@@ -1,6 +1,7 @@
 package com.uevitondev.deliverybackend.domain.dto;
 
 import com.uevitondev.deliverybackend.domain.model.Store;
+import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.util.UUID;

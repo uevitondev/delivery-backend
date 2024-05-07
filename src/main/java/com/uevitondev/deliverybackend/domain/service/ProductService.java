@@ -1,10 +1,14 @@
 package com.uevitondev.deliverybackend.domain.service;
 
 import com.uevitondev.deliverybackend.domain.dto.ProductDTO;
+import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
+import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.model.Category;
 import com.uevitondev.deliverybackend.domain.model.Product;
+import com.uevitondev.deliverybackend.domain.model.Store;
 import com.uevitondev.deliverybackend.domain.repository.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.repository.ProductRepository;
+import com.uevitondev.deliverybackend.domain.repository.StoreRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;

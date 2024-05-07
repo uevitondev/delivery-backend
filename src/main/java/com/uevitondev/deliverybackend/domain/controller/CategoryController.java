@@ -2,6 +2,7 @@ package com.uevitondev.deliverybackend.domain.controller;
 
 import com.uevitondev.deliverybackend.domain.dto.CategoryDTO;
 import com.uevitondev.deliverybackend.domain.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;

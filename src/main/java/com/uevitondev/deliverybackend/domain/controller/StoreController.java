@@ -1,5 +1,8 @@
 package com.uevitondev.deliverybackend.domain.controller;
 
+import com.uevitondev.deliverybackend.domain.dto.StoreDTO;
+import com.uevitondev.deliverybackend.domain.service.StoreService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,9 +22,7 @@ public class StoreController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StoreDTO>> getAllStores
-
-    {
+    public ResponseEntity<List<StoreDTO>> getAllStores() {
         return ResponseEntity.ok().body(storeService.findAllStores());
     }
 

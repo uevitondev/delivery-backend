@@ -1,6 +1,8 @@
 package com.uevitondev.deliverybackend.domain.service;
 
 import com.uevitondev.deliverybackend.domain.dto.CategoryDTO;
+import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
+import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.model.Category;
 import com.uevitondev.deliverybackend.domain.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;

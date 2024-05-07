@@ -1,6 +1,7 @@
 package com.uevitondev.deliverybackend.domain.dto;
 
 import com.uevitondev.deliverybackend.domain.model.Category;
+import com.uevitondev.deliverybackend.domain.model.Product;
 
 import java.io.Serializable;
 import java.util.HashSet;

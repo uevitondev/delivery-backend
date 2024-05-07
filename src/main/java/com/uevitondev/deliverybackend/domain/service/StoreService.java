@@ -1,6 +1,8 @@
 package com.uevitondev.deliverybackend.domain.service;
 
 import com.uevitondev.deliverybackend.domain.dto.StoreDTO;
+import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
+import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.model.Store;
 import com.uevitondev.deliverybackend.domain.repository.StoreRepository;
 import org.springframework.dao.DataIntegrityViolationException;

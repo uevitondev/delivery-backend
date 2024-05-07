@@ -1,6 +1,8 @@
 package com.uevitondev.deliverybackend.domain.dto;
 
-import org.antlr.v4.runtime.misc.NotNull;
+import com.uevitondev.deliverybackend.domain.model.Product;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.util.UUID;
