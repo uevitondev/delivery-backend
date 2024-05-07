@@ -1,6 +1,8 @@
 package com.uevitondev.deliverybackend.domain.service;
 
+import com.uevitondev.deliverybackend.domain.dto.CartItemDTO;
 import com.uevitondev.deliverybackend.domain.dto.OrderDTO;
+import com.uevitondev.deliverybackend.domain.dto.ShoppingCartDTO;
 import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
