@@ -1,6 +1,7 @@
 package com.uevitondev.deliverybackend.domain.dto;
 
 import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
+import com.uevitondev.deliverybackend.domain.model.Order;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
