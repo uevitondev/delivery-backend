@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tb_user_refresh_token")
+@Table(name = "tb_refresh_token")
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

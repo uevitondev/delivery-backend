@@ -33,7 +33,7 @@ public class Store implements Serializable {
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final Set<Order> orders = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinTable(
             name = "tb_store_address",
             joinColumns = @JoinColumn(name = "store_id"),

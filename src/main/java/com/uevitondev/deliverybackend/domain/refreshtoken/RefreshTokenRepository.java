@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
-    Optional<RefreshToken> findByRefreshToken(String refreshToken);
+    Optional<RefreshToken> findByToken(String refreshToken);
 
     @Query(value = "SELECT tr.* FROM TB_REFRESH_TOKEN tb_rt " +
             "INNER JOIN USER_DETAILS ud ON tr.user_id = ud.id " +
