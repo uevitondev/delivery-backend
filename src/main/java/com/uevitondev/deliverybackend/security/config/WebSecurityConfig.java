@@ -34,7 +34,7 @@ public class WebSecurityConfig {
     private final JwtService jwtService;
     private final HandlerExceptionResolver resolver;
 
-    private static final String[] ENDPOINTS_PUBLIC = {"/delivery/v1/h2-console/**", "/delivery/v1/api/test/public/**", "/delivery/v1/api/auth/sign-in/**"};
+    private static final String[] ENDPOINTS_PUBLIC = {"/delivery/v1/h2-console/**", "/delivery/v1/doc/**", "/delivery/v1/api/test/public/**", "/delivery/v1/api/auth/sign-in/**"};
     private static final String[] ENDPOINTS_ADMIN = {"/delivery/v1/api/admin/**"};
 
 
