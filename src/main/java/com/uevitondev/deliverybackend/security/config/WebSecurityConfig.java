@@ -2,7 +2,7 @@ package com.uevitondev.deliverybackend.security.config;
 
 import com.uevitondev.deliverybackend.security.jwt.JwtService;
 import com.uevitondev.deliverybackend.security.jwt.JwtTokenSecurityFilter;
-import com.uevitondev.deliverybackend.security.userimpl.UserDetailsServiceImpl;
+import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

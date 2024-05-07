@@ -1,10 +1,10 @@
 package com.uevitondev.deliverybackend.runner;
 
 
-import com.uevitondev.deliverybackend.domain.model.Role;
-import com.uevitondev.deliverybackend.domain.model.User;
-import com.uevitondev.deliverybackend.domain.repository.RoleRepository;
-import com.uevitondev.deliverybackend.domain.repository.UserRepository;
+import com.uevitondev.deliverybackend.domain.role.Role;
+import com.uevitondev.deliverybackend.domain.user.User;
+import com.uevitondev.deliverybackend.domain.role.RoleRepository;
+import com.uevitondev.deliverybackend.domain.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

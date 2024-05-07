@@ -1,7 +1,7 @@
 package com.uevitondev.deliverybackend.security.jwt;
 
 
-import com.uevitondev.deliverybackend.security.userimpl.UserDetailsServiceImpl;
+import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
