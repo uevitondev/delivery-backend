@@ -35,6 +35,10 @@ public class Order implements Serializable {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "tb_order_order_item",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "order_item_id")
+    )
     private final Set<OrderItem> orderItems = new HashSet<>();
 
     public Order() {

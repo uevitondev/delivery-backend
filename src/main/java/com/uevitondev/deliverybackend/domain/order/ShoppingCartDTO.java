@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ShoppingCartDTO implements Serializable {
 
     @NotNull(message = "pizzeriaId: is mandatory")
-    private UUID pizzeriaId;
+    private UUID storeId;
     @NotNull(message = "addressId: is mandatory")
     private UUID addressId;
 
@@ -22,17 +22,17 @@ public class ShoppingCartDTO implements Serializable {
     public ShoppingCartDTO() {
     }
 
-    public ShoppingCartDTO(UUID pizzeriaId, UUID addressId) {
-        this.pizzeriaId = pizzeriaId;
+    public ShoppingCartDTO(UUID storeId, UUID addressId) {
+        this.storeId = storeId;
         this.addressId = addressId;
     }
 
-    public UUID getPizzeriaId() {
-        return pizzeriaId;
+    public UUID getStoreId() {
+        return storeId;
     }
 
-    public void setPizzeriaId(UUID pizzeriaId) {
-        this.pizzeriaId = pizzeriaId;
+    public void setStoreId(UUID storeId) {
+        this.storeId = storeId;
     }
 
     public UUID getAddressId() {

@@ -1,5 +1,6 @@
 package com.uevitondev.deliverybackend.domain.orderitem;
 
+import com.uevitondev.deliverybackend.domain.order.Order;
 import com.uevitondev.deliverybackend.domain.product.Product;
 import jakarta.persistence.*;
 

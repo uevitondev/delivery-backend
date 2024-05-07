@@ -12,9 +12,12 @@ import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
 import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
+import com.uevitondev.deliverybackend.domain.user.User;
+import com.uevitondev.deliverybackend.domain.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,15 +35,17 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
                         StoreRepository storeRepository, AddressRepository addressRepository,
-                        ProductRepository productRepository) {
+                        ProductRepository productRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.storeRepository = storeRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional(readOnly = true)
@@ -59,15 +64,14 @@ public class OrderService {
     @Transactional
     public OrderDTO saveNewOrder(ShoppingCartDTO dto) {
         try {
-            var user = new Customer();
-            //var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            // var user = (PhysicalUser) authService.getUserAuthenticated();
-            Store store = storeRepository.findById(dto.getPizzeriaId())
-                    .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getPizzeriaId()));
+            var username = SecurityContextHolder.getContext().getAuthentication().getName();
+            var customer = (Customer) userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("not found"));
+            Store store = storeRepository.findById(dto.getStoreId())
+                    .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getStoreId()));
             Address address = addressRepository.findById(dto.getAddressId())
                     .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.getAddressId()));
 
-            Order order = new Order(OrderStatus.PENDENTE, user, saveOrderItem(dto.getCartItems()));
+            Order order = new Order(OrderStatus.PENDENTE, customer, saveOrderItem(dto.getCartItems()));
             order.setStore(store);
             order.setAddress(address);
 
