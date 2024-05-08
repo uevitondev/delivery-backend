@@ -1,31 +1,31 @@
 package com.uevitondev.deliverybackend.domain.authentication;
 
+import com.uevitondev.deliverybackend.domain.role.Role;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.Collection;
+import java.util.*;
 
 public class AuthResponseDTO implements Serializable {
     private String tokenType;
     private String accessToken;
-    private Instant expiresAt;
-    private String userName;
-    private String userEmail;
-    private Collection<? extends GrantedAuthority> authorities;
+    private Long expiresAt;
+    private String authName;
+    private String username;
+    private List<String> roles = new ArrayList<>();
 
 
     public AuthResponseDTO() {
 
     }
 
-    public AuthResponseDTO(String tokenType, String accessToken, Instant expiresAt, String userName, String userEmail, Collection<? extends GrantedAuthority> authorities) {
+    public AuthResponseDTO(String tokenType, String accessToken, Long expiresAt, String authName, String username, List<String> roles) {
         this.tokenType = tokenType;
         this.accessToken = accessToken;
         this.expiresAt = expiresAt;
-        this.userName = userName;
-        this.userEmail = userEmail;
-        this.authorities = authorities;
+        this.authName = authName;
+        this.username = username;
+        this.roles = roles;
     }
 
     public String getTokenType() {
@@ -44,35 +44,31 @@ public class AuthResponseDTO implements Serializable {
         this.accessToken = accessToken;
     }
 
-    public Instant getExpiresAt() {
+    public Long getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(Instant expiresAt) {
+    public void setExpiresAt(Long expiresAt) {
         this.expiresAt = expiresAt;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getAuthName() {
+        return authName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setAuthName(String authName) {
+        this.authName = authName;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
+    public List<String> getRoles() {
+        return roles;
     }
 }

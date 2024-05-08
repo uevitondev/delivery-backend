@@ -1,6 +1,7 @@
 package com.uevitondev.deliverybackend.handler;
 
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
+import com.uevitondev.deliverybackend.domain.exception.RefreshTokenRevokedException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
 import com.uevitondev.deliverybackend.security.jwt.exception.JwtBearerTokenException;
@@ -70,6 +71,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DatabaseException.class)
     protected ResponseEntity<ProblemDetail> handleDatabaseException(DatabaseException e) {
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
+        problemDetail.setTitle(httpStatus.getReasonPhrase());
+        problemDetail.setDetail(e.getMessage());
+        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
+        return ResponseEntity.status(httpStatus).body(problemDetail);
+    }
+
+    @ExceptionHandler(RefreshTokenRevokedException.class)
+    protected ResponseEntity<ProblemDetail> handleRefreshTokenRevokedException(RefreshTokenRevokedException e) {
+        var httpStatus = HttpStatus.UNAUTHORIZED;
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());

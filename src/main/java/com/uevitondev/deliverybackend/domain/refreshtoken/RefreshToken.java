@@ -3,6 +3,7 @@ package com.uevitondev.deliverybackend.domain.refreshtoken;
 import com.uevitondev.deliverybackend.domain.user.User;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -13,18 +14,24 @@ public class RefreshToken {
     private UUID id;
     @Column(nullable = false, length = 10000)
     private String token;
-    @Column
-    private boolean revoked;
-    @ManyToOne
+    @Column(nullable = false, length = 10000)
+    private Instant expiryDate;
+    @Column(nullable = false)
+    private Instant createdAt;
+    @Column(nullable = false)
+    private Instant updateAt;
+    @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     public RefreshToken() {
     }
 
-    public RefreshToken(String token, boolean revoked, User user) {
+    public RefreshToken(String token, Instant expiryDate, User user) {
         this.token = token;
-        this.revoked = revoked;
+        this.expiryDate = expiryDate;
+        this.createdAt = Instant.now();
+        this.updateAt = Instant.now();
         this.user = user;
     }
 
@@ -44,12 +51,28 @@ public class RefreshToken {
         this.token = token;
     }
 
-    public boolean isRevoked() {
-        return revoked;
+    public Instant getExpiryDate() {
+        return expiryDate;
     }
 
-    public void setRevoked(boolean revoked) {
-        this.revoked = revoked;
+    public void setExpiryDate(Instant expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Instant updateAt) {
+        this.updateAt = updateAt;
     }
 
     public User getUser() {

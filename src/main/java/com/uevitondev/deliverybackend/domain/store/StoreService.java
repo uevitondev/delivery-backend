@@ -1,6 +1,5 @@
 package com.uevitondev.deliverybackend.domain.store;
 
-import com.uevitondev.deliverybackend.domain.role.StoreDTO;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;

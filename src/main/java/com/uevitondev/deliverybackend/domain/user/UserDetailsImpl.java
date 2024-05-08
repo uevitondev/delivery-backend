@@ -25,10 +25,6 @@ public class UserDetailsImpl implements UserDetails {
         return this.user.getPassword();
     }
 
-    public String getName() {
-        return user.getFirstName();
-    }
-
     @Override
     public String getUsername() {
         return this.user.getUsername();
@@ -52,5 +48,9 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return user.getEnabled();
+    }
+
+    public String getAuthName() {
+        return this.user.getFirstName();
     }
 }

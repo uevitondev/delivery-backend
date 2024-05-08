@@ -1,6 +1,5 @@
 package com.uevitondev.deliverybackend.domain.store;
 
-import com.uevitondev.deliverybackend.domain.role.StoreDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

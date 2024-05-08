@@ -1,6 +1,5 @@
-package com.uevitondev.deliverybackend.domain.role;
+package com.uevitondev.deliverybackend.domain.store;
 
-import com.uevitondev.deliverybackend.domain.store.Store;
 import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
