@@ -32,14 +32,14 @@ public class RefreshTokenService {
             var refreshToken = optionalRefreshToken.get();
             refreshToken.setToken(UUID.randomUUID().toString());
             refreshToken.setUpdateAt(Instant.now());
-            refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenExpiresAt));
+            refreshToken.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpiresAt));
             log.info("[RefreshTokenService:generateSaveRefreshToken] Refresh Token (exist and updated) new token: {}", refreshToken.getToken());
             return refreshTokenRepository.save(refreshToken);
         }
 
         var refreshToken = new RefreshToken(
                 UUID.randomUUID().toString(),
-                Instant.now().plusMillis(refreshTokenExpiresAt),
+                Instant.now().plusSeconds(refreshTokenExpiresAt),
                 userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("not found"))
         );
         log.info("[RefreshTokenService:generateSaveRefreshToken] Refresh Token has been generated: {}", refreshToken.getToken());

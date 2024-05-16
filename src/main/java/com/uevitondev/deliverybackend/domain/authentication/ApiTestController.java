@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiTestController {
 
     @GetMapping("/public")
-    public ResponseEntity<String> routePublic() {
-        return ResponseEntity.ok().body("access public route success!");
+    public ResponseEntity<TestResponse> routePublic() {
+        return ResponseEntity.ok().body(new TestResponse("access public route success!"));
     }
 
     @GetMapping("/authenticated")
-    public ResponseEntity<String> routeAuthenticated() {
-        return ResponseEntity.ok().body("access authenticated route success!");
+    public ResponseEntity<TestResponse> routeAuthenticated() {
+        return ResponseEntity.ok().body(new TestResponse("access authenticated route success!"));
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<String> routeAdmin() {
-        return ResponseEntity.ok().body("access admin route success!");
+    public ResponseEntity<TestResponse> routeAdmin() {
+        return ResponseEntity.ok().body(new TestResponse("access admin route success!"));
     }
 
 

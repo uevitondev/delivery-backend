@@ -69,7 +69,8 @@ public class AuthenticationService {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60);
+        refreshTokenCookie.setPath("/delivery/v1/api/auth/refresh-token");
+        refreshTokenCookie.setMaxAge(604800);
         response.addCookie(refreshTokenCookie);
         log.info("[AuthenticationService:createRefreshTokenCookie] Response Cookie Refresh Token created: {}", refreshToken);
     }
