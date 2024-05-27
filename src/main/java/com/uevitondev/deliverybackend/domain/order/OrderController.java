@@ -1,5 +1,8 @@
 package com.uevitondev.deliverybackend.domain.order;
 
+import com.uevitondev.deliverybackend.domain.customer.Customer;
+import com.uevitondev.deliverybackend.domain.orderitem.ShoppingCartDTO;
+import com.uevitondev.deliverybackend.domain.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/delivery/v1/api/orders")
+@RequestMapping("/v1/orders")
 public class OrderController {
 
     private final OrderService orderService;
@@ -25,6 +28,12 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderDTO> findOrderById(@PathVariable UUID id) {
         return ResponseEntity.ok().body(orderService.findOrderById(id));
+    }
+
+    @GetMapping("/customer")
+    public ResponseEntity<List<OrderDTO>> findOrdersByCustomer() {
+        Customer customer = (Customer) UserService.getUserAuthenticated();
+        return ResponseEntity.ok().body(orderService.findAllOrdersByCustomer(customer));
     }
 
     @PostMapping

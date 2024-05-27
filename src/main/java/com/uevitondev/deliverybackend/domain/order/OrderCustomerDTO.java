@@ -1,12 +1,15 @@
 package com.uevitondev.deliverybackend.domain.order;
 
 import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
+import com.uevitondev.deliverybackend.domain.orderitem.OrderItemDTO;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class OrderDTO implements Serializable {
+public class OrderCustomerDTO implements Serializable {
     private UUID id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -15,8 +18,9 @@ public class OrderDTO implements Serializable {
     private UUID userId;
     private UUID storeId;
     private UUID addressId;
+    private final List<OrderItemDTO> orderItems = new ArrayList<>();
 
-    public OrderDTO(Order order) {
+    public OrderCustomerDTO(Order order) {
         this.id = order.getId();
         this.createdAt = order.getCreatedAt();
         this.updatedAt = order.getUpdatedAt();
@@ -25,6 +29,7 @@ public class OrderDTO implements Serializable {
         this.userId = order.getCustomer().getId();
         this.storeId = order.getStore().getId();
         this.addressId = order.getAddress().getId();
+        order.getOrderItems().forEach(orderItem -> orderItems.add(new OrderItemDTO(orderItem)));
     }
 
 
@@ -90,5 +95,9 @@ public class OrderDTO implements Serializable {
 
     public void setAddressId(UUID addressId) {
         this.addressId = addressId;
+    }
+
+    public List<OrderItemDTO> getOrderItems() {
+        return orderItems;
     }
 }

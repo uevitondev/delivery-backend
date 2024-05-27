@@ -1,13 +1,10 @@
 package com.uevitondev.deliverybackend.domain.role;
 
-import com.uevitondev.deliverybackend.domain.user.User;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -18,9 +15,7 @@ public class Role implements Serializable {
     private UUID id;
     private String name;
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private final Set<User> users = new HashSet<>();
+    private LocalDateTime updatedAt;
 
     public Role() {
     }
@@ -28,7 +23,7 @@ public class Role implements Serializable {
     public Role(String name) {
         this.name = name;
         this.createdAt = LocalDateTime.now();
-        this.updateAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public UUID getId() {
@@ -55,16 +50,12 @@ public class Role implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
-    }
-
-    public Set<User> getUsers() {
-        return users;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override

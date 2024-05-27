@@ -31,7 +31,7 @@ public class RefreshTokenService {
         if (optionalRefreshToken.isPresent()) {
             var refreshToken = optionalRefreshToken.get();
             refreshToken.setToken(UUID.randomUUID().toString());
-            refreshToken.setUpdateAt(Instant.now());
+            refreshToken.setUpdatedAt(Instant.now());
             refreshToken.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpiresAt));
             log.info("[RefreshTokenService:generateSaveRefreshToken] Refresh Token (exist and updated) new token: {}", refreshToken.getToken());
             return refreshTokenRepository.save(refreshToken);

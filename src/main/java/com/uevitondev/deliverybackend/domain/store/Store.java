@@ -1,6 +1,6 @@
 package com.uevitondev.deliverybackend.domain.store;
 
-import com.uevitondev.deliverybackend.domain.address.Address;
+import com.uevitondev.deliverybackend.domain.address.StoreAddress;
 import com.uevitondev.deliverybackend.domain.order.Order;
 import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.seller.Seller;
@@ -24,7 +24,7 @@ public class Store implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createdAt;
     @Column(nullable = false)
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
@@ -32,14 +32,8 @@ public class Store implements Serializable {
     private final Set<Product> products = new HashSet<>();
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final Set<Order> orders = new HashSet<>();
-
-    @OneToOne
-    @JoinTable(
-            name = "tb_store_address",
-            joinColumns = @JoinColumn(name = "store_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
-    private Address address;
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    private StoreAddress address;
 
     public Store() {
     }
@@ -48,7 +42,7 @@ public class Store implements Serializable {
         this.name = name;
         this.seller = seller;
         this.createdAt = LocalDateTime.now();
-        this.updateAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public UUID getId() {
@@ -75,12 +69,12 @@ public class Store implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Seller getSeller() {
@@ -99,11 +93,11 @@ public class Store implements Serializable {
         return orders;
     }
 
-    public Address getAddress() {
+    public StoreAddress getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(StoreAddress address) {
         this.address = address;
     }
 

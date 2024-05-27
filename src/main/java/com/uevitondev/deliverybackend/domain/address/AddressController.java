@@ -1,5 +1,7 @@
 package com.uevitondev.deliverybackend.domain.address;
 
+import com.uevitondev.deliverybackend.domain.store.Store;
+import com.uevitondev.deliverybackend.domain.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/delivery/v1/api/adresses")
+@RequestMapping("/v1/addresses")
 public class AddressController {
 
     private final AddressService addressService;
@@ -19,14 +21,35 @@ public class AddressController {
         this.addressService = addressService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<AddressDTO>> getAllAddresses() {
-        return ResponseEntity.ok().body(addressService.findAllAddresses());
+
+    @GetMapping("/users")
+    public ResponseEntity<List<AddressDTO>> getAllAddressesForAllUsers() {
+        return ResponseEntity.ok().body(addressService.findAllUserAddresses());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AddressDTO> getAddressById(@PathVariable UUID id) {
-        return ResponseEntity.ok().body(addressService.findAddressById(id));
+    @GetMapping("/user/all")
+    public ResponseEntity<List<AddressDTO>> getAllAddressesByUser() {
+        return ResponseEntity.ok().body(addressService.findAllAddressesByUser(UserService.getUserAuthenticated()));
+    }
+
+    @GetMapping("/{id}/user")
+    public ResponseEntity<AddressDTO> getAddressForUserById(@PathVariable UUID id) {
+        return ResponseEntity.ok().body(addressService.findUserAddressById(id));
+    }
+
+    @GetMapping("/stores")
+    public ResponseEntity<List<AddressDTO>> getAllStoreAddresses() {
+        return ResponseEntity.ok().body(addressService.findAllUserAddresses());
+    }
+
+    @GetMapping("/store/all")
+    public ResponseEntity<List<AddressDTO>> getAllAddressesByStore() {
+        return ResponseEntity.ok().body(addressService.findAllAddressesByStore(new Store()));
+    }
+
+    @GetMapping("/store/{id}")
+    public ResponseEntity<AddressDTO> getStoreAddressById(@PathVariable UUID id) {
+        return ResponseEntity.ok().body(addressService.findStoreAddressById(id));
     }
 
     @PostMapping

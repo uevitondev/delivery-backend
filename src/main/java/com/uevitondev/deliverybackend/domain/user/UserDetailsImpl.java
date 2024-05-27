@@ -50,7 +50,7 @@ public class UserDetailsImpl implements UserDetails {
         return user.getEnabled();
     }
 
-    public String getAuthName() {
-        return this.user.getFirstName();
+    public User getUser() {
+        return user;
     }
 }

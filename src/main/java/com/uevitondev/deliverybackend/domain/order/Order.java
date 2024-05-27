@@ -1,18 +1,15 @@
 package com.uevitondev.deliverybackend.domain.order;
 
-import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
-import com.uevitondev.deliverybackend.domain.address.Address;
+import com.uevitondev.deliverybackend.domain.address.UserAddress;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
+import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 import com.uevitondev.deliverybackend.domain.store.Store;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_order")
@@ -24,7 +21,7 @@ public class Order implements Serializable {
     private OrderStatus status;
     private Double total;
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
@@ -33,23 +30,21 @@ public class Order implements Serializable {
     private Store store;
     @ManyToOne
     @JoinColumn(name = "address_id", nullable = false)
-    private Address address;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "tb_order_order_item",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "order_item_id")
-    )
+    private UserAddress address;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final Set<OrderItem> orderItems = new HashSet<>();
 
     public Order() {
     }
 
-    public Order(OrderStatus status, Customer customer, Set<OrderItem> orderItems) {
+    public Order(OrderStatus status, Store store, Customer customer, UserAddress address, List<OrderItem> orderItems) {
         this.status = status;
+        this.store = store;
         this.customer = customer;
+        this.address = address;
         this.createdAt = LocalDateTime.now();
-        this.updateAt = LocalDateTime.now();
-        addOrderItemsAndCalculateTotal(orderItems);
+        this.updatedAt = LocalDateTime.now();
+        addOrderItems(orderItems);
     }
 
     public UUID getId() {
@@ -84,12 +79,12 @@ public class Order implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Customer getCustomer() {
@@ -108,11 +103,11 @@ public class Order implements Serializable {
         this.store = store;
     }
 
-    public Address getAddress() {
+    public UserAddress getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(UserAddress address) {
         this.address = address;
     }
 
@@ -120,18 +115,30 @@ public class Order implements Serializable {
         return orderItems;
     }
 
-    public void addOrderItemsAndCalculateTotal(Set<OrderItem> orderItems) {
-        this.orderItems.addAll(orderItems);
-        calculateOrderTotal();
+    public void addOrderItems(List<OrderItem> orderItems) {
+        orderItems.forEach(this::addOrderItem);
+        calculateOrderTotal(orderItems);
     }
 
-    public void calculateOrderTotal() {
+    public void addOrderItem(OrderItem orderItem) {
+        getOrderItems().add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void removeOrderItem(OrderItem orderItem) {
+        getOrderItems().remove(orderItem);
+        orderItem.setOrder(null);
+    }
+
+
+    public void calculateOrderTotal(List<OrderItem> orderItems) {
         double sum = 0.0;
-        for (OrderItem orderItem : this.orderItems) {
+        for (OrderItem orderItem : orderItems) {
             sum += orderItem.getTotal();
         }
         this.total = sum;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -143,6 +150,6 @@ public class Order implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(id);
     }
 }

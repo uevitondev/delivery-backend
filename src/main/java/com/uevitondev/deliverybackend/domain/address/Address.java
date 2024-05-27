@@ -7,10 +7,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity
-@Table(name = "tb_address")
-public class Address implements Serializable {
-
+@MappedSuperclass
+public abstract class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -23,12 +21,13 @@ public class Address implements Serializable {
     private Integer number;
     @Column(nullable = false)
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
-    public Address() {
+
+    protected Address() {
     }
 
-    public Address(String zipCode, String uf, String city, String district, String street, Integer number) {
+    protected Address(String zipCode, String uf, String city, String district, String street, Integer number) {
         this.zipCode = zipCode;
         this.uf = uf;
         this.city = city;
@@ -36,7 +35,7 @@ public class Address implements Serializable {
         this.street = street;
         this.number = number;
         this.createdAt = LocalDateTime.now();
-        this.updateAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
 
@@ -112,24 +111,23 @@ public class Address implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Address address = (Address) o;
-        return Objects.equals(id, address.id);
+        if (!(o instanceof Address that)) return false;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(id);
     }
 }

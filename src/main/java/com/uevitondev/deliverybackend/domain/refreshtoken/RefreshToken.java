@@ -19,7 +19,7 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant createdAt;
     @Column(nullable = false)
-    private Instant updateAt;
+    private Instant updatedAt;
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
@@ -31,7 +31,7 @@ public class RefreshToken {
         this.token = token;
         this.expiryDate = expiryDate;
         this.createdAt = Instant.now();
-        this.updateAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.user = user;
     }
 
@@ -67,12 +67,12 @@ public class RefreshToken {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdateAt() {
-        return updateAt;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(Instant updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public User getUser() {

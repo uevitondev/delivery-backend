@@ -1,7 +1,6 @@
-package com.uevitondev.deliverybackend.domain.order;
+package com.uevitondev.deliverybackend.domain.orderitem;
 
 import com.uevitondev.deliverybackend.domain.product.ProductDTO;
-import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 
 import java.io.Serializable;
 import java.util.UUID;

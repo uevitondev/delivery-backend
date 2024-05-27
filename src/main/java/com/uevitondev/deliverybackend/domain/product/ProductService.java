@@ -1,10 +1,10 @@
 package com.uevitondev.deliverybackend.domain.product;
 
+import com.uevitondev.deliverybackend.domain.category.Category;
+import com.uevitondev.deliverybackend.domain.category.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
-import com.uevitondev.deliverybackend.domain.category.Category;
 import com.uevitondev.deliverybackend.domain.store.Store;
-import com.uevitondev.deliverybackend.domain.category.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -88,7 +88,7 @@ public class ProductService {
             product.setPrice(dto.getPrice());
             product.setCategory(category);
             product.setStore(store);
-            product.setUpdateAt(LocalDateTime.now());
+            product.setUpdatedAt(LocalDateTime.now());
             product = productRepository.save(product);
 
             return new ProductDTO(product);

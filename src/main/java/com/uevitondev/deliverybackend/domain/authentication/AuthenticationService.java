@@ -53,7 +53,7 @@ public class AuthenticationService {
     private AuthResponseDTO buildAuthResponseDto(UserDetailsImpl userDetails, String jwtToken) {
         var accessTokenExpiryAt = jwtService.getExpirationJwtToken(jwtToken);
         List<String> userRoles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        return new AuthResponseDTO(TokenType.Bearer.name(), jwtToken, accessTokenExpiryAt, userDetails.getAuthName(), userDetails.getUsername(), userRoles);
+        return new AuthResponseDTO(TokenType.Bearer.name(), jwtToken, accessTokenExpiryAt, userDetails.getUser().getFirstName(), userDetails.getUsername(), userRoles);
     }
 
     public AuthResponseDTO getJwtTokenUsingRefreshToken(HttpServletRequest request, HttpServletResponse response) {

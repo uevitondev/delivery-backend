@@ -1,4 +1,4 @@
-package com.uevitondev.deliverybackend.domain.order;
+package com.uevitondev.deliverybackend.domain.orderitem;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

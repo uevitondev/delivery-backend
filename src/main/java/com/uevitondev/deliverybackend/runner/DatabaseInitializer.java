@@ -1,8 +1,10 @@
 package com.uevitondev.deliverybackend.runner;
 
 
-import com.uevitondev.deliverybackend.domain.address.Address;
-import com.uevitondev.deliverybackend.domain.address.AddressRepository;
+import com.uevitondev.deliverybackend.domain.address.StoreAddress;
+import com.uevitondev.deliverybackend.domain.address.StoreAddressRepository;
+import com.uevitondev.deliverybackend.domain.address.UserAddress;
+import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.category.Category;
 import com.uevitondev.deliverybackend.domain.category.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
@@ -10,6 +12,7 @@ import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
 import com.uevitondev.deliverybackend.domain.order.Order;
 import com.uevitondev.deliverybackend.domain.order.OrderRepository;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
+import com.uevitondev.deliverybackend.domain.orderitem.OrderItemRepository;
 import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
 import com.uevitondev.deliverybackend.domain.role.Role;
@@ -19,82 +22,91 @@ import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
 import com.uevitondev.deliverybackend.domain.user.User;
 import com.uevitondev.deliverybackend.domain.user.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
-    private final AddressRepository addressRepository;
+    private final UserAddressRepository userAddressRepository;
+    private final StoreAddressRepository storeAddressRepository;
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
 
     public DatabaseInitializer(RoleRepository roleRepository, UserRepository userRepository,
-                               AddressRepository addressRepository, CategoryRepository categoryRepository,
+                               UserAddressRepository userAddressRepository, StoreAddressRepository storeAddressRepository, CategoryRepository categoryRepository,
                                ProductRepository productRepository, StoreRepository storeRepository,
-                               OrderRepository orderRepository) {
+                               OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
-        this.addressRepository = addressRepository;
+        this.userAddressRepository = userAddressRepository;
+        this.storeAddressRepository = storeAddressRepository;
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
 
+
+        // Role
         Role adminRole = new Role("ROLE_ADMIN");
+        adminRole = roleRepository.save(adminRole);
+
         Role customerRole = new Role("ROLE_CUSTOMER");
+        customerRole = roleRepository.save(customerRole);
+
         Role sellerRole = new Role("ROLE_SELLER");
+        sellerRole = roleRepository.save(sellerRole);
 
-        roleRepository.saveAll(List.of(adminRole, customerRole, sellerRole));
-
-        User adminUser = new User();
-        adminUser.setId(UUID.randomUUID());
-        adminUser.setFirstName("Admin");
-        adminUser.setLastName("UserAdmin");
-        adminUser.setUsername("admin@gmail.com");
-        adminUser.setPassword("$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu");
+        User adminUser = new User(
+                "Admin",
+                "UserAdmin",
+                "admin@gmail.com",
+                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+        );
         adminUser.getRoles().add(adminRole);
         adminUser = userRepository.save(adminUser);
 
-        Customer customerUser = new Customer();
-        customerUser.setId(UUID.randomUUID());
-        customerUser.setFirstName("Customer");
-        customerUser.setLastName("UserCustomer");
-        customerUser.setUsername("customer@gmail.com");
-        customerUser.setPassword("$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu");
+        Customer customerUser = new Customer(
+                "Customer",
+                "UserCustomer",
+                "customer@gmail.com",
+                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+        );
         customerUser.getRoles().add(customerRole);
         customerUser = userRepository.save(customerUser);
 
-        Seller sellerUser = new Seller();
-        sellerUser.setId(UUID.randomUUID());
-        sellerUser.setFirstName("Seller");
-        sellerUser.setLastName("UserSeller");
-        sellerUser.setUsername("seller@gmail.com");
-        sellerUser.setPassword("$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu");
+        // user customer address
+        UserAddress addressCustomerUser = new UserAddress("03584000", "SP", "São Paulo", "Distrito 1", "Rua da flores", 126);
+        addressCustomerUser.setComplement("Condominio Residencial ABA - Apt 26 A");
+        addressCustomerUser.setUser(customerUser);
+        addressCustomerUser = userAddressRepository.save(addressCustomerUser);
+
+        customerUser.getAddresses().add(addressCustomerUser);
+        userRepository.save(customerUser);
+
+        Seller sellerUser = new Seller(
+                "Seller",
+                "UserSeller",
+                "seller@gmail.com",
+                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+        );
         sellerUser.getRoles().add(sellerRole);
         sellerUser = userRepository.save(sellerUser);
-        //userRepository.saveAll(List.of(adminUser, customerUser, sellerUser));
 
-        // address
-        Address addressCustomer1 = new Address("03584000", "SP", "São Paulo", "Distrito 1", "Rua da flores", 126);
-        addressCustomer1.setComplement("Condominio Residencial ABA - Apt 26 A");
-
-        Address addressStore1 = new Address("03484000", "MG", "Minas Gerais", "Montes Claros", "Rua da Conservação", 25);
-        addressStore1.setComplement("Prédio Comercial, Bloco C, loja 05");
-        addressRepository.saveAll(List.of(addressCustomer1, addressStore1));
 
         // category
         Category category1 = new Category("PIZZAS");
@@ -103,13 +115,22 @@ public class DatabaseInitializer implements CommandLineRunner {
         Category category4 = new Category("DOCES");
         categoryRepository.saveAll(List.of(category1, category2, category3, category4));
 
+
         // store
         Store store1 = new Store("Pizzaria Sabor", sellerUser);
-        store1.setAddress(addressStore1);
+        store1 = storeRepository.save(store1);
         Store store2 = new Store("Restaurante Villa", sellerUser);
         Store store3 = new Store("Doceria Braga", sellerUser);
         Store store4 = new Store("Adega Bar", sellerUser);
-        storeRepository.saveAll(List.of(store1, store2, store3, store4));
+        storeRepository.saveAll(List.of(store2, store3, store4));
+
+        // address store
+        StoreAddress addressStore1 = new StoreAddress("03484000", "MG", "Minas Gerais", "Montes Claros", "Rua da Conservação", 25, store1);
+        addressStore1.setComplement("Prédio Comercial, Bloco C, loja 05");
+        addressStore1 = storeAddressRepository.save(addressStore1);
+
+        store1.setAddress(addressStore1);
+        storeRepository.save(store1);
 
         // product
         String productImageUrl = "https://images.pexels.com/photos/6941025/pexels-photo-6941025.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
@@ -148,19 +169,26 @@ public class DatabaseInitializer implements CommandLineRunner {
         product8.setStore(store1);
         productRepository.saveAll(List.of(product1, product2, product3, product4, product5, product6, product7, product8));
 
+
         // order-item
         OrderItem orderItem1 = new OrderItem(2, "obs", product1);
-        OrderItem orderItem2 = new OrderItem(1, "obs", product2);
-
-        Set<OrderItem> orderItems = new HashSet<>();
-        orderItems.add(orderItem1);
-        orderItems.add(orderItem2);
+        OrderItem orderItem2 = new OrderItem(3, "obs", product2);
+        var orderItems = List.of(orderItem1, orderItem2);
 
         // order
-        Order order1 = new Order(OrderStatus.PENDENTE, customerUser, orderItems);
-        order1.setStore(store1);
-        order1.setAddress(addressCustomer1);
-        orderRepository.save(order1);
+        Order order1 = new Order(
+                OrderStatus.PENDENTE,
+                store1,
+                customerUser,
+                addressCustomerUser,
+                orderItems
+        );
+
+        orderItemRepository.saveAll(orderItems);
+        order1 = orderRepository.save(order1);
+
+        customerUser.getOrders().add(order1);
+        userRepository.save(customerUser);
 
 
     }

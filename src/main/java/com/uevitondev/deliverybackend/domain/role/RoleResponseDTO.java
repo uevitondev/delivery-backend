@@ -9,7 +9,7 @@ public class RoleResponseDTO implements Serializable {
     private UUID id;
     private String name;
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     public RoleResponseDTO() {
     }
@@ -18,7 +18,7 @@ public class RoleResponseDTO implements Serializable {
         this.id = role.getId();
         this.name = role.getName();
         this.createdAt = role.getCreatedAt();
-        this.updateAt = role.getUpdateAt();
+        this.updatedAt = role.getUpdatedAt();
     }
 
     public UUID getId() {
@@ -45,11 +45,11 @@ public class RoleResponseDTO implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

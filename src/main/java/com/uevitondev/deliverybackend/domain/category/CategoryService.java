@@ -46,7 +46,7 @@ public class CategoryService {
         try {
             Category category = categoryRepository.getReferenceById(id);
             category.setName(dto.getName());
-            category.setUpdateAt(LocalDateTime.now());
+            category.setUpdatedAt(LocalDateTime.now());
             category = categoryRepository.save(category);
             return new CategoryDTO(category);
         } catch (EntityNotFoundException e) {

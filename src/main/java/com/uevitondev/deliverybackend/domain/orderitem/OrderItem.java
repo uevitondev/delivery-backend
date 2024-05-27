@@ -17,9 +17,12 @@ public class OrderItem implements Serializable {
     private Integer quantity;
     private String observation;
     private Double total;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     public OrderItem() {
     }
@@ -29,7 +32,6 @@ public class OrderItem implements Serializable {
         this.observation = observation;
         this.product = product;
         this.calculateTotal();
-
     }
 
     public UUID getId() {
@@ -69,6 +71,18 @@ public class OrderItem implements Serializable {
         this.product = product;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
     public void calculateTotal() {
         this.total = this.product.getPrice() * this.quantity;
     }
@@ -83,6 +97,6 @@ public class OrderItem implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(id);
     }
 }

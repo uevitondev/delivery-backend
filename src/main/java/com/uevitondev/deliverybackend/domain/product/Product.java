@@ -22,7 +22,7 @@ public class Product implements Serializable {
     private Double price;
     @Column(nullable = false)
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -39,7 +39,7 @@ public class Product implements Serializable {
         this.description = description;
         this.price = price;
         this.createdAt = LocalDateTime.now();
-        this.updateAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public UUID getId() {
@@ -90,12 +90,12 @@ public class Product implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Category getCategory() {

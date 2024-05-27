@@ -46,7 +46,7 @@ public class StoreService {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + id));
         store.setName(dto.getName());
-        store.setUpdateAt(LocalDateTime.now());
+        store.setUpdatedAt(LocalDateTime.now());
         store = storeRepository.save(store);
         return new StoreDTO(store);
     }

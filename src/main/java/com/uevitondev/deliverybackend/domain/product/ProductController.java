@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/delivery/v1/api/products")
+@RequestMapping("/v1/products")
 public class ProductController {
 
     private final ProductService productService;
