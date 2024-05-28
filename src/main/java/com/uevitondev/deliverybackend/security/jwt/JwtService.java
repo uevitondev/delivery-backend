@@ -37,19 +37,8 @@ public class JwtService {
         }
     }
 
-
-    public long getExpirationJwtToken(String jwtToken) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(jwtAccessTokenSecretKey);
-            return JWT.require(algorithm)
-                    .withIssuer("spring-security-jwt-access-token")
-                    .build()
-                    .verify(jwtToken)
-                    .getExpiresAt()
-                    .getTime();
-        } catch (JWTVerificationException e) {
-            throw new JwtBearerTokenException(e.getMessage());
-        }
+    public long getExpirationJwtToken() {
+        return jwtAccessTokenExpiration;
     }
 
     public String validateJwtToken(String jwtToken) {

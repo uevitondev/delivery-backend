@@ -1,10 +1,8 @@
 package com.uevitondev.deliverybackend.domain.authentication;
 
-import com.uevitondev.deliverybackend.domain.role.Role;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuthResponseDTO implements Serializable {
     private String tokenType;

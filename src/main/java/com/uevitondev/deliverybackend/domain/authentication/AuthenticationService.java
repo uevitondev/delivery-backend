@@ -20,8 +20,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class AuthenticationService {
     private final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
@@ -51,9 +49,14 @@ public class AuthenticationService {
     }
 
     private AuthResponseDTO buildAuthResponseDto(UserDetailsImpl userDetails, String jwtToken) {
-        var accessTokenExpiryAt = jwtService.getExpirationJwtToken(jwtToken);
-        List<String> userRoles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        return new AuthResponseDTO(TokenType.Bearer.name(), jwtToken, accessTokenExpiryAt, userDetails.getUser().getFirstName(), userDetails.getUsername(), userRoles);
+        return new AuthResponseDTO(
+                TokenType.Bearer.name(),
+                jwtToken,
+                jwtService.getExpirationJwtToken(),
+                userDetails.getUser().getFirstName(),
+                userDetails.getUsername(),
+                userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+        );
     }
 
     public AuthResponseDTO getJwtTokenUsingRefreshToken(HttpServletRequest request, HttpServletResponse response) {
