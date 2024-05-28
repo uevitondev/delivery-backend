@@ -47,9 +47,9 @@ public class AddressService {
     }
 
     public AddressDTO findStoreAddressById(UUID id) {
-        UserAddress userAddress = userAddressRepository.findById(id)
+        StoreAddress storeAddress = storeAddressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("store address not found for id: " + id));
-        return new AddressDTO(userAddress);
+        return new AddressDTO(storeAddress);
     }
 
 

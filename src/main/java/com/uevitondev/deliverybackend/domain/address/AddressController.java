@@ -32,7 +32,7 @@ public class AddressController {
         return ResponseEntity.ok().body(addressService.findAllAddressesByUser(UserService.getUserAuthenticated()));
     }
 
-    @GetMapping("/{id}/user")
+    @GetMapping("/user/{id}")
     public ResponseEntity<AddressDTO> getAddressForUserById(@PathVariable UUID id) {
         return ResponseEntity.ok().body(addressService.findUserAddressById(id));
     }
