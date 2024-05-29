@@ -20,7 +20,7 @@ public class RefreshToken {
     private Instant createdAt;
     @Column(nullable = false)
     private Instant updatedAt;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

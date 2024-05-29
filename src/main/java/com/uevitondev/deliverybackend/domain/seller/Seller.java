@@ -12,7 +12,7 @@ import java.util.Set;
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Seller extends User {
 
-    @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY)
     private final Set<Store> stores = new HashSet<>();
 
     public Seller() {

@@ -6,9 +6,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -32,15 +32,14 @@ public class User implements Serializable {
     private Boolean accountNonLocked = true;
     private Boolean credentialsNonExpired = true;
     private Boolean enabled = true;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private final List<UserAddress> addresses = new ArrayList<>();
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private final Set<Role> roles = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private final Set<UserAddress> addresses = new HashSet<>();
-
+    private final List<Role> roles = new ArrayList<>();
 
     public User() {
     }
@@ -142,12 +141,12 @@ public class User implements Serializable {
         this.enabled = enabled;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public List<UserAddress> getAddresses() {
+        return addresses;
     }
 
-    public Set<UserAddress> getAddresses() {
-        return addresses;
+    public List<Role> getRoles() {
+        return roles;
     }
 
     @Override

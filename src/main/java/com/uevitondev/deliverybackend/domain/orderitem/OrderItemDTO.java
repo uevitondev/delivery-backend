@@ -1,7 +1,5 @@
 package com.uevitondev.deliverybackend.domain.orderitem;
 
-import com.uevitondev.deliverybackend.domain.product.ProductDTO;
-
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -10,25 +8,12 @@ public class OrderItemDTO implements Serializable {
     private Integer quantity;
     private Double total;
     private String observation;
-    private ProductDTO product;
-
-    public OrderItemDTO() {
-    }
-
-    public OrderItemDTO(UUID id, Integer quantity, Double total, String observation, ProductDTO product) {
-        this.id = id;
-        this.quantity = quantity;
-        this.total = total;
-        this.observation = observation;
-        this.product = product;
-    }
 
     public OrderItemDTO(OrderItem orderItem) {
         this.id = orderItem.getId();
         this.quantity = orderItem.getQuantity();
         this.total = orderItem.getTotal();
         this.observation = orderItem.getObservation();
-        this.product = new ProductDTO(orderItem.getProduct());
     }
 
     public UUID getId() {
@@ -61,13 +46,5 @@ public class OrderItemDTO implements Serializable {
 
     public void setObservation(String observation) {
         this.observation = observation;
-    }
-
-    public ProductDTO getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductDTO product) {
-        this.product = product;
     }
 }

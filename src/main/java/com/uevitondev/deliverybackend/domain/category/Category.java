@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -20,8 +20,8 @@ public class Category implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private final Set<Product> products = new HashSet<>();
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private final List<Product> products = new ArrayList<>();
 
 
     public Category() {
@@ -65,7 +65,7 @@ public class Category implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Set<Product> getProducts() {
+    public List<Product> getProducts() {
         return products;
     }
 

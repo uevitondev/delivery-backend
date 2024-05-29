@@ -3,20 +3,14 @@ package com.uevitondev.deliverybackend.domain.product;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class ProductDTO implements Serializable {
+public class NewProductDTO implements Serializable {
     private UUID id;
     private String name;
     private String imageUrl;
     private String description;
     private Double price;
-
-    public ProductDTO(Product product) {
-        this.id = product.getId();
-        this.name = product.getName();
-        this.imageUrl = product.getImageUrl();
-        this.description = product.getDescription();
-        this.price = product.getPrice();
-    }
+    private UUID categoryId;
+    private UUID storeId;
 
     public UUID getId() {
         return id;
@@ -56,5 +50,21 @@ public class ProductDTO implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public UUID getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(UUID storeId) {
+        this.storeId = storeId;
     }
 }

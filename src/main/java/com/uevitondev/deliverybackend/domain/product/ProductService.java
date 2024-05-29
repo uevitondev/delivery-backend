@@ -11,13 +11,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -30,32 +30,26 @@ public class ProductService {
         this.storeRepository = storeRepository;
     }
 
-    @Transactional(readOnly = true)
     public Page<ProductDTO> findAllProducts(Pageable pageable) {
         return productRepository.findAllProductsPaged(pageable).map(ProductDTO::new);
     }
 
-
-    @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProductsByStoreId(UUID id, Pageable pageable) {
         return productRepository.findAllProductsPagedByStoreId(id, pageable).map(ProductDTO::new);
     }
 
-
-    @Transactional(readOnly = true)
     public ProductDTO findProductById(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("product not found for productId: " + id));
         return new ProductDTO(product);
     }
 
-    @Transactional
-    public ProductDTO insertNewProduct(ProductDTO dto) {
+    public ProductDTO insertNewProduct(NewProductDTO dto) {
         Product product = productRepository.save(convertProductDtoToProduct(dto));
         return new ProductDTO(product);
     }
 
-    public Product convertProductDtoToProduct(ProductDTO dto) {
+    public Product convertProductDtoToProduct(NewProductDTO dto) {
 
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("category not found for categoryId: " + dto.getCategoryId()));
@@ -73,8 +67,7 @@ public class ProductService {
     }
 
 
-    @Transactional
-    public ProductDTO updateProductById(UUID id, ProductDTO dto) {
+    public ProductDTO updateProductById(UUID id, NewProductDTO dto) {
         try {
             Category category = categoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("category not found for categoryId: " + dto.getCategoryId()));
@@ -97,7 +90,6 @@ public class ProductService {
         }
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteProductById(UUID id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("product not found for productId: " + id);

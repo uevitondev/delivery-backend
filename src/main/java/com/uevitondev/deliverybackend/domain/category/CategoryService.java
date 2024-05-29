@@ -5,7 +5,6 @@ import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -21,19 +21,16 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    @Transactional(readOnly = true)
     public List<CategoryDTO> findAllCategories() {
         return categoryRepository.findAll().stream().map(CategoryDTO::new).toList();
     }
 
-    @Transactional(readOnly = true)
     public CategoryDTO findCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("category not found for categoryId: " + id));
         return new CategoryDTO(category);
     }
 
-    @Transactional
     public CategoryDTO insertNewCategory(CategoryDTO dto) {
         Category category = new Category(dto.getName());
         category = categoryRepository.save(category);
@@ -41,7 +38,6 @@ public class CategoryService {
         return new CategoryDTO(category);
     }
 
-    @Transactional
     public CategoryDTO updateCategoryById(UUID id, CategoryDTO dto) {
         try {
             Category category = categoryRepository.getReferenceById(id);
@@ -54,7 +50,6 @@ public class CategoryService {
         }
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteCategoryById(UUID id) {
         if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFoundException("category not found for categoryId: " + id);

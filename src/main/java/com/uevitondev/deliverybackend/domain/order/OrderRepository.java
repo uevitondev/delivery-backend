@@ -1,7 +1,6 @@
 package com.uevitondev.deliverybackend.domain.order;
 
 import com.uevitondev.deliverybackend.domain.customer.Customer;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +12,6 @@ import java.util.UUID;
 
 
 @Repository
-@Transactional
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderItems WHERE o.id = :id")

@@ -27,6 +27,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
@@ -60,7 +61,6 @@ public class DatabaseInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-
         // Role
         Role adminRole = new Role("ROLE_ADMIN");
         adminRole = roleRepository.save(adminRole);
@@ -78,7 +78,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
         adminUser.getRoles().add(adminRole);
-        adminUser = userRepository.save(adminUser);
+        userRepository.save(adminUser);
 
         Customer customerUser = new Customer(
                 "Customer",
@@ -118,6 +118,7 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         // store
         Store store1 = new Store("Pizzaria Sabor", sellerUser);
+        store1.setId(UUID.fromString("005d7c57-04ad-4251-bf05-fdc8b38182aa"));
         store1 = storeRepository.save(store1);
         Store store2 = new Store("Restaurante Villa", sellerUser);
         Store store3 = new Store("Doceria Braga", sellerUser);
@@ -178,18 +179,11 @@ public class DatabaseInitializer implements CommandLineRunner {
         // order
         Order order1 = new Order(
                 OrderStatus.PENDENTE,
-                store1,
                 customerUser,
-                addressCustomerUser,
-                orderItems
+                store1,
+                addressCustomerUser
         );
-
-        orderItemRepository.saveAll(orderItems);
-        order1 = orderRepository.save(order1);
-
-        customerUser.getOrders().add(order1);
-        userRepository.save(customerUser);
-
-
+        order1.addOrderItems(orderItems);
+        orderRepository.save(order1);
     }
 }

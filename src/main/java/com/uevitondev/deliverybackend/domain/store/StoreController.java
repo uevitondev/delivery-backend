@@ -25,7 +25,7 @@ public class StoreController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StoreDTO> getPizzeriaById(@PathVariable UUID id) {
+    public ResponseEntity<StoreDTO> getStoreById(@PathVariable UUID id) {
         return ResponseEntity.ok().body(storeService.findStoreById(id));
     }
 

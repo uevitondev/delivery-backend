@@ -9,12 +9,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -27,11 +29,9 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll().stream().map(UserResponseDTO::new).toList();
     }
-
 
     public UserResponseDTO findUserById(UUID id) {
         User user = userRepository.findById(id)
@@ -56,7 +56,6 @@ public class UserService {
         }
     }
 
-
     public UserResponseDTO updateUserById(UUID id, UserRequestDTO dto) {
 
         User user = userRepository.findById(id)
@@ -74,7 +73,6 @@ public class UserService {
 
         user = userRepository.save(user);
         return new UserResponseDTO(user);
-
     }
 
     public void deleteUserById(UUID id) {
@@ -88,9 +86,7 @@ public class UserService {
         }
     }
 
-
     public static User getUserAuthenticated() {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (userDetailsImpl.getUser() != null) {
             return userDetailsImpl.getUser();

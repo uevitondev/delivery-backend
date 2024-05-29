@@ -1,6 +1,5 @@
 package com.uevitondev.deliverybackend.domain.order;
 
-import com.uevitondev.deliverybackend.domain.address.UserAddress;
 import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
 import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
@@ -12,21 +11,21 @@ import com.uevitondev.deliverybackend.domain.orderitem.OrderItemRepository;
 import com.uevitondev.deliverybackend.domain.orderitem.ShoppingCartDTO;
 import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
-import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
 import com.uevitondev.deliverybackend.domain.user.UserRepository;
+import com.uevitondev.deliverybackend.domain.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
@@ -67,16 +66,15 @@ public class OrderService {
 
     public OrderDTO saveNewOrder(ShoppingCartDTO dto) {
         try {
-            var username = SecurityContextHolder.getContext().getAuthentication().getName();
-            var customer = (Customer) userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("not found"));
-            Store store = storeRepository.findById(dto.getStoreId())
-                    .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getStoreId()));
-            UserAddress address = userAddressRepository.findById(dto.getAddressId())
-                    .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.getAddressId()));
-
-            var orderItems = getOrderItems(dto.getCartItems());
-            Order order = new Order(OrderStatus.PENDENTE, store, customer, address, orderItems);
-            orderItemRepository.saveAll(orderItems);
+            Order order = new Order(
+                    OrderStatus.PENDENTE,
+                    (Customer) UserService.getUserAuthenticated(),
+                    storeRepository.findById(dto.getStoreId())
+                            .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getStoreId())),
+                    userAddressRepository.findById(dto.getAddressId())
+                            .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.getAddressId()))
+            );
+            addOrderItemsToOrder(order, dto.getCartItems());
             return new OrderDTO(orderRepository.save(order));
 
         } catch (DataIntegrityViolationException e) {
@@ -84,15 +82,13 @@ public class OrderService {
         }
     }
 
-    public List<OrderItem> getOrderItems(Set<CartItemDTO> cartItems) {
-        List<OrderItem> orderItems = new ArrayList<>();
+    public void addOrderItemsToOrder(Order order, Set<CartItemDTO> cartItems) {
         for (CartItemDTO cartItem : cartItems) {
             Product product = productRepository.findById(cartItem.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("product not found for productId: " + cartItem.getProductId()));
             OrderItem orderItem = new OrderItem(cartItem.getQuantity(), cartItem.getObservation(), product);
-            orderItems.add(orderItem);
+            order.addOrderItem(orderItem);
         }
-        return orderItems;
     }
 
 

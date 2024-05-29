@@ -9,7 +9,10 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tb_order")
@@ -31,20 +34,20 @@ public class Order implements Serializable {
     @ManyToOne
     @JoinColumn(name = "address_id", nullable = false)
     private UserAddress address;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private final Set<OrderItem> orderItems = new HashSet<>();
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<OrderItem> orderItems = new ArrayList<>();
 
     public Order() {
     }
 
-    public Order(OrderStatus status, Store store, Customer customer, UserAddress address, List<OrderItem> orderItems) {
+    public Order(OrderStatus status, Customer customer, Store store, UserAddress address) {
         this.status = status;
-        this.store = store;
         this.customer = customer;
+        this.store = store;
         this.address = address;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        addOrderItems(orderItems);
     }
 
     public UUID getId() {
@@ -111,7 +114,7 @@ public class Order implements Serializable {
         this.address = address;
     }
 
-    public Set<OrderItem> getOrderItems() {
+    public List<OrderItem> getOrderItems() {
         return orderItems;
     }
 

@@ -8,9 +8,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,15 +25,15 @@ public class Store implements Serializable {
     private LocalDateTime createdAt;
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
-    @OneToMany(mappedBy = "store")
-    private final Set<Product> products = new HashSet<>();
-    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private final Set<Order> orders = new HashSet<>();
-    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY)
     private StoreAddress address;
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+    private final List<Product> products = new ArrayList<>();
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+    private final List<Order> orders = new ArrayList<>();
 
     public Store() {
     }
@@ -85,11 +85,11 @@ public class Store implements Serializable {
         this.seller = seller;
     }
 
-    public Set<Product> getProducts() {
+    public List<Product> getProducts() {
         return products;
     }
 
-    public Set<Order> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 
