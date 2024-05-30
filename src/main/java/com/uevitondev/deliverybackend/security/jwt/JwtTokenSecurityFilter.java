@@ -13,26 +13,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 public class JwtTokenSecurityFilter extends OncePerRequestFilter {
     Logger log = LoggerFactory.getLogger(JwtTokenSecurityFilter.class);
-    private final List<String> publicEndpoints;
-    private final PathMatcher pathMatcher = new AntPathMatcher();
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
     private final HandlerExceptionResolver resolver;
 
-
-    public JwtTokenSecurityFilter(List<String> publicEndpoints, JwtService jwtService, UserDetailsServiceImpl userDetailsService, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
-        this.publicEndpoints = publicEndpoints;
+    public JwtTokenSecurityFilter(JwtService jwtService,
+                                  UserDetailsServiceImpl userDetailsService,
+                                  @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.resolver = resolver;
@@ -42,13 +37,7 @@ public class JwtTokenSecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String requestURI = request.getRequestURI();
-            if (isPublicEndpoint(requestURI)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            var jwtToken = this.getToken(request);
+            var jwtToken = getToken(request);
             if (jwtToken != null) {
                 var username = jwtService.validateJwtToken(jwtToken);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -60,10 +49,6 @@ public class JwtTokenSecurityFilter extends OncePerRequestFilter {
             log.info("[JwtTokenSecurityFilter:doFilterInternal] handle exception in filter: {}", e.getMessage());
             resolver.resolveException(request, response, null, e);
         }
-    }
-
-    private boolean isPublicEndpoint(String requestURI) {
-        return publicEndpoints.stream().anyMatch(endpoint -> pathMatcher.match(endpoint, requestURI));
     }
 
     private String getToken(HttpServletRequest request) {

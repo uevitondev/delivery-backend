@@ -1,8 +1,8 @@
 package com.uevitondev.deliverybackend.security.config;
 
+import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
 import com.uevitondev.deliverybackend.security.jwt.JwtService;
 import com.uevitondev.deliverybackend.security.jwt.JwtTokenSecurityFilter;
-import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -62,16 +61,15 @@ public class WebSecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtTokenSecurityFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handler -> {
-                    handler.authenticationEntryPoint(customBasicAuthenticationEntryPoint());
-                    handler.accessDeniedHandler(customBearerTokenAccessDeniedHandler());
+                    handler.authenticationEntryPoint(authenticationEntryPointResolver());
+                    handler.accessDeniedHandler(accessDeniedHandlerResolver());
                 })
                 .build();
     }
 
     @Bean
     public JwtTokenSecurityFilter jwtTokenSecurityFilter() {
-        List<String> publicEndpoints = Arrays.asList(ENDPOINTS_PUBLIC);
-        return new JwtTokenSecurityFilter(publicEndpoints, jwtService, userDetailsService, resolver);
+        return new JwtTokenSecurityFilter(jwtService, userDetailsService, resolver);
     }
 
     @Bean
@@ -105,13 +103,13 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint() {
-        return new CustomBasicAuthenticationEntryPoint(this.resolver);
+    public AuthenticationEntryPointResolver authenticationEntryPointResolver() {
+        return new AuthenticationEntryPointResolver(this.resolver);
     }
 
     @Bean
-    public CustomBearerTokenAccessDeniedHandler customBearerTokenAccessDeniedHandler() {
-        return new CustomBearerTokenAccessDeniedHandler(this.resolver);
+    public AccessDeniedHandlerResolver accessDeniedHandlerResolver() {
+        return new AccessDeniedHandlerResolver(this.resolver);
     }
 
 

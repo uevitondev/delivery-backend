@@ -12,9 +12,6 @@ public class OrderDTO implements Serializable {
     private LocalDateTime updatedAt;
     private OrderStatus status;
     private Double total;
-    private UUID userId;
-    private UUID storeId;
-    private UUID addressId;
 
     public OrderDTO(Order order) {
         this.id = order.getId();
@@ -22,9 +19,6 @@ public class OrderDTO implements Serializable {
         this.updatedAt = order.getUpdatedAt();
         this.status = order.getStatus();
         this.total = order.getTotal();
-        this.userId = order.getCustomer().getId();
-        this.storeId = order.getStore().getId();
-        this.addressId = order.getAddress().getId();
     }
 
 
@@ -68,27 +62,4 @@ public class OrderDTO implements Serializable {
         this.total = total;
     }
 
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public UUID getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(UUID storeId) {
-        this.storeId = storeId;
-    }
-
-    public UUID getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(UUID addressId) {
-        this.addressId = addressId;
-    }
 }

@@ -12,10 +12,12 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 
 @Component
-public class CustomBearerTokenAccessDeniedHandler implements AccessDeniedHandler {
+public class AccessDeniedHandlerResolver implements AccessDeniedHandler {
     private final HandlerExceptionResolver resolver;
 
-    public CustomBearerTokenAccessDeniedHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+    public AccessDeniedHandlerResolver(
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
+    ) {
         this.resolver = resolver;
     }
 

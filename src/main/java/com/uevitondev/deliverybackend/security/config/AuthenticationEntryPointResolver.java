@@ -1,6 +1,5 @@
 package com.uevitondev.deliverybackend.security.config;
 
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,10 +12,12 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 
 @Component
-public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class AuthenticationEntryPointResolver implements AuthenticationEntryPoint {
     private final HandlerExceptionResolver resolver;
 
-    public CustomBasicAuthenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+    public AuthenticationEntryPointResolver(
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
+    ) {
         this.resolver = resolver;
     }
 
