@@ -21,13 +21,16 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAllProducts(Pageable pageable) {
-        return ResponseEntity.ok().body(productService.findAllProducts(pageable));
+    public ResponseEntity<Page<ProductDTO>> getAllProductsPaged(Pageable pageable) {
+        return ResponseEntity.ok().body(productService.getAllProductsPaged(pageable));
     }
 
-    @GetMapping("/store/{id}")
-    public ResponseEntity<Page<ProductDTO>> getAllProductsPagedByStoreId(@PathVariable UUID id, Pageable pageable) {
-        return ResponseEntity.ok().body(productService.getAllProductsByStoreId(id, pageable));
+    @GetMapping("/store/{storeId}")
+    public ResponseEntity<Page<ProductDTO>> getAllProductsPagedByStoreAndCategory(
+            @PathVariable UUID storeId,
+            @RequestParam(required = false) String categoryName,
+            Pageable pageable) {
+        return ResponseEntity.ok().body(productService.getAllProductsPagedByStoreAndCategory(storeId, categoryName, pageable));
     }
 
     @GetMapping("/{id}")

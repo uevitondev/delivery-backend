@@ -30,12 +30,12 @@ public class ProductService {
         this.storeRepository = storeRepository;
     }
 
-    public Page<ProductDTO> findAllProducts(Pageable pageable) {
+    public Page<ProductDTO> getAllProductsPaged(Pageable pageable) {
         return productRepository.findAllProductsPaged(pageable).map(ProductDTO::new);
     }
 
-    public Page<ProductDTO> getAllProductsByStoreId(UUID id, Pageable pageable) {
-        return productRepository.findAllProductsPagedByStoreId(id, pageable).map(ProductDTO::new);
+    public Page<ProductDTO> getAllProductsPagedByStoreAndCategory(UUID storeId, String categoryName, Pageable pageable) {
+        return productRepository.findAllByStoreAndCategory(storeId, categoryName, pageable).map(ProductDTO::new);
     }
 
     public ProductDTO findProductById(UUID id) {

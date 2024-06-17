@@ -8,7 +8,8 @@ import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.category.Category;
 import com.uevitondev.deliverybackend.domain.category.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
-import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
+import com.uevitondev.deliverybackend.domain.order.OrderPayment;
+import com.uevitondev.deliverybackend.domain.order.OrderStatus;
 import com.uevitondev.deliverybackend.domain.order.Order;
 import com.uevitondev.deliverybackend.domain.order.OrderRepository;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
@@ -179,6 +180,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         // order
         Order order1 = new Order(
                 OrderStatus.PENDENTE,
+                OrderPayment.PIX,
                 customerUser,
                 store1,
                 addressCustomerUser

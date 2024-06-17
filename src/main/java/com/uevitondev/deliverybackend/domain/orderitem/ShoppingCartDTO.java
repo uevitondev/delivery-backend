@@ -11,20 +11,21 @@ import java.util.UUID;
 
 public class ShoppingCartDTO implements Serializable {
 
-    @NotNull(message = "pizzeriaId: is mandatory")
+    @NotNull(message = "storeId: is mandatory")
     private UUID storeId;
-    @NotNull(message = "addressId: is mandatory")
-    private UUID addressId;
-
+    @NotNull(message = "userAddressId: is mandatory")
+    private UUID userAddressId;
+    private String paymentMethod;
     @NotEmpty(message = "cartItems: cannot be empty")
     private final Set<@Valid CartItemDTO> cartItems = new HashSet<>();
 
     public ShoppingCartDTO() {
     }
 
-    public ShoppingCartDTO(UUID storeId, UUID addressId) {
+    public ShoppingCartDTO(UUID storeId, UUID userAddressId, String paymentMethod) {
         this.storeId = storeId;
-        this.addressId = addressId;
+        this.userAddressId = userAddressId;
+        this.paymentMethod = paymentMethod;
     }
 
     public UUID getStoreId() {
@@ -35,12 +36,20 @@ public class ShoppingCartDTO implements Serializable {
         this.storeId = storeId;
     }
 
-    public UUID getAddressId() {
-        return addressId;
+    public UUID getUserAddressId() {
+        return userAddressId;
     }
 
-    public void setAddressId(UUID addressId) {
-        this.addressId = addressId;
+    public void setUserAddressId(UUID userAddressId) {
+        this.userAddressId = userAddressId;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public Set<CartItemDTO> getCartItems() {

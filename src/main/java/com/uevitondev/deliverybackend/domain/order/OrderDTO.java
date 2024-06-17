@@ -1,7 +1,5 @@
 package com.uevitondev.deliverybackend.domain.order;
 
-import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,6 +9,7 @@ public class OrderDTO implements Serializable {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private OrderStatus status;
+    private OrderPayment paymentMethod;
     private Double total;
 
     public OrderDTO(Order order) {
@@ -18,6 +17,7 @@ public class OrderDTO implements Serializable {
         this.createdAt = order.getCreatedAt();
         this.updatedAt = order.getUpdatedAt();
         this.status = order.getStatus();
+        this.paymentMethod = order.getPaymentMethod();
         this.total = order.getTotal();
     }
 
@@ -52,6 +52,14 @@ public class OrderDTO implements Serializable {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public OrderPayment getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(OrderPayment paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public Double getTotal() {

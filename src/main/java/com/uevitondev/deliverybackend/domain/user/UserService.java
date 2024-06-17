@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.domain.user;
 
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
-import com.uevitondev.deliverybackend.domain.order.OrderService;
 import com.uevitondev.deliverybackend.domain.role.Role;
 import com.uevitondev.deliverybackend.domain.role.RoleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,11 +22,16 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     public UserService(UserRepository userRepository,
-                       RoleRepository roleRepository,
-                       OrderService orderService) {
+                       RoleRepository roleRepository
+    ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
     }
+
+    public UserAccountDTO getUserAccountData() {
+        return new UserAccountDTO(getUserAuthenticated());
+    }
+
 
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll().stream().map(UserResponseDTO::new).toList();

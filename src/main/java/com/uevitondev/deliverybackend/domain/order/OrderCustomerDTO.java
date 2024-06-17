@@ -1,6 +1,5 @@
 package com.uevitondev.deliverybackend.domain.order;
 
-import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItemDTO;
 
 import java.io.Serializable;

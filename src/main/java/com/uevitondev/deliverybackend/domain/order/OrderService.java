@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.domain.order;
 
 import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
-import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.orderitem.CartItemDTO;
@@ -68,11 +67,12 @@ public class OrderService {
         try {
             Order order = new Order(
                     OrderStatus.PENDENTE,
+                    OrderPayment.PIX,
                     (Customer) UserService.getUserAuthenticated(),
                     storeRepository.findById(dto.getStoreId())
                             .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getStoreId())),
-                    userAddressRepository.findById(dto.getAddressId())
-                            .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.getAddressId()))
+                    userAddressRepository.findById(dto.getUserAddressId())
+                            .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.getUserAddressId()))
             );
             addOrderItemsToOrder(order, dto.getCartItems());
             return new OrderDTO(orderRepository.save(order));

@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.domain.order;
 
 import com.uevitondev.deliverybackend.domain.address.UserAddress;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
-import com.uevitondev.deliverybackend.domain.enums.OrderStatus;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 import com.uevitondev.deliverybackend.domain.store.Store;
 import jakarta.persistence.*;
@@ -22,6 +21,8 @@ public class Order implements Serializable {
     private UUID id;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+    @Enumerated(EnumType.STRING)
+    private OrderPayment paymentMethod;
     private Double total;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -41,8 +42,9 @@ public class Order implements Serializable {
     public Order() {
     }
 
-    public Order(OrderStatus status, Customer customer, Store store, UserAddress address) {
+    public Order(OrderStatus status, OrderPayment paymentMethod, Customer customer, Store store, UserAddress address) {
         this.status = status;
+        this.paymentMethod = paymentMethod;
         this.customer = customer;
         this.store = store;
         this.address = address;
@@ -64,6 +66,14 @@ public class Order implements Serializable {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public OrderPayment getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(OrderPayment paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public Double getTotal() {

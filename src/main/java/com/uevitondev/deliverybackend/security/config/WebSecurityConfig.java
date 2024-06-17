@@ -33,7 +33,16 @@ public class WebSecurityConfig {
     private final JwtService jwtService;
     private final HandlerExceptionResolver resolver;
 
-    private static final String[] ENDPOINTS_PUBLIC = {"/v1/h2-console/**", "/v1/doc/**", "/v1/test/public/**", "/v1/auth/refresh-token/**", "/v1/auth/sign-in/**"};
+    private static final String[] ENDPOINTS_PUBLIC = {
+            "/v1/h2-console/**",
+            "/v1/doc/**",
+            "/v1/test/public/**",
+            "/v1/stores/**",
+            "/v1/categories/**",
+            "/v1/products/**",
+            "/v1/auth/refresh-token/**",
+            "/v1/auth/sign-in/**"};
+
     private static final String[] ENDPOINTS_ADMIN = {"/v1/test/admin/**"};
 
 

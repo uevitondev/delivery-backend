@@ -16,7 +16,7 @@ public abstract class Address implements Serializable {
     private String uf;
     private String city;
     private String district;
-    private String street;
+        private String street;
     private String complement;
     private Integer number;
     @Column(nullable = false)

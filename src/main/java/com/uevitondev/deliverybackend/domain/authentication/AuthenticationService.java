@@ -1,6 +1,6 @@
 package com.uevitondev.deliverybackend.domain.authentication;
 
-import com.uevitondev.deliverybackend.domain.enums.TokenType;
+import com.uevitondev.deliverybackend.security.jwt.TokenType;
 import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshTokenService;
 import com.uevitondev.deliverybackend.domain.user.UserDetailsImpl;
 import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
@@ -74,7 +74,7 @@ public class AuthenticationService {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/delivery/v1/api/auth/refresh-token");
+        refreshTokenCookie.setPath("/v1/auth/refresh-token");
         refreshTokenCookie.setMaxAge(604800);
         response.addCookie(refreshTokenCookie);
         log.info("[AuthenticationService:createRefreshTokenCookie] Response Cookie Refresh Token created: {}", refreshToken);
