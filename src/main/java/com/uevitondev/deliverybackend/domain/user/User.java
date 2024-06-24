@@ -22,16 +22,17 @@ public class User implements Serializable {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
+    private String phoneNumber;
     @Column(nullable = false)
     private String username;
     @Column(nullable = false)
     private String password;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Boolean accountNonExpired = true;
-    private Boolean accountNonLocked = true;
-    private Boolean credentialsNonExpired = true;
-    private Boolean enabled = true;
+    private Boolean isAccountNonExpired = true;
+    private Boolean isAccountNonLocked = true;
+    private Boolean isCredentialsNonExpired = true;
+    private Boolean isEnabled = true;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private final List<UserAddress> addresses = new ArrayList<>();
     @ManyToMany(fetch = FetchType.EAGER)
@@ -44,9 +45,10 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String firstName, String lastName, String username, String password) {
+    public User(String firstName, String lastName, String phoneNumber, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
         this.username = username;
         this.password = password;
         this.createdAt = LocalDateTime.now();
@@ -75,6 +77,14 @@ public class User implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getUsername() {
@@ -109,36 +119,36 @@ public class User implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Boolean getAccountNonExpired() {
-        return accountNonExpired;
+    public Boolean isAccountNonExpired() {
+        return isAccountNonExpired;
     }
 
-    public void setAccountNonExpired(Boolean accountNonExpired) {
-        this.accountNonExpired = accountNonExpired;
+    public void isAccountNonExpired(Boolean isAccountNonExpired) {
+        this.isAccountNonExpired = isAccountNonExpired;
     }
 
-    public Boolean getAccountNonLocked() {
-        return accountNonLocked;
+    public Boolean isAccountNonLocked() {
+        return isAccountNonLocked;
     }
 
-    public void setAccountNonLocked(Boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
+    public void isAccountNonLocked(Boolean isAccountNonLocked) {
+        this.isAccountNonLocked = isAccountNonLocked;
     }
 
-    public Boolean getCredentialsNonExpired() {
-        return credentialsNonExpired;
+    public Boolean isCredentialsNonExpired() {
+        return isCredentialsNonExpired;
     }
 
-    public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
-        this.credentialsNonExpired = credentialsNonExpired;
+    public void isCredentialsNonExpired(Boolean isCredentialsNonExpired) {
+        this.isCredentialsNonExpired = isCredentialsNonExpired;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
+    public Boolean isEnabled() {
+        return isEnabled;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public void isEnabled(Boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     public List<UserAddress> getAddresses() {

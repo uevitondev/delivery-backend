@@ -18,8 +18,8 @@ public class Seller extends User {
     public Seller() {
     }
 
-    public Seller(String firstName, String lastName, String username, String password) {
-        super(firstName, lastName, username, password);
+    public Seller(String firstName, String lastName, String phoneNumber, String username, String password) {
+        super(firstName, lastName, phoneNumber, username, password);
     }
 
     public Set<Store> getStores() {

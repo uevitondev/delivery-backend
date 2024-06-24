@@ -16,8 +16,9 @@ public class UserAddress extends Address implements Serializable {
     public UserAddress() {
     }
 
-    public UserAddress(String zipCode, String uf, String city, String district, String street, Integer number) {
-        super(zipCode, uf, city, district, street, number);
+
+    public UserAddress(String street, Integer number, String district, String city, String uf, String complement, String zipCode) {
+        super(street, number, district, city, uf, complement, zipCode);
     }
 
     public User getUser() {

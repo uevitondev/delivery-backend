@@ -9,19 +9,22 @@ import java.io.Serializable;
 @Table(name = "tb_store_address")
 public class StoreAddress extends Address implements Serializable {
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     public StoreAddress() {
     }
 
-    public StoreAddress(Store store) {
-        this.store = store;
+    public StoreAddress(String street, Integer number, String district, String city, String uf, String complement, String zipCode) {
+        super(street, number, district, city, uf, complement, zipCode);
     }
 
-    public StoreAddress(String zipCode, String uf, String city, String district, String street, Integer number, Store store) {
-        super(zipCode, uf, city, district, street, number);
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
         this.store = store;
     }
 

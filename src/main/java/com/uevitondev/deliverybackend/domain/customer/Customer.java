@@ -18,8 +18,8 @@ public class Customer extends User {
     public Customer() {
     }
 
-    public Customer(String firstName, String lastName, String username, String password) {
-        super(firstName, lastName, username, password);
+    public Customer(String firstName, String lastName, String phoneNumber, String username, String password) {
+        super(firstName, lastName, phoneNumber, username, password);
     }
 
     public Set<Order> getOrders() {

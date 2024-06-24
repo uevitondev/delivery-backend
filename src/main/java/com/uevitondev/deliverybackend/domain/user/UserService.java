@@ -92,8 +92,8 @@ public class UserService {
 
     public static User getUserAuthenticated() {
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userDetailsImpl.getUser() != null) {
-            return userDetailsImpl.getUser();
+        if (userDetailsImpl.user() != null) {
+            return userDetailsImpl.user();
         }
         throw new AccessDeniedException("Access denied");
     }

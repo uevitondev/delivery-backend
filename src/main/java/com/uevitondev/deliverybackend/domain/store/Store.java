@@ -19,8 +19,11 @@ public class Store implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    private String logoUrl;
     @Column(nullable = false)
     private String name;
+    private String phoneNumber;
+    private String type;
     @Column(nullable = false)
     private LocalDateTime createdAt;
     @Column(nullable = false)
@@ -28,7 +31,7 @@ public class Store implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
-    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "store")
     private StoreAddress address;
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     private final List<Product> products = new ArrayList<>();
@@ -53,6 +56,14 @@ public class Store implements Serializable {
         this.id = id;
     }
 
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
     public String getName() {
         return name;
     }
@@ -60,6 +71,23 @@ public class Store implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

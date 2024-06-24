@@ -55,7 +55,7 @@ public class AuthenticationService {
                 TokenType.Bearer.name(),
                 jwtToken,
                 jwtService.getExpirationJwtToken(),
-                userDetails.getUser().getFirstName(),
+                userDetails.user().getFirstName(),
                 userDetails.getUsername(),
                 userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
         );

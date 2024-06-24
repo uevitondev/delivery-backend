@@ -26,6 +26,7 @@ public class Order implements Serializable {
     private Double total;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime closedAt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
@@ -98,6 +99,14 @@ public class Order implements Serializable {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(LocalDateTime closedAt) {
+        this.closedAt = closedAt;
     }
 
     public Customer getCustomer() {

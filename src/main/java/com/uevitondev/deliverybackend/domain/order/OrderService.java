@@ -1,17 +1,18 @@
 package com.uevitondev.deliverybackend.domain.order;
 
+import com.uevitondev.deliverybackend.domain.address.AddressDTO;
 import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.orderitem.CartItemDTO;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
-import com.uevitondev.deliverybackend.domain.orderitem.OrderItemRepository;
+import com.uevitondev.deliverybackend.domain.orderitem.OrderItemDTO;
 import com.uevitondev.deliverybackend.domain.orderitem.ShoppingCartDTO;
 import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
+import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
-import com.uevitondev.deliverybackend.domain.user.UserRepository;
 import com.uevitondev.deliverybackend.domain.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,23 +28,18 @@ import java.util.UUID;
 @Transactional
 public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
-
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
     private final StoreRepository storeRepository;
     private final UserAddressRepository userAddressRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
 
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
-                        StoreRepository storeRepository, UserAddressRepository userAddressRepository,
-                        ProductRepository productRepository, UserRepository userRepository) {
+
+    public OrderService(OrderRepository orderRepository, StoreRepository storeRepository,
+                        UserAddressRepository userAddressRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
         this.storeRepository = storeRepository;
         this.userAddressRepository = userAddressRepository;
         this.productRepository = productRepository;
-        this.userRepository = userRepository;
     }
 
 
@@ -52,7 +48,7 @@ public class OrderService {
     }
 
     public List<OrderDTO> findAllOrdersByCustomer(Customer customer) {
-        return orderRepository.findOrdersByCustomer(customer).stream().map(OrderDTO::new).toList();
+        return orderRepository.findByCustomer(customer).stream().map(OrderDTO::new).toList();
     }
 
 
@@ -60,6 +56,43 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("order not found for orderId: " + id));
         return new OrderDTO(order);
+    }
+
+    public OrderCustomerDTO findOrderByIdWithOrderItems(UUID id) {
+        Order order = orderRepository.findByIdWithOrderItems(id)
+                .orElseThrow(() -> new ResourceNotFoundException("order not found for orderId: " + id));
+
+        return new OrderCustomerDTO(
+                order.getId(),
+                order.getCreatedAt(),
+                order.getUpdatedAt(),
+                order.getClosedAt(),
+                order.getStatus(),
+                order.getPaymentMethod(),
+                order.getTotal(),
+                getOrderCustomerDataForCustomerOrder(order.getCustomer()),
+                getOrderStoreDataForStoreOrder(order.getStore()),
+                new AddressDTO(order.getAddress()),
+                order.getOrderItems().stream().map(OrderItemDTO::new).toList()
+        );
+    }
+
+    public OrderCustomerDataDTO getOrderCustomerDataForCustomerOrder(Customer customer) {
+        return new OrderCustomerDataDTO(
+                customer.getFirstName(),
+                customer.getLastName(),
+                customer.getPhoneNumber()
+        );
+    }
+
+    public OrderStoreDataDTO getOrderStoreDataForStoreOrder(Store store) {
+        return new OrderStoreDataDTO(
+                store.getId(),
+                store.getLogoUrl(),
+                store.getName(),
+                store.getPhoneNumber(),
+                store.getType()
+        );
     }
 
 

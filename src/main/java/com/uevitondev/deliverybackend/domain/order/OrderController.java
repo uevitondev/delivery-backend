@@ -36,6 +36,12 @@ public class OrderController {
         return ResponseEntity.ok().body(orderService.findAllOrdersByCustomer(customer));
     }
 
+    @GetMapping("/{id}/customer")
+    public ResponseEntity<OrderCustomerDTO> findOrderByIdWithOrderItems(@PathVariable UUID id) {
+        return ResponseEntity.ok().body(orderService.findOrderByIdWithOrderItems(id));
+    }
+
+
     @PostMapping
     public ResponseEntity<OrderDTO> saveNewOrder(@RequestBody @Valid ShoppingCartDTO dto) {
         return ResponseEntity.ok().body(orderService.saveNewOrder(dto));

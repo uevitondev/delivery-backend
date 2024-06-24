@@ -8,12 +8,11 @@ import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.category.Category;
 import com.uevitondev.deliverybackend.domain.category.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
-import com.uevitondev.deliverybackend.domain.order.OrderPayment;
-import com.uevitondev.deliverybackend.domain.order.OrderStatus;
 import com.uevitondev.deliverybackend.domain.order.Order;
+import com.uevitondev.deliverybackend.domain.order.OrderPayment;
 import com.uevitondev.deliverybackend.domain.order.OrderRepository;
+import com.uevitondev.deliverybackend.domain.order.OrderStatus;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
-import com.uevitondev.deliverybackend.domain.orderitem.OrderItemRepository;
 import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
 import com.uevitondev.deliverybackend.domain.role.Role;
@@ -40,13 +39,12 @@ public class DatabaseInitializer implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
 
 
     public DatabaseInitializer(RoleRepository roleRepository, UserRepository userRepository,
                                UserAddressRepository userAddressRepository, StoreAddressRepository storeAddressRepository, CategoryRepository categoryRepository,
                                ProductRepository productRepository, StoreRepository storeRepository,
-                               OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+                               OrderRepository orderRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.userAddressRepository = userAddressRepository;
@@ -55,7 +53,6 @@ public class DatabaseInitializer implements CommandLineRunner {
         this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
     }
 
     @Transactional
@@ -75,6 +72,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         User adminUser = new User(
                 "Admin",
                 "UserAdmin",
+                "1199454599985",
                 "admin@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
@@ -84,6 +82,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         Customer customerUser = new Customer(
                 "Customer",
                 "UserCustomer",
+                "1199454599985",
                 "customer@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
@@ -91,8 +90,15 @@ public class DatabaseInitializer implements CommandLineRunner {
         customerUser = userRepository.save(customerUser);
 
         // user customer address
-        UserAddress addressCustomerUser = new UserAddress("03584000", "SP", "São Paulo", "Distrito 1", "Rua da flores", 126);
-        addressCustomerUser.setComplement("Condominio Residencial ABA - Apt 26 A");
+        UserAddress addressCustomerUser = new UserAddress(
+                "Rua da flores",
+                126,
+                "Distrito 1",
+                "São Paulo",
+                "SP",
+                "Condominio Residencial ABA - Apt 26 A",
+                "03584000"
+        );
         addressCustomerUser.setUser(customerUser);
         addressCustomerUser = userAddressRepository.save(addressCustomerUser);
 
@@ -102,6 +108,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         Seller sellerUser = new Seller(
                 "Seller",
                 "UserSeller",
+                "1199454599985",
                 "seller@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
@@ -127,8 +134,16 @@ public class DatabaseInitializer implements CommandLineRunner {
         storeRepository.saveAll(List.of(store2, store3, store4));
 
         // address store
-        StoreAddress addressStore1 = new StoreAddress("03484000", "MG", "Minas Gerais", "Montes Claros", "Rua da Conservação", 25, store1);
-        addressStore1.setComplement("Prédio Comercial, Bloco C, loja 05");
+        StoreAddress addressStore1 = new StoreAddress(
+                "Rua da Conservação",
+                25,
+                "Montes Claros",
+                "Minas Gerais",
+                "MG",
+                "Proximo ao posto de combustível",
+                "03484000"
+        );
+        addressStore1.setStore(store1);
         addressStore1 = storeAddressRepository.save(addressStore1);
 
         store1.setAddress(addressStore1);
