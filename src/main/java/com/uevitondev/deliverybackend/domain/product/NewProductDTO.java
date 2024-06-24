@@ -6,7 +6,7 @@ import java.util.UUID;
 public class NewProductDTO implements Serializable {
     private UUID id;
     private String name;
-    private String imageUrl;
+    private String imgUrl;
     private String description;
     private Double price;
     private UUID categoryId;
@@ -28,12 +28,12 @@ public class NewProductDTO implements Serializable {
         this.name = name;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public String getDescription() {

@@ -6,14 +6,14 @@ import java.util.UUID;
 public class ProductDTO implements Serializable {
     private UUID id;
     private String name;
-    private String imageUrl;
+    private String imgUrl;
     private String description;
     private Double price;
 
     public ProductDTO(Product product) {
         this.id = product.getId();
         this.name = product.getName();
-        this.imageUrl = product.getImageUrl();
+        this.imgUrl = product.getImgUrl();
         this.description = product.getDescription();
         this.price = product.getPrice();
     }
@@ -34,12 +34,12 @@ public class ProductDTO implements Serializable {
         this.name = name;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public String getDescription() {

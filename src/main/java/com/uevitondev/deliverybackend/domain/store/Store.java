@@ -41,6 +41,18 @@ public class Store implements Serializable {
     public Store() {
     }
 
+
+    public Store(String logoUrl, String name, String phoneNumber, String type, Seller seller, StoreAddress address) {
+        this.logoUrl = logoUrl;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.type = type;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.seller = seller;
+        this.address = address;
+    }
+
     public Store(String name, Seller seller) {
         this.name = name;
         this.seller = seller;
