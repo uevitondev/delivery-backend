@@ -1,10 +1,9 @@
-package com.uevitondev.deliverybackend.security.jwt;
+package com.uevitondev.deliverybackend.config.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.uevitondev.deliverybackend.security.jwt.exception.JwtBearerTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

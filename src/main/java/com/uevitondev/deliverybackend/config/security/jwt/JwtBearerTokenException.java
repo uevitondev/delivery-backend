@@ -1,4 +1,4 @@
-package com.uevitondev.deliverybackend.security.jwt.exception;
+package com.uevitondev.deliverybackend.config.security.jwt;
 
 public class JwtBearerTokenException extends RuntimeException {
 

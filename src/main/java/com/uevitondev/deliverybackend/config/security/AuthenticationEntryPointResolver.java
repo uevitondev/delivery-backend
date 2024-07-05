@@ -1,29 +1,29 @@
-package com.uevitondev.deliverybackend.security.config;
+package com.uevitondev.deliverybackend.config.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
 @Component
-public class AccessDeniedHandlerResolver implements AccessDeniedHandler {
+public class AuthenticationEntryPointResolver implements AuthenticationEntryPoint {
     private final HandlerExceptionResolver resolver;
 
-    public AccessDeniedHandlerResolver(
+    public AuthenticationEntryPointResolver(
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
     ) {
         this.resolver = resolver;
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        this.resolver.resolveException(request, response, null, accessDeniedException);
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        this.resolver.resolveException(request, response, null, authException);
     }
 
 }

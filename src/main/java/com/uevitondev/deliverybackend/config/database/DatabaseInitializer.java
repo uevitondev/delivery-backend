@@ -1,4 +1,4 @@
-package com.uevitondev.deliverybackend.runner;
+package com.uevitondev.deliverybackend.config.database;
 
 
 import com.uevitondev.deliverybackend.domain.address.StoreAddress;
@@ -20,12 +20,14 @@ import com.uevitondev.deliverybackend.domain.role.RoleRepository;
 import com.uevitondev.deliverybackend.domain.seller.Seller;
 import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
+import com.uevitondev.deliverybackend.domain.store.StoreType;
 import com.uevitondev.deliverybackend.domain.user.User;
 import com.uevitondev.deliverybackend.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -97,7 +99,9 @@ public class DatabaseInitializer implements CommandLineRunner {
                 "São Paulo",
                 "SP",
                 "Condominio Residencial ABA - Apt 26 A",
-                "03584000"
+                "03584000",
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
         addressCustomerUser.setUser(customerUser);
         addressCustomerUser = userAddressRepository.save(addressCustomerUser);
@@ -123,16 +127,6 @@ public class DatabaseInitializer implements CommandLineRunner {
         Category category4 = new Category("DOCES");
         categoryRepository.saveAll(List.of(category1, category2, category3, category4));
 
-
-        // store
-        Store store1 = new Store("Pizzaria Sabor", sellerUser);
-        store1.setId(UUID.fromString("005d7c57-04ad-4251-bf05-fdc8b38182aa"));
-        store1 = storeRepository.save(store1);
-        Store store2 = new Store("Restaurante Villa", sellerUser);
-        Store store3 = new Store("Doceria Braga", sellerUser);
-        Store store4 = new Store("Adega Bar", sellerUser);
-        storeRepository.saveAll(List.of(store2, store3, store4));
-
         // address store
         StoreAddress addressStore1 = new StoreAddress(
                 "Rua da Conservação",
@@ -141,13 +135,24 @@ public class DatabaseInitializer implements CommandLineRunner {
                 "Minas Gerais",
                 "MG",
                 "Proximo ao posto de combustível",
-                "03484000"
+                "03484000",
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
-        addressStore1.setStore(store1);
-        addressStore1 = storeAddressRepository.save(addressStore1);
 
-        store1.setAddress(addressStore1);
-        storeRepository.save(store1);
+        // store
+        Store store1 = new Store(
+                "https://img.freepik.com/fotos-gratis/frente-do-icone-da-cesta-de-compras_187299-40115.jpg?t=st=1719251168~exp=1719254768~hmac=5ae1185eacbb75d1489105e68614a3caf9777b6f198e48d6db8deb791f933212&w=740",
+                "Pizzaria Sabor",
+                "119958796542",
+                StoreType.PIZZERIA.name(),
+                sellerUser,
+                addressStore1
+        );
+        store1.setId(UUID.fromString("005d7c57-04ad-4251-bf05-fdc8b38182aa"));
+        store1.addAddress(addressStore1);
+        store1 = storeRepository.save(store1);
+
 
         // product
         String productImageUrl = "https://images.pexels.com/photos/6941025/pexels-photo-6941025.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";

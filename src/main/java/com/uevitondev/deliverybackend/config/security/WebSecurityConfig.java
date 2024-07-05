@@ -1,8 +1,8 @@
-package com.uevitondev.deliverybackend.security.config;
+package com.uevitondev.deliverybackend.config.security;
 
+import com.uevitondev.deliverybackend.config.security.jwt.JwtService;
+import com.uevitondev.deliverybackend.config.security.jwt.JwtTokenSecurityFilter;
 import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
-import com.uevitondev.deliverybackend.security.jwt.JwtService;
-import com.uevitondev.deliverybackend.security.jwt.JwtTokenSecurityFilter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +40,10 @@ public class WebSecurityConfig {
             "/v1/stores/**",
             "/v1/categories/**",
             "/v1/products/**",
-            "/v1/auth/refresh-token/**",
-            "/v1/auth/sign-in/**"};
+            "/v1/auth/sign-in/**",
+            "/v1/auth/sign-up/**",
+            "/v1/auth/refresh-token/**"
+            };
 
     private static final String[] ENDPOINTS_ADMIN = {"/v1/test/admin/**"};
 

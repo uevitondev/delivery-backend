@@ -4,21 +4,24 @@ import com.uevitondev.deliverybackend.domain.store.Store;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_store_address")
 public class StoreAddress extends Address implements Serializable {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    public StoreAddress() {
+    protected StoreAddress() {
+        super();
     }
 
-    public StoreAddress(String street, Integer number, String district, String city, String uf, String complement, String zipCode) {
-        super(street, number, district, city, uf, complement, zipCode);
+    public StoreAddress(String street, Integer number, String district, String city, String uf, String complement, String zipCode, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(street, number, district, city, uf, complement, zipCode, createdAt, updatedAt);
     }
+
 
     public Store getStore() {
         return store;

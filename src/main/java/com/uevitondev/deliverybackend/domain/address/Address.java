@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @MappedSuperclass
-public abstract class Address implements Serializable {
+public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -19,7 +19,6 @@ public abstract class Address implements Serializable {
     private String uf;
     private String complement;
     private String zipCode;
-    @Column(nullable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -27,7 +26,8 @@ public abstract class Address implements Serializable {
     protected Address() {
     }
 
-    public Address(String street, Integer number, String district, String city, String uf, String complement, String zipCode) {
+    public Address(String street, Integer number, String district, String city,
+                   String uf, String complement, String zipCode, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.street = street;
         this.number = number;
         this.district = district;
@@ -35,8 +35,8 @@ public abstract class Address implements Serializable {
         this.uf = uf;
         this.complement = complement;
         this.zipCode = zipCode;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public UUID getId() {

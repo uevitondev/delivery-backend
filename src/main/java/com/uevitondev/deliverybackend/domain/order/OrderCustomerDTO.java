@@ -15,9 +15,9 @@ public record OrderCustomerDTO(
         OrderStatus status,
         OrderPayment paymentMethod,
         Double total,
-        OrderCustomerDataDTO orderCustomerData,
-        OrderStoreDataDTO orderStoreData,
-        AddressDTO orderDeliveryAddress,
+        OrderCustomerDataDTO customerData,
+        OrderStoreDataDTO storeData,
+        AddressDTO deliveryAddress,
         List<OrderItemDTO> orderItems
 
 ) {

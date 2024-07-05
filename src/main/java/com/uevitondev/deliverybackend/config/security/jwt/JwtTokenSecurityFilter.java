@@ -1,4 +1,4 @@
-package com.uevitondev.deliverybackend.security.jwt;
+package com.uevitondev.deliverybackend.config.security.jwt;
 
 
 import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;

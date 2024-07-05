@@ -1,10 +1,10 @@
 package com.uevitondev.deliverybackend.domain.authentication;
 
-import com.uevitondev.deliverybackend.security.jwt.TokenType;
+import com.uevitondev.deliverybackend.config.security.jwt.TokenType;
 import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshTokenService;
 import com.uevitondev.deliverybackend.domain.user.UserDetailsImpl;
 import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
-import com.uevitondev.deliverybackend.security.jwt.JwtService;
+import com.uevitondev.deliverybackend.config.security.jwt.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -31,7 +31,7 @@ public class Store implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
-    @OneToOne(mappedBy = "store")
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
     private StoreAddress address;
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     private final List<Product> products = new ArrayList<>();
@@ -42,6 +42,17 @@ public class Store implements Serializable {
     }
 
 
+    public Store(UUID id, String logoUrl, String name, String phoneNumber, String type, LocalDateTime createdAt, Seller seller, StoreAddress address) {
+        this.id = id;
+        this.logoUrl = logoUrl;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.type = type;
+        this.createdAt = createdAt;
+        this.seller = seller;
+        this.address = address;
+    }
+
     public Store(String logoUrl, String name, String phoneNumber, String type, Seller seller, StoreAddress address) {
         this.logoUrl = logoUrl;
         this.name = name;
@@ -51,13 +62,6 @@ public class Store implements Serializable {
         this.updatedAt = LocalDateTime.now();
         this.seller = seller;
         this.address = address;
-    }
-
-    public Store(String name, Seller seller) {
-        this.name = name;
-        this.seller = seller;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     public UUID getId() {
@@ -139,6 +143,11 @@ public class Store implements Serializable {
 
     public void setAddress(StoreAddress address) {
         this.address = address;
+    }
+
+    public void addAddress(StoreAddress storeAddress){
+        setAddress(storeAddress);
+        storeAddress.setStore(this);
     }
 
     @Override

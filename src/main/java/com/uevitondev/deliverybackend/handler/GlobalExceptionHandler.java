@@ -4,7 +4,7 @@ import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.RefreshTokenRevokedException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
-import com.uevitondev.deliverybackend.security.jwt.exception.JwtBearerTokenException;
+import com.uevitondev.deliverybackend.config.security.jwt.JwtBearerTokenException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
