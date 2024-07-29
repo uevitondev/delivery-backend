@@ -156,7 +156,7 @@ public class Order implements Serializable {
     public void calculateOrderTotal(List<OrderItem> orderItems) {
         double sum = 0.0;
         for (OrderItem orderItem : orderItems) {
-            sum += orderItem.getTotal();
+            sum += orderItem.getTotalPrice();
         }
         this.total = sum;
     }

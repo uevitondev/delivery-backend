@@ -5,15 +5,15 @@ import java.util.UUID;
 
 public class ProductDTO implements Serializable {
     private UUID id;
-    private String name;
     private String imgUrl;
+    private String name;
     private String description;
     private Double price;
 
     public ProductDTO(Product product) {
+        this.imgUrl = product.getImgUrl();
         this.id = product.getId();
         this.name = product.getName();
-        this.imgUrl = product.getImgUrl();
         this.description = product.getDescription();
         this.price = product.getPrice();
     }
@@ -26,20 +26,20 @@ public class ProductDTO implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getImgUrl() {
         return imgUrl;
     }
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {

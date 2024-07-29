@@ -14,25 +14,28 @@ public class OrderItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    private String imgUrl;
+    private String name;
+    private String description;
+    private Double price;
     private Integer quantity;
-    private String observation;
-    private Double total;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private Double totalPrice;
+    private UUID productId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-
     public OrderItem() {
     }
 
-    public OrderItem(Integer quantity, String observation, Product product) {
+    public OrderItem(Product product, Integer quantity) {
+        this.imgUrl = product.getImgUrl();
+        this.name = product.getName();
+        this.description = product.getDescription();
+        this.price = product.getPrice();
         this.quantity = quantity;
-        this.observation = observation;
-        this.product = product;
-        this.calculateTotal();
+        this.totalPrice = product.getPrice() * quantity;
+        this.productId = product.getId();
     }
 
     public UUID getId() {
@@ -43,6 +46,37 @@ public class OrderItem implements Serializable {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 
     public Integer getQuantity() {
         return quantity;
@@ -52,24 +86,20 @@ public class OrderItem implements Serializable {
         this.quantity = quantity;
     }
 
-    public Double getTotal() {
-        return total;
+    public Double getTotalPrice() {
+        return totalPrice;
     }
 
-    public String getObservation() {
-        return observation;
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
-    public void setObservation(String observation) {
-        this.observation = observation;
+    public UUID getProductId() {
+        return productId;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductId(UUID productId) {
+        this.productId = productId;
     }
 
     public Order getOrder() {
@@ -78,14 +108,6 @@ public class OrderItem implements Serializable {
 
     public void setOrder(Order order) {
         this.order = order;
-    }
-
-    public void setTotal(Double total) {
-        this.total = total;
-    }
-
-    public void calculateTotal() {
-        this.total = this.product.getPrice() * this.quantity;
     }
 
     @Override

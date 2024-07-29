@@ -15,8 +15,8 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String name;
     private String imgUrl;
+    private String name;
     @Column(columnDefinition = "TEXT")
     private String description;
     private Double price;
@@ -33,9 +33,9 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(String name, String imgUrl, String description, Double price) {
-        this.name = name;
+    public Product(String imgUrl, String name, String description, Double price) {
         this.imgUrl = imgUrl;
+        this.name = name;
         this.description = description;
         this.price = price;
         this.createdAt = LocalDateTime.now();
@@ -50,20 +50,20 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getImgUrl() {
         return imgUrl;
     }
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {

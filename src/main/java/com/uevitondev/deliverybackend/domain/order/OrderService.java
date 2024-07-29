@@ -117,12 +117,15 @@ public class OrderService {
 
     public void addOrderItemsToOrder(Order order, Set<CartItemDTO> cartItems) {
         for (CartItemDTO cartItem : cartItems) {
-            Product product = productRepository.findById(cartItem.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("product not found for productId: " + cartItem.getProductId()));
-            OrderItem orderItem = new OrderItem(cartItem.getQuantity(), cartItem.getObservation(), product);
-            order.addOrderItem(orderItem);
+            order.addOrderItem(getOrderItemFromCartItem(cartItem));
         }
     }
 
+    public OrderItem getOrderItemFromCartItem(CartItemDTO cartItemDTO){
+        var productId = cartItemDTO.getProduct().getId();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("product not found for productId: " + productId));
+        return new OrderItem(product, cartItemDTO.getQuantity());
+    }
 
 }

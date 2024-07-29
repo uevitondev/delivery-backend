@@ -1,5 +1,6 @@
 package com.uevitondev.deliverybackend.domain.orderitem;
 
+import com.uevitondev.deliverybackend.domain.product.ProductDTO;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -7,28 +8,23 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class CartItemDTO implements Serializable {
-    @NotNull(message = "productId: is mandatory")
-    private UUID productId;
-    @NotNull(message = "quantity: is mandatory")
-    @Min(value = 1, message = "qtd: minimum value = 1")
+    private ProductDTO product;
     private Integer quantity;
-    private String observation;
 
     public CartItemDTO() {
     }
 
-    public CartItemDTO(UUID productId, Integer quantity, String observation) {
-        this.productId = productId;
+    public CartItemDTO(ProductDTO product, Integer quantity) {
+        this.product = product;
         this.quantity = quantity;
-        this.observation = observation;
     }
 
-    public UUID getProductId() {
-        return productId;
+    public ProductDTO getProduct() {
+        return product;
     }
 
-    public void setProductId(UUID productId) {
-        this.productId = productId;
+    public void setProduct(ProductDTO product) {
+        this.product = product;
     }
 
     public Integer getQuantity() {
@@ -37,13 +33,5 @@ public class CartItemDTO implements Serializable {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public String getObservation() {
-        return observation;
-    }
-
-    public void setObservation(String observation) {
-        this.observation = observation;
     }
 }
