@@ -94,6 +94,17 @@ public class DatabaseInitializer implements CommandLineRunner {
         customerUser.getRoles().add(customerRole);
         customerUser = userRepository.save(customerUser);
 
+
+        Customer testCustomer = new Customer(
+                "Test",
+                "Customer Delivery",
+                "1199664599986",
+                "testcustomer@gmail.com",
+                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+        );
+        userRepository.save(testCustomer);
+
+
         // user customer address
         UserAddress addressCustomerUser = new UserAddress(
                 null,

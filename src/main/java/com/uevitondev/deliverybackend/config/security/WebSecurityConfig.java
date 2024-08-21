@@ -105,7 +105,7 @@ public class WebSecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:4200",
-                "https://delivery-rf0w3qh9u-ueviton-santos-projects.vercel.app"));
+                "https://delivery-ui-bay.vercel.app"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
