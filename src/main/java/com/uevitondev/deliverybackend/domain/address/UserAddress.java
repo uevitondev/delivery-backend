@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tb_user_address")
@@ -18,8 +19,20 @@ public class UserAddress extends Address implements Serializable {
         super();
     }
 
-    public UserAddress(String street, Integer number, String district, String city, String uf, String complement, String zipCode, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        super(street, number, district, city, uf, complement, zipCode, createdAt, updatedAt);
+    public UserAddress(
+            UUID id,
+            String name,
+            String phoneNumber,
+            String street,
+            Integer number,
+            String district,
+            String city,
+            String uf,
+            String complement,
+            String zipCode,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        super(id, name, phoneNumber, street, number, district, city, uf, complement, zipCode, createdAt, updatedAt);
     }
 
     public User getUser() {

@@ -12,6 +12,8 @@ public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    private String name;
+    private String phoneNumber;
     private String street;
     private Integer number;
     private String district;
@@ -26,8 +28,23 @@ public class Address implements Serializable {
     protected Address() {
     }
 
-    public Address(String street, Integer number, String district, String city,
-                   String uf, String complement, String zipCode, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Address(
+            UUID id,
+            String name,
+            String phoneNumber,
+            String street,
+            Integer number,
+            String district,
+            String city,
+            String uf,
+            String complement,
+            String zipCode,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
+        this.id = id;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
         this.street = street;
         this.number = number;
         this.district = district;
@@ -45,6 +62,22 @@ public class Address implements Serializable {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getStreet() {
@@ -103,13 +136,8 @@ public class Address implements Serializable {
         this.zipCode = zipCode;
     }
 
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {

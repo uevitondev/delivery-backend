@@ -19,9 +19,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/account-data")
-    public ResponseEntity<UserAccountDTO> getAccountData(){
-        return ResponseEntity.ok().body(userService.getUserAccountData());
+    @GetMapping("/account/profile")
+    public ResponseEntity<UserProfileDTO> getAccountData(){
+        return ResponseEntity.ok().body(userService.getUserProfile());
     }
 
     @GetMapping

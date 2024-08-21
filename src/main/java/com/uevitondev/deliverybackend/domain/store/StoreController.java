@@ -32,7 +32,7 @@ public class StoreController {
     @PostMapping
     public ResponseEntity<StoreDTO> insertNewStore(@RequestBody @Valid StoreDTO dto) {
         dto = storeService.insertNewStore(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.id()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
 

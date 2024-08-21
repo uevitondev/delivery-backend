@@ -43,7 +43,7 @@ public class ProductController {
         var productDto = productService.insertNewProduct(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/{id}")
-                .buildAndExpand(productDto.getId())
+                .buildAndExpand(productDto.id())
                 .toUri();
 
         return ResponseEntity.created(uri).body(productDto);

@@ -20,6 +20,7 @@ public class OrderItem implements Serializable {
     private Double price;
     private Integer quantity;
     private Double totalPrice;
+    private String note;
     private UUID productId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
@@ -28,14 +29,15 @@ public class OrderItem implements Serializable {
     public OrderItem() {
     }
 
-    public OrderItem(Product product, Integer quantity) {
+    public OrderItem(Product product, Integer quantity, String note) {
         this.imgUrl = product.getImgUrl();
         this.name = product.getName();
         this.description = product.getDescription();
         this.price = product.getPrice();
-        this.quantity = quantity;
         this.totalPrice = product.getPrice() * quantity;
         this.productId = product.getId();
+        this.quantity = quantity;
+        this.note = note;
     }
 
     public UUID getId() {
@@ -93,6 +95,15 @@ public class OrderItem implements Serializable {
     public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
 
     public UUID getProductId() {
         return productId;

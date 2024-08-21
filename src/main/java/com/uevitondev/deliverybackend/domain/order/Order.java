@@ -43,7 +43,13 @@ public class Order implements Serializable {
     public Order() {
     }
 
-    public Order(OrderStatus status, OrderPayment paymentMethod, Customer customer, Store store, UserAddress address) {
+    public Order(
+            OrderStatus status,
+            OrderPayment paymentMethod,
+            Customer customer,
+            Store store,
+            UserAddress address
+    ) {
         this.status = status;
         this.paymentMethod = paymentMethod;
         this.customer = customer;
@@ -139,21 +145,23 @@ public class Order implements Serializable {
 
     public void addOrderItems(List<OrderItem> orderItems) {
         orderItems.forEach(this::addOrderItem);
-        calculateOrderTotal(orderItems);
+        calculateOrderTotal();
     }
 
     public void addOrderItem(OrderItem orderItem) {
         getOrderItems().add(orderItem);
         orderItem.setOrder(this);
+        calculateOrderTotal();
     }
 
     public void removeOrderItem(OrderItem orderItem) {
         getOrderItems().remove(orderItem);
         orderItem.setOrder(null);
+        calculateOrderTotal();
     }
 
 
-    public void calculateOrderTotal(List<OrderItem> orderItems) {
+    public void calculateOrderTotal() {
         double sum = 0.0;
         for (OrderItem orderItem : orderItems) {
             sum += orderItem.getTotalPrice();

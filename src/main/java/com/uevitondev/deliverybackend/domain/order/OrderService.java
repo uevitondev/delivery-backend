@@ -102,12 +102,12 @@ public class OrderService {
                     OrderStatus.PENDENTE,
                     OrderPayment.PIX,
                     (Customer) UserService.getUserAuthenticated(),
-                    storeRepository.findById(dto.getStoreId())
-                            .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getStoreId())),
-                    userAddressRepository.findById(dto.getUserAddressId())
-                            .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.getUserAddressId()))
+                    storeRepository.findById(dto.store().id())
+                            .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.store().id())),
+                    userAddressRepository.findById(dto.address().id())
+                            .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.address().id()))
             );
-            addOrderItemsToOrder(order, dto.getCartItems());
+            addOrderItemsToOrder(order, dto.cartItems());
             return new OrderDTO(orderRepository.save(order));
 
         } catch (DataIntegrityViolationException e) {
@@ -115,17 +115,17 @@ public class OrderService {
         }
     }
 
-    public void addOrderItemsToOrder(Order order, Set<CartItemDTO> cartItems) {
-        for (CartItemDTO cartItem : cartItems) {
+    public void addOrderItemsToOrder(Order order, Set<CartItemDTO> cartItemsDtos) {
+        for (CartItemDTO cartItem : cartItemsDtos) {
             order.addOrderItem(getOrderItemFromCartItem(cartItem));
         }
     }
 
     public OrderItem getOrderItemFromCartItem(CartItemDTO cartItemDTO){
-        var productId = cartItemDTO.getProduct().getId();
+        var productId = cartItemDTO.product().id();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("product not found for productId: " + productId));
-        return new OrderItem(product, cartItemDTO.getQuantity());
+        return new OrderItem(product, cartItemDTO.quantity(), cartItemDTO.note());
     }
 
 }

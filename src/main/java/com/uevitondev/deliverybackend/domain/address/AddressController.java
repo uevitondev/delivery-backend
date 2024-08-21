@@ -55,7 +55,7 @@ public class AddressController {
     @PostMapping
     public ResponseEntity<AddressDTO> insertNewAddress(@RequestBody @Valid AddressDTO dto) {
         dto = addressService.insertNewAddress(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.id()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
 

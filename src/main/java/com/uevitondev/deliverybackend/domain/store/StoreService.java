@@ -32,7 +32,7 @@ public class StoreService {
 
     public StoreDTO insertNewStore(StoreDTO dto) {
         Store store = new Store();
-        store.setName(dto.getName());
+        store.setName(dto.name());
         store = storeRepository.save(store);
 
         return new StoreDTO(store);
@@ -41,7 +41,7 @@ public class StoreService {
     public StoreDTO updateStoreById(UUID id, StoreDTO dto) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + id));
-        store.setName(dto.getName());
+        store.setName(dto.name());
         store.setUpdatedAt(LocalDateTime.now());
         store = storeRepository.save(store);
         return new StoreDTO(store);

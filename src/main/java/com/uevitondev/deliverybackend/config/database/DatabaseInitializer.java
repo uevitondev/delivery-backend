@@ -85,10 +85,10 @@ public class DatabaseInitializer implements CommandLineRunner {
         userRepository.save(adminUser);
 
         Customer customerUser = new Customer(
-                "Customer",
-                "UserCustomer",
+                "Ueviton",
+                "Customer Teste",
                 "1199454599985",
-                "customer@gmail.com",
+                "uevitoncustomerteste@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
         customerUser.getRoles().add(customerRole);
@@ -96,6 +96,9 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         // user customer address
         UserAddress addressCustomerUser = new UserAddress(
+                null,
+                "Ueviton Customer Teste",
+                "1199454599985",
                 "Rua da flores",
                 126,
                 "Distrito 1",
@@ -113,10 +116,10 @@ public class DatabaseInitializer implements CommandLineRunner {
         userRepository.save(customerUser);
 
         Seller sellerUser = new Seller(
-                "Seller",
-                "UserSeller",
+                "Ueviton",
+                "Seller Teste",
                 "1199454599985",
-                "seller@gmail.com",
+                "uevitonsellerteste@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
         sellerUser.getRoles().add(sellerRole);
@@ -132,6 +135,9 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         // address store
         StoreAddress addressStore1 = new StoreAddress(
+                null,
+                "Pizzaria Sabor",
+                "119958796542",
                 "Rua da Conservação",
                 25,
                 "Montes Claros",
@@ -163,8 +169,12 @@ public class DatabaseInitializer implements CommandLineRunner {
 
 
         // product
-        String productImageUrl = "https://images.pexels.com/photos/6941025/pexels-photo-694" +
-                "1025.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+        String productImageUrl = "https://img.freepik.com/vetores-gratis/prato-de-comida-muculmana-de-carneiro_24" +
+                "877-82334.jpg?t=st=1722865896~exp=1722869496~hmac=095a28c9295fe6f9c52080ea57ab9a562149ab8" +
+                "0737800e0c993b673f3f57f29&w=826";
+
+
+
         String productDescription = "Desperte seus sentidos com a irresistível Pizza Suprema, uma obra-prima " +
                 "gastronômica que eleva o prazer de saborear uma boa pizza a um novo patamar.";
 
@@ -205,8 +215,8 @@ public class DatabaseInitializer implements CommandLineRunner {
 
 
         // order-item
-        OrderItem orderItem1 = new OrderItem(product1, 2);
-        OrderItem orderItem2 = new OrderItem(product2, 3);
+        OrderItem orderItem1 = new OrderItem(product1, 2, "bem caprichado!");
+        OrderItem orderItem2 = new OrderItem(product2, 3, "");
         var orderItems = List.of(orderItem1, orderItem2);
 
         // order

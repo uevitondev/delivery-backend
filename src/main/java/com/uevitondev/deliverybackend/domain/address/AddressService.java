@@ -56,34 +56,23 @@ public class AddressService {
 
 
     public AddressDTO insertNewAddress(AddressDTO dto) {
-        UserAddress userAddress = new UserAddress();
-        userAddress.setZipCode(dto.getZipCode());
-        userAddress.setUf(dto.getUf());
-        userAddress.setCity(dto.getCity());
-        userAddress.setDistrict(dto.getDistrict());
-        userAddress.setStreet(dto.getStreet());
-        userAddress.setComplement(dto.getComplement());
-        userAddress.setNumber(dto.getNumber());
-        userAddress = userAddressRepository.save(userAddress);
-
-        return new AddressDTO(userAddress);
+        UserAddress userAddress = (UserAddress) mapperAddressDtoFromNewAddress(dto);
+        return new AddressDTO(userAddressRepository.save(userAddress));
     }
 
-    public AddressDTO updateAddressById(UUID id, AddressDTO dto) {
+    public AddressDTO updateAddressById(UUID addressId, AddressDTO dto) {
         try {
-            UserAddress userAddress = userAddressRepository.getReferenceById(id);
-            userAddress.setZipCode(dto.getZipCode());
-            userAddress.setUf(dto.getUf());
-            userAddress.setCity(dto.getCity());
-            userAddress.setDistrict(dto.getDistrict());
-            userAddress.setStreet(dto.getStreet());
-            userAddress.setComplement(dto.getComplement());
-            userAddress.setNumber(dto.getNumber());
-            userAddress.setUpdatedAt(LocalDateTime.now());
+
+            UserAddress userAddress = (UserAddress) mapperAddressDtoFromUpdateAddress(
+                    dto,
+                    userAddressRepository.getReferenceById(addressId)
+            );
+
+
             userAddress = userAddressRepository.save(userAddress);
             return new AddressDTO(userAddress);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("userAddress not found for userAddressId: " + id);
+            throw new ResourceNotFoundException("userAddress not found for userAddressId: " + addressId);
         }
     }
 
@@ -96,5 +85,37 @@ public class AddressService {
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity constraint violation");
         }
+    }
+
+    public Address mapperAddressDtoFromNewAddress(AddressDTO dto) {
+        return new Address(
+                null,
+                dto.name(),
+                dto.phoneNumber(),
+                dto.street(),
+                dto.number(),
+                dto.district(),
+                dto.city(),
+                dto.uf(),
+                dto.complement(),
+                dto.zipCode(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    public Address mapperAddressDtoFromUpdateAddress(AddressDTO dto, Address address) {
+        address.setName(dto.name());
+        address.setPhoneNumber(dto.phoneNumber());
+        address.setStreet(dto.street());
+        address.setNumber(dto.number());
+        address.setDistrict(dto.district());
+        address.setCity(dto.city());
+        address.setUf(dto.uf());
+        address.setComplement(dto.complement());
+        address.setZipCode(dto.zipCode());
+        address.setUpdatedAt(LocalDateTime.now());
+
+        return address;
     }
 }

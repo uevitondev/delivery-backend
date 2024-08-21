@@ -28,8 +28,8 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public UserAccountDTO getUserAccountData() {
-        return new UserAccountDTO(getUserAuthenticated());
+    public UserProfileDTO getUserProfile() {
+        return new UserProfileDTO(getUserAuthenticated());
     }
 
 
