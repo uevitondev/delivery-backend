@@ -32,7 +32,7 @@ public class CategoryService {
     }
 
     public CategoryDTO insertNewCategory(CategoryDTO dto) {
-        Category category = new Category(dto.getName());
+        Category category = new Category(null,dto.getName());
         category = categoryRepository.save(category);
 
         return new CategoryDTO(category);

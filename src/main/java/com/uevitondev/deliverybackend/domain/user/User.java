@@ -32,7 +32,8 @@ public class User implements Serializable {
     private Boolean isAccountNonExpired = true;
     private Boolean isAccountNonLocked = true;
     private Boolean isCredentialsNonExpired = true;
-    private Boolean isEnabled = true;
+    @Column(nullable = false)
+    private Boolean isEnabled = false;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private final List<UserAddress> addresses = new ArrayList<>();
     @ManyToMany(fetch = FetchType.EAGER)

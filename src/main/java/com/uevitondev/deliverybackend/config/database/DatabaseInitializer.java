@@ -138,10 +138,10 @@ public class DatabaseInitializer implements CommandLineRunner {
 
 
         // category
-        Category category1 = new Category("PIZZAS");
-        Category category2 = new Category("BEBIDAS");
-        Category category3 = new Category("SALGADOS");
-        Category category4 = new Category("DOCES");
+        Category category1 = new Category(null,"PIZZAS");
+        Category category2 = new Category(null,"BEBIDAS");
+        Category category3 = new Category(null,"SALGADOS");
+        Category category4 = new Category(null,"DOCES");
         categoryRepository.saveAll(List.of(category1, category2, category3, category4));
 
         // address store
