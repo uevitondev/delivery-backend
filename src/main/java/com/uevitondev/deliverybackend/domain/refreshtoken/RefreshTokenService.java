@@ -26,42 +26,51 @@ public class RefreshTokenService {
         this.userRepository = userRepository;
     }
 
-    public RefreshToken generateRefreshTokenAndSave(String username) {
-        log.info("[RefreshTokenService:generateSaveRefreshToken] Refresh Token Generate Started for: {}", username);
-        var user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("not found"));
-        var optionalRefreshToken = refreshTokenRepository.findRefreshTokenByUserId(user.getId());
-        if (optionalRefreshToken.isPresent()) {
-            var refreshToken = optionalRefreshToken.get();
-            refreshToken.setToken(UUID.randomUUID().toString());
-            refreshToken.setUpdatedAt(Instant.now());
-            refreshToken.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpiresAt));
-            log.info("[RefreshTokenService:generateSaveRefreshToken] Refresh Token (exist and updated) new token: {}", refreshToken.getToken());
-            return refreshTokenRepository.save(refreshToken);
-        }
 
-        var refreshToken = new RefreshToken(
-                UUID.randomUUID().toString(),
-                Instant.now().plusSeconds(refreshTokenExpiresAt),
-                userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("not found"))
+    boolean hasRefreshTokenFromUsername(String username) {
+        var user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException("user not found")
         );
-        log.info("[RefreshTokenService:generateSaveRefreshToken] Refresh Token has been generated: {}", refreshToken.getToken());
-        return refreshTokenRepository.save(refreshToken);
+        var optionalRefreshToken = refreshTokenRepository.findRefreshTokenByUserId(user.getId());
+        return optionalRefreshToken.isPresent();
+    }
+
+    public RefreshToken generateRefreshTokenFromUserByUsername(String username) {
+        var user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException("user not found")
+        );
+        var refreshTokenEntity = new RefreshToken();
+        var optionalRefreshTokenEntity = refreshTokenRepository.findRefreshTokenByUserId(user.getId());
+        if (optionalRefreshTokenEntity.isPresent()) {
+            refreshTokenEntity = optionalRefreshTokenEntity.get();
+            refreshTokenEntity.setToken(UUID.randomUUID().toString());
+            refreshTokenEntity.setUpdatedAt(Instant.now());
+            refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpiresAt));
+            log.info(
+                    "[RefreshTokenService:generateRefreshTokenFromUserByUsername] Refresh Token (exist and updated) " +
+                            "new token: {}", refreshTokenEntity.getToken()
+            );
+            return refreshTokenRepository.save(refreshTokenEntity);
+        }
+        refreshTokenEntity.setToken(UUID.randomUUID().toString());
+        refreshTokenEntity.setCreatedAt(Instant.now());
+        refreshTokenEntity.setUpdatedAt(Instant.now());
+        refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpiresAt));
+        refreshTokenEntity.setUser(user);
+        log.info("[RefreshTokenService:generateRefreshTokenFromUserByUsername] Refresh Token has been generated: {}", refreshTokenEntity.getToken());
+        return refreshTokenRepository.save(refreshTokenEntity);
     }
 
 
-    public String getUsernameRefreshTokenByToken(String token) {
-        return refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new RefreshTokenRevokedException("refresh token dont exist"))
-                .getUser()
-                .getUsername();
-    }
+    public RefreshToken validateTokenAndReturnRefreshToken(String token) {
+        var refreshTokenEntity = refreshTokenRepository.findByToken(token)
+                .orElseThrow(() -> new RefreshTokenRevokedException("refresh token dont exist"));
 
-    public RefreshToken verifyRefreshTokenExpiration(RefreshToken refreshToken) {
-        if (refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
-            refreshTokenRepository.delete(refreshToken);
+        if (refreshTokenEntity.getExpiryDate().compareTo(Instant.now()) < 0) {
+            refreshTokenRepository.delete(refreshTokenEntity);
             throw new RefreshTokenRevokedException("Refresh token is expired. Please make a new login..!");
         }
-        return refreshToken;
+        return refreshTokenEntity;
     }
 
 }

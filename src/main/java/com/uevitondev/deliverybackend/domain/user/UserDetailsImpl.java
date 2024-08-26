@@ -7,7 +7,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public record UserDetailsImpl(User user) implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
+
+    private final User user;
+
+    public UserDetailsImpl(User user) {
+        this.user = user;
+    }
+
+
+    public User getUser() {
+        return this.user;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -43,5 +55,6 @@ public record UserDetailsImpl(User user) implements UserDetails {
     public boolean isEnabled() {
         return user.isEnabled();
     }
+
 
 }

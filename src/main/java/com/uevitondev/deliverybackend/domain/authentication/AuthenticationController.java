@@ -2,6 +2,7 @@ package com.uevitondev.deliverybackend.domain.authentication;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/sign-in")
-    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody AuthRequestDTO dto, HttpServletResponse response) {
+    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody SignInRequestDTO dto, HttpServletResponse response) {
         var authResponseDto = authService.signIn(dto, response);
         return ResponseEntity.ok().body(authResponseDto);
     }
@@ -27,7 +28,13 @@ public class AuthenticationController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<AuthResponseDTO> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.ok(authService.getJwtTokenUsingRefreshToken(request, response));
+        return ResponseEntity.ok(authService.refreshToken(request, response));
+    }
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequestDTO dto) {
+        authService.signUp(dto);
+        return ResponseEntity.noContent().build();
     }
 
 }
