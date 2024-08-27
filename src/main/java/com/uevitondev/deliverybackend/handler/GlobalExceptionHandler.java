@@ -1,13 +1,11 @@
 package com.uevitondev.deliverybackend.handler;
 
-import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
-import com.uevitondev.deliverybackend.domain.exception.RefreshTokenRevokedException;
-import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
-import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
+import com.uevitondev.deliverybackend.domain.exception.*;
 import com.uevitondev.deliverybackend.config.security.jwt.JwtBearerTokenException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    private static final String STACKTRACE = "stackTrace";
 
     @ExceptionHandler({
             BadCredentialsException.class,
@@ -33,7 +30,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 
@@ -43,7 +39,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 
@@ -53,7 +48,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 
@@ -63,7 +57,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 
@@ -74,7 +67,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 
@@ -84,13 +76,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
+        return ResponseEntity.status(httpStatus).body(problemDetail);
+    }
+
+    @ExceptionHandler(InvalidTokenVerificationException.class)
+    protected ResponseEntity<ProblemDetail> handleRefreshTokenRevokedException(InvalidTokenVerificationException e) {
+        var httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
+        problemDetail.setTitle(httpStatus.getReasonPhrase());
+        problemDetail.setDetail(e.getMessage());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpHeaders headers,
-                                                                  HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            @NonNull MethodArgumentNotValidException e,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
         super.handleMethodArgumentNotValid(e, headers, status, request);
         var httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
@@ -100,18 +104,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", ")));
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers,
-                                                                  HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException e,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
         var httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setProperty(STACKTRACE, e.getStackTrace());
         return ResponseEntity.status(httpStatus).body(problemDetail);
     }
 

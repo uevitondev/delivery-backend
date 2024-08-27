@@ -1,27 +1,34 @@
 package com.uevitondev.deliverybackend.domain.tokenverification;
 
-import com.uevitondev.deliverybackend.domain.exception.RefreshTokenRevokedException;
+import com.uevitondev.deliverybackend.domain.exception.InvalidTokenVerificationException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.user.User;
 import com.uevitondev.deliverybackend.domain.user.UserRepository;
+import com.uevitondev.deliverybackend.domain.utils.MailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class TokenVerificationService {
 
-    private final TokenVerificationRepository tokenVerificationRepository;
+    private final Logger log = LoggerFactory.getLogger(TokenVerificationService.class);
 
-    public TokenVerificationService(TokenVerificationRepository tokenVerificationRepository) {
+    private final TokenVerificationRepository tokenVerificationRepository;
+    private final UserRepository userRepository;
+    private final MailService mailService;
+
+    public TokenVerificationService(
+            TokenVerificationRepository tokenVerificationRepository,
+            UserRepository userRepository,
+            MailService mailService
+    ) {
         this.tokenVerificationRepository = tokenVerificationRepository;
+        this.userRepository = userRepository;
+        this.mailService = mailService;
     }
 
     @Transactional
@@ -30,16 +37,46 @@ public class TokenVerificationService {
         return tokenVerificationRepository.save(tokenVerification);
     }
 
-    public TokenVerification getTokenVerificationByToken(String token) {
-        return tokenVerificationRepository.findByToken(token)
-                .orElseThrow(() -> new ResourceNotFoundException("token verification is invalid "));
+    public void validateUserTokenVerificationByToken(String token) {
+        var tokenVerificationEntity = tokenVerificationRepository.findByToken(token)
+                .filter(tokenVerification -> !tokenVerification.isExpired())
+                .orElseThrow(() -> {
+                    log.error("[TokenVerificationService:validateUserTokenVerificationByToken] Token invalid or expired");
+                    return new InvalidTokenVerificationException("token expired or invalid");
+                });
+
+        enableUserByTokenVerification(tokenVerificationEntity);
+        tokenVerificationEntity.setConfirmedAt(LocalDateTime.now());
+        tokenVerificationRepository.save(tokenVerificationEntity);
     }
 
+    public void enableUserByTokenVerification(TokenVerification tokenVerification) {
+        var user = tokenVerification.getUser();
+        user.isEnabled(true);
+        userRepository.save(user);
+        log.error("[TokenVerificationService:enableUserByTokenVerification] User enabled by token verification");
+    }
+
+
     @Transactional
-    public void updateTokenVerificationById(UUID tokenVerificationId) {
-        var tokenVerification = tokenVerificationRepository.getReferenceById(tokenVerificationId);
-        tokenVerification.setConfirmedAt(LocalDateTime.now());
-        tokenVerificationRepository.save(tokenVerification);
+    public void updateTokenVerificationByUsername(String username) {
+        var user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException("user not found")
+        );
+        var tokenVerification = tokenVerificationRepository.findByUser(user).orElseThrow(
+                () -> new ResourceNotFoundException("token verification not found")
+        );
+        tokenVerification.setToken();
+        tokenVerification = tokenVerificationRepository.save(tokenVerification);
+
+        var emailDto = new MailService.EmailDTO(
+                user.getUsername(),
+                user.getFirstName(),
+                "Email de Verificação",
+                tokenVerification.getToken(),
+                "token-verification-email.html"
+        );
+        mailService.sendEmail(emailDto);
     }
 
 

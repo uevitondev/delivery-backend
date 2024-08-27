@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 @Table(name = "tb_token_verification")
@@ -29,9 +31,9 @@ public class TokenVerification implements Serializable {
 
     public TokenVerification(User user) {
         this.id = null;
-        this.token = UUID.randomUUID().toString();
+        this.setToken();
         this.createdAt = LocalDateTime.now();
-        this.expiredAt = LocalDateTime.now().plusMinutes(5);
+        this.expiredAt = LocalDateTime.now().plusMinutes(3);
         this.user = user;
     }
 
@@ -47,8 +49,8 @@ public class TokenVerification implements Serializable {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setToken() {
+        this.token = Integer.toString(ThreadLocalRandom.current().nextInt(100000, 1000000));
     }
 
     public LocalDateTime getCreatedAt() {
@@ -82,4 +84,10 @@ public class TokenVerification implements Serializable {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public boolean isExpired() {
+        return this.expiredAt.isBefore(LocalDateTime.now());
+    }
+
+
 }

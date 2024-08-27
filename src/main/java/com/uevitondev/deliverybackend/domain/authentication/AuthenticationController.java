@@ -1,5 +1,6 @@
 package com.uevitondev.deliverybackend.domain.authentication;
 
+import com.uevitondev.deliverybackend.domain.tokenverification.TokenRequestDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -32,9 +33,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequestDTO dto) {
+    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDTO dto) {
         authService.signUp(dto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/sign-up/verification")
+    public ResponseEntity<Void> signUp(@Valid @RequestBody TokenRequestDTO dto) {
+        authService.signUpVerification(dto);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação de Email</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            margin: 0;
+            color: #0b0c0c;
+        }
+        .hidden {
+            display: none;
+            font-size: 1px;
+            color: #fff;
+            max-height: 0;
+        }
+        .header {
+            width: 100%;
+            height: 53px;
+            background-color: #0b0c0c;
+        }
+        .header .logo {
+            width: 70px;
+            background-color: #0b0c0c;
+            vertical-align: middle;
+        }
+        .header .title {
+            font-size: 28px;
+            line-height: 1.315789474;
+            margin-top: 4px;
+            padding-left: 10px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .content {
+            max-width: 580px;
+            width: 100% !important;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        .spacer {
+            height: 10px;
+            background-color: #1D70B8;
+        }
+        .body-text {
+            font-size: 19px;
+            line-height: 1.315789474;
+            color: #0b0c0c;
+            max-width: 560px;
+        }
+        .cta {
+            border: 1px solid black;
+            border-radius: 8px
+            padding: 15px;
+        }
+        .cta p {
+            color: #0b0c0c;
+            font-size: 19px;
+            line-height: 25px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <span class="hidden"></span>
+    <table role="presentation" width="100%" style="border-collapse: collapse; min-width: 100%; width: 100%!important;" cellpadding="0" cellspacing="0" border="0">
+        <tbody>
+        <tr>
+            <td class="header">
+                <table role="presentation" width="100%" style="border-collapse: collapse; max-width: 580px;" cellpadding="0" cellspacing="0" border="0" align="center">
+                    <tbody>
+                    <tr>
+                        <td class="logo"></td>
+                        <td class="title">
+                            #{{title}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table role="presentation" class="content" align="center" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; max-width: 580px; width: 100%!important;" width="100%">
+        <tbody>
+        <tr>
+            <td width="10" height="10"></td>
+            <td>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                    <tbody>
+                    <tr>
+                        <td class="spacer" width="100%" height="10"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td width="10"></td>
+        </tr>
+        </tbody>
+    </table>
+    <table role="presentation" class="content" align="center" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; max-width: 580px; width: 100%!important;" width="100%">
+        <tbody>
+        <tr>
+            <td height="30"><br></td>
+        </tr>
+        <tr>
+            <td width="10"><br></td>
+            <td class="body-text">
+                <p>  Olá #{{subject}} !</p>
+                <p>Obrigado por se registrar. Use o token abaixo para ativar sua conta:</p>
+                <div class="cta">
+                    <p>Ative Agora: #{{text}}</p>
+                </div>
+                <p>Seu token expirará em 3 minutos.</p>
+            </td>
+            <td width="10"><br></td>
+        </tr>
+        <tr>
+            <td height="30"><br></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

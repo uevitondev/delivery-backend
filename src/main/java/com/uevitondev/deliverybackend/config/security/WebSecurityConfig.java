@@ -41,8 +41,9 @@ public class WebSecurityConfig {
             "/v1/categories/**",
             "/v1/products/**",
             "/v1/auth/sign-in/**",
+            "/v1/auth/refresh-token/**",
             "/v1/auth/sign-up/**",
-            "/v1/auth/refresh-token/**"
+            "/v1/auth/signup/verification/**"
             };
 
     private static final String[] ENDPOINTS_ADMIN = {"/v1/test/admin/**"};

@@ -7,15 +7,19 @@ import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException
 import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
 import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshTokenService;
 import com.uevitondev.deliverybackend.domain.role.RoleRepository;
+import com.uevitondev.deliverybackend.domain.tokenverification.TokenRequestDTO;
+import com.uevitondev.deliverybackend.domain.tokenverification.TokenVerificationService;
 import com.uevitondev.deliverybackend.domain.user.User;
 import com.uevitondev.deliverybackend.domain.user.UserDetailsImpl;
 import com.uevitondev.deliverybackend.domain.user.UserRepository;
 import com.uevitondev.deliverybackend.domain.utils.CookieService;
+import com.uevitondev.deliverybackend.domain.utils.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,7 +38,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final TokenVerificationService tokenVerificationService;
     private final CookieService cookieService;
+    private final MailService mailService;
 
 
     public AuthenticationService(
@@ -44,7 +50,9 @@ public class AuthenticationService {
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
-            CookieService cookieService
+            TokenVerificationService tokenVerificationService,
+            CookieService cookieService,
+            MailService mailService
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -52,7 +60,9 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.tokenVerificationService = tokenVerificationService;
         this.cookieService = cookieService;
+        this.mailService = mailService;
     }
 
     public AuthResponseDTO signIn(SignInRequestDTO dto, HttpServletResponse response) {
@@ -115,7 +125,17 @@ public class AuthenticationService {
             throw new UserAlreadyExistsException("user already exists");
         }
         var newUserCustomer = newUserCustomerFromSignUpRequestDto(dto);
-        userRepository.save(newUserCustomer);
+        newUserCustomer = userRepository.save(newUserCustomer);
+        var token = tokenVerificationService.generateTokenVerificationByUser(newUserCustomer).getToken();
+        var emailDto = new MailService.EmailDTO(
+                newUserCustomer.getUsername(),
+                newUserCustomer.getFirstName(),
+                "Email de Verificação",
+                token,
+                "token-verification-email.html"
+        );
+        mailService.sendEmail(emailDto);
+        log.info("[AuthService:signUp] User Successfully registered ");
     }
 
     public User newUserCustomerFromSignUpRequestDto(SignUpRequestDTO dto) {
@@ -130,4 +150,7 @@ public class AuthenticationService {
     }
 
 
+    public void signUpVerification(TokenRequestDTO dto) {
+        tokenVerificationService.validateUserTokenVerificationByToken(dto.token());
+    }
 }
