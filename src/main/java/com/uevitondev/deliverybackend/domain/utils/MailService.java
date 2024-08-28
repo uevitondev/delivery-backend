@@ -1,7 +1,6 @@
 package com.uevitondev.deliverybackend.domain.utils;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,15 +62,13 @@ public class MailService {
 
     public String loadTemplate(String templateName) {
         try {
-            var resource = new ClassPathResource("templates/"+ templateName);
+            var resource = new ClassPathResource("templates/" + templateName);
             return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             logger.error("[MailService:loadTemplate] failed to load template in mail service: {}", e.getMessage());
             throw new IllegalStateException("failed to load template in mail service");
         }
     }
-
-
 
 
 }
