@@ -18,19 +18,24 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 25)
     private String firstName;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 60)
     private String lastName;
     private String phoneNumber;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
+    @Column(nullable = false)
     private Boolean isAccountNonExpired = true;
+    @Column(nullable = false)
     private Boolean isAccountNonLocked = true;
+    @Column(nullable = false)
     private Boolean isCredentialsNonExpired = true;
     @Column(nullable = false)
     private Boolean isEnabled = false;
@@ -46,10 +51,16 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String firstName, String lastName, String phoneNumber, String username, String password) {
+    public User(
+            UUID id,
+            String firstName,
+            String lastName,
+            String username,
+            String password
+    ) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
         this.username = username;
         this.password = password;
         this.createdAt = LocalDateTime.now();

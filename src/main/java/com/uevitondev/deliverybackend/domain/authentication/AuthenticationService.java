@@ -119,34 +119,40 @@ public class AuthenticationService {
 
 
     public void signUp(SignUpRequestDTO dto) {
-        var user = userRepository.findByUsername(dto.email());
-        if (user.isPresent()) {
-            log.error("[AuthService:signUp]Exception while registering the user due to : user already exists");
+        var userExists = userRepository.findByUsername(dto.email());
+        if (userExists.isPresent()) {
+            log.error("[AuthenticationService:signUp]Exception while registering the user due to : user already exists");
             throw new UserAlreadyExistsException("user already exists");
         }
-        var newUserCustomer = newUserCustomerFromSignUpRequestDto(dto);
-        newUserCustomer = userRepository.save(newUserCustomer);
-        var token = tokenVerificationService.generateTokenVerificationByUser(newUserCustomer).getToken();
+        var newUser = registerNewUserFromSignUpRequestDto(dto);
+        var token = tokenVerificationService.generateTokenVerificationByUser(newUser).getToken();
         var emailDto = new MailService.EmailDTO(
-                newUserCustomer.getUsername(),
-                newUserCustomer.getFirstName(),
+                newUser.getUsername(),
+                newUser.getFirstName(),
                 "Email de Verificação",
                 token,
                 "token-verification-email.html"
         );
         mailService.sendEmail(emailDto);
-        log.info("[AuthService:signUp] User Successfully registered ");
+
     }
 
-    public User newUserCustomerFromSignUpRequestDto(SignUpRequestDTO dto) {
-        var role = roleRepository.findByName("ROLE_CUSTOMER").orElseThrow(() -> new ResourceNotFoundException("role not found"));
-        Customer user = new Customer();
-        user.setFirstName(dto.firstName());
-        user.setLastName(dto.lastName());
-        user.setUsername(dto.email());
-        user.setPassword(passwordEncoder.encode(dto.password()));
+    @Transactional
+    public User registerNewUserFromSignUpRequestDto(SignUpRequestDTO dto) {
+        var role = roleRepository.findByName("ROLE_CUSTOMER").orElseThrow(
+                () -> new ResourceNotFoundException("role not found")
+        );
+        Customer user = new Customer(
+                null,
+                dto.firstName(),
+                dto.lastName(),
+                dto.email(),
+                passwordEncoder.encode(dto.password())
+        );
         user.getRoles().add(role);
-        return user;
+        user = userRepository.save(user);
+        log.info("[AuthService:signUp] User Successfully registered ");
+        return  user;
     }
 
 

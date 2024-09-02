@@ -21,7 +21,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/sign-in")
-    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody SignInRequestDTO dto, HttpServletResponse response) {
+    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody @Valid SignInRequestDTO dto, HttpServletResponse response) {
         var authResponseDto = authService.signIn(dto, response);
         return ResponseEntity.ok().body(authResponseDto);
     }
@@ -33,13 +33,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDTO dto) {
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequestDTO dto) {
         authService.signUp(dto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sign-up/verification")
-    public ResponseEntity<Void> signUp(@Valid @RequestBody TokenRequestDTO dto) {
+    public ResponseEntity<Void> signUp(@RequestBody @Valid TokenRequestDTO dto) {
         authService.signUpVerification(dto);
         return ResponseEntity.ok().build();
     }

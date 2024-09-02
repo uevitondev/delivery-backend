@@ -4,8 +4,10 @@ import com.uevitondev.deliverybackend.domain.order.Order;
 import com.uevitondev.deliverybackend.domain.user.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tb_customer")
@@ -18,8 +20,16 @@ public class Customer extends User {
     public Customer() {
     }
 
-    public Customer(String firstName, String lastName, String phoneNumber, String username, String password) {
-        super(firstName, lastName, phoneNumber, username, password);
+    public Customer(
+            UUID id,
+            String firstName,
+            String lastName,
+            String username,
+            String password
+    ) {
+        super(id, firstName, lastName, username, password);
+        this.setCreatedAt(LocalDateTime.now());
+        this.setUpdatedAt(LocalDateTime.now());
     }
 
     public Set<Order> getOrders() {

@@ -75,9 +75,9 @@ public class DatabaseInitializer implements CommandLineRunner {
         sellerRole = roleRepository.save(sellerRole);
 
         User adminUser = new User(
+                null,
                 "Admin",
                 "UserAdmin",
-                "1199454599985",
                 "admin@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
@@ -85,9 +85,9 @@ public class DatabaseInitializer implements CommandLineRunner {
         userRepository.save(adminUser);
 
         Customer customerUser = new Customer(
+                null,
                 "Ueviton",
-                "Customer Teste",
-                "1199454599985",
+                "Customer",
                 "uevitoncustomerteste@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
@@ -96,9 +96,9 @@ public class DatabaseInitializer implements CommandLineRunner {
 
 
         Customer testCustomer = new Customer(
+                null,
+                "Customer",
                 "Test",
-                "Customer Delivery",
-                "1199664599986",
                 "testcustomer@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
         );
@@ -127,11 +127,12 @@ public class DatabaseInitializer implements CommandLineRunner {
         userRepository.save(customerUser);
 
         Seller sellerUser = new Seller(
+                null,
                 "Ueviton",
-                "Seller Teste",
-                "1199454599985",
+                "Seller",
                 "uevitonsellerteste@gmail.com",
                 "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+
         );
         sellerUser.getRoles().add(sellerRole);
         sellerUser = userRepository.save(sellerUser);
