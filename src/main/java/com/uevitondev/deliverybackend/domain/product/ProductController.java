@@ -3,6 +3,10 @@ package com.uevitondev.deliverybackend.domain.product;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedModel;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -21,16 +25,21 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> getAllProductsPaged(Pageable pageable) {
-        return ResponseEntity.ok().body(productService.getAllProductsPaged(pageable));
+    public ResponseEntity<PagedModel<ProductDTO>> getAllProductsPaged(Pageable pageable) {
+        return ResponseEntity.ok().body(
+                new PagedModel<>(productService.getAllProductsPaged(pageable))
+        );
     }
 
     @GetMapping("/store/{storeId}")
-    public ResponseEntity<Page<ProductDTO>> getAllProductsPagedByStoreAndCategory(
+    public ResponseEntity<PagedModel<ProductDTO>> getAllProductsPagedByStoreAndCategory(
             @PathVariable UUID storeId,
             @RequestParam(required = false) String categoryName,
-            Pageable pageable) {
-        return ResponseEntity.ok().body(productService.getAllProductsPagedByStoreAndCategory(storeId, categoryName, pageable));
+            @PageableDefault(size = 12) Pageable pageable
+    ) {
+        return ResponseEntity.ok().body(
+                new PagedModel<>(productService.getAllProductsPagedByStoreAndCategory(storeId, categoryName, pageable))
+        );
     }
 
     @GetMapping("/{id}")

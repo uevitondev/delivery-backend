@@ -44,7 +44,7 @@ public class WebSecurityConfig {
             "/v1/auth/refresh-token/**",
             "/v1/auth/sign-up/**",
             "/v1/auth/signup/verification/**"
-            };
+    };
 
     private static final String[] ENDPOINTS_ADMIN = {"/v1/test/admin/**"};
 
@@ -70,7 +70,6 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtTokenSecurityFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handler -> {
                     handler.authenticationEntryPoint(authenticationEntryPointResolver());
@@ -84,13 +83,6 @@ public class WebSecurityConfig {
         return new JwtTokenSecurityFilter(jwtService, userDetailsService, resolver);
     }
 
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
