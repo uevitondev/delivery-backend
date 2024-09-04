@@ -29,11 +29,22 @@ public class StoreAddress extends Address implements Serializable {
             String city,
             String uf,
             String complement,
-            String zipCode,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
+            String zipCode
     ) {
-        super(id, name, phoneNumber, street, number, district, city, uf, complement, zipCode, createdAt, updatedAt);
+        super(
+                id,
+                name,
+                phoneNumber,
+                street,
+                number,
+                district,
+                city,
+                uf,
+                complement,
+                zipCode,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 
 

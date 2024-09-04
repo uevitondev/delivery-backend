@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.config.database;
 
 
 import com.uevitondev.deliverybackend.domain.address.StoreAddress;
-import com.uevitondev.deliverybackend.domain.address.StoreAddressRepository;
 import com.uevitondev.deliverybackend.domain.address.UserAddress;
 import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.category.Category;
@@ -25,9 +24,9 @@ import com.uevitondev.deliverybackend.domain.user.User;
 import com.uevitondev.deliverybackend.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +39,7 @@ public class DatabaseInitializer implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     public DatabaseInitializer(
@@ -49,7 +49,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             CategoryRepository categoryRepository,
             ProductRepository productRepository,
             StoreRepository storeRepository,
-            OrderRepository orderRepository
+            OrderRepository orderRepository, PasswordEncoder passwordEncoder
     ) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
@@ -58,6 +58,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.orderRepository = orderRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -76,39 +77,43 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         User adminUser = new User(
                 null,
+                "User",
                 "Admin",
-                "UserAdmin",
-                "admin@gmail.com",
-                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+                "useradmin@gmail.com",
+                passwordEncoder.encode("Admin123")
         );
+        adminUser.isEnabled(true);
         adminUser.getRoles().add(adminRole);
         userRepository.save(adminUser);
 
         Customer customerUser = new Customer(
                 null,
-                "Ueviton",
+                "User",
                 "Customer",
-                "uevitoncustomerteste@gmail.com",
-                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+                "usercustomer@gmail.com",
+                passwordEncoder.encode("Customer123")
         );
+        customerUser.isEnabled(true);
         customerUser.getRoles().add(customerRole);
         customerUser = userRepository.save(customerUser);
 
-
-        Customer testCustomer = new Customer(
+        Seller sellerUser = new Seller(
                 null,
-                "Customer",
-                "Test",
-                "testcustomer@gmail.com",
-                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
+                "User",
+                "Seller",
+                "userseller@gmail.com",
+                passwordEncoder.encode("Seller123")
+
         );
-        userRepository.save(testCustomer);
+        sellerUser.isEnabled(true);
+        sellerUser.getRoles().add(sellerRole);
+        sellerUser = userRepository.save(sellerUser);
 
 
         // user customer address
         UserAddress addressCustomerUser = new UserAddress(
                 null,
-                "Ueviton Customer Teste",
+                "User Customer",
                 "1199454599985",
                 "Rua da flores",
                 126,
@@ -116,9 +121,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 "São Paulo",
                 "SP",
                 "Condominio Residencial ABA - Apt 26 A",
-                "03584000",
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                "03584000"
         );
         addressCustomerUser.setUser(customerUser);
         addressCustomerUser = userAddressRepository.save(addressCustomerUser);
@@ -126,23 +129,12 @@ public class DatabaseInitializer implements CommandLineRunner {
         customerUser.getAddresses().add(addressCustomerUser);
         userRepository.save(customerUser);
 
-        Seller sellerUser = new Seller(
-                null,
-                "Ueviton",
-                "Seller",
-                "uevitonsellerteste@gmail.com",
-                "$2a$10$Y7fk59/1Pg.ig0Goy0yTS.5RgKD18N5J3MYCo5bPYzVpslJqfr4uu"
-
-        );
-        sellerUser.getRoles().add(sellerRole);
-        sellerUser = userRepository.save(sellerUser);
-
 
         // category
-        Category category1 = new Category(null,"PIZZAS");
-        Category category2 = new Category(null,"BEBIDAS");
-        Category category3 = new Category(null,"SALGADOS");
-        Category category4 = new Category(null,"DOCES");
+        Category category1 = new Category(null, "PIZZAS");
+        Category category2 = new Category(null, "BEBIDAS");
+        Category category3 = new Category(null, "SALGADOS");
+        Category category4 = new Category(null, "DOCES");
         categoryRepository.saveAll(List.of(category1, category2, category3, category4));
 
         // address store
@@ -156,18 +148,16 @@ public class DatabaseInitializer implements CommandLineRunner {
                 "Minas Gerais",
                 "MG",
                 "Proximo ao posto de combustível",
-                "03484000",
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                "03484000"
         );
 
         // store
-
         var storeLogoUrl = "https://img.freepik.com/fotos-gratis/frente-do-icone-da-" +
                 "cesta-de-compras_187299-40115.jpg?t=st=1719251168~exp=17" +
                 "19254768~hmac=5ae1185eacbb75d1489105e68614a3caf9777b6f198e48d6db8deb791f933212&w=740";
 
         Store store1 = new Store(
+                null,
                 storeLogoUrl,
                 "Pizzaria Sabor",
                 "119958796542",
@@ -184,7 +174,6 @@ public class DatabaseInitializer implements CommandLineRunner {
         String productImageUrl = "https://img.freepik.com/vetores-gratis/prato-de-comida-muculmana-de-carneiro_24" +
                 "877-82334.jpg?t=st=1722865896~exp=1722869496~hmac=095a28c9295fe6f9c52080ea57ab9a562149ab8" +
                 "0737800e0c993b673f3f57f29&w=826";
-
 
 
         String productDescription = "Desperte seus sentidos com a irresistível Pizza Suprema, uma obra-prima " +

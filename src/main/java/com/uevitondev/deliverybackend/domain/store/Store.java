@@ -19,10 +19,13 @@ public class Store implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
     private String logoUrl;
     @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String phoneNumber;
+    @Column(nullable = false)
     private String type;
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -41,27 +44,24 @@ public class Store implements Serializable {
     public Store() {
     }
 
-
-    public Store(UUID id, String logoUrl, String name, String phoneNumber, String type, LocalDateTime createdAt, Seller seller, StoreAddress address) {
+    public Store(
+            UUID id,
+            String logoUrl,
+            String name,
+            String phoneNumber,
+            String type,
+            Seller seller,
+            StoreAddress address
+    ) {
         this.id = id;
         this.logoUrl = logoUrl;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.type = type;
-        this.createdAt = createdAt;
         this.seller = seller;
         this.address = address;
-    }
-
-    public Store(String logoUrl, String name, String phoneNumber, String type, Seller seller, StoreAddress address) {
-        this.logoUrl = logoUrl;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.type = type;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.seller = seller;
-        this.address = address;
     }
 
     public UUID getId() {
@@ -145,7 +145,7 @@ public class Store implements Serializable {
         this.address = address;
     }
 
-    public void addAddress(StoreAddress storeAddress){
+    public void addAddress(StoreAddress storeAddress) {
         setAddress(storeAddress);
         storeAddress.setStore(this);
     }

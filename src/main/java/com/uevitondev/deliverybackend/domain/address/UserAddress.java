@@ -29,11 +29,26 @@ public class UserAddress extends Address implements Serializable {
             String city,
             String uf,
             String complement,
-            String zipCode,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
-        super(id, name, phoneNumber, street, number, district, city, uf, complement, zipCode, createdAt, updatedAt);
+            String zipCode
+    ) {
+        super(
+                id,
+                name,
+                phoneNumber,
+                street,
+                number,
+                district,
+                city,
+                uf,
+                complement,
+                zipCode,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+
+
     }
+
 
     public User getUser() {
         return user;
