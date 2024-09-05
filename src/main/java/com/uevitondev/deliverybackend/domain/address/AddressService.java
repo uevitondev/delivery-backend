@@ -4,7 +4,7 @@ import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.user.User;
-import jakarta.persistence.EntityNotFoundException;
+import com.uevitondev.deliverybackend.domain.user.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,14 +14,17 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class AddressService {
 
     private final UserAddressRepository userAddressRepository;
     private final StoreAddressRepository storeAddressRepository;
 
 
-    public AddressService(UserAddressRepository userAddressRepository, StoreAddressRepository storeAddressRepository) {
+    public AddressService(
+            UserAddressRepository userAddressRepository,
+            StoreAddressRepository storeAddressRepository
+    ) {
         this.userAddressRepository = userAddressRepository;
         this.storeAddressRepository = storeAddressRepository;
     }
@@ -36,7 +39,7 @@ public class AddressService {
 
     public AddressDTO findUserAddressById(UUID id) {
         UserAddress userAddress = userAddressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("user address not found for id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("user not found"));
         return new AddressDTO(userAddress);
     }
 
@@ -50,45 +53,41 @@ public class AddressService {
 
     public AddressDTO findStoreAddressById(UUID id) {
         StoreAddress storeAddress = storeAddressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("store address not found for id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("store address not found"));
         return new AddressDTO(storeAddress);
     }
 
-
-    public AddressDTO insertNewAddress(AddressDTO dto) {
-        UserAddress userAddress = (UserAddress) mapperAddressDtoFromNewAddress(dto);
+    @Transactional
+    public AddressDTO insertNewUserAddress(AddressDTO dto) {
+        var userAddress = mapperAddressDtoFromNewUserAddress(dto);
         return new AddressDTO(userAddressRepository.save(userAddress));
     }
 
-    public AddressDTO updateAddressById(UUID addressId, AddressDTO dto) {
-        try {
+    @Transactional
+    public AddressDTO updateUserAddress(AddressDTO dto) {
+        var userAddress = userAddressRepository.findById(dto.id()).orElseThrow(
+                () -> new ResourceNotFoundException("user address not found")
+        );
+        userAddress = mapperAddressDtoFromUpdateUserAddress(userAddress, dto);
+        return new AddressDTO(userAddressRepository.save(userAddress));
 
-            UserAddress userAddress = (UserAddress) mapperAddressDtoFromUpdateAddress(
-                    dto,
-                    userAddressRepository.getReferenceById(addressId)
-            );
-
-
-            userAddress = userAddressRepository.save(userAddress);
-            return new AddressDTO(userAddress);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("userAddress not found for userAddressId: " + addressId);
-        }
     }
 
+    @Transactional
     public void deleteAddressById(UUID id) {
         if (!userAddressRepository.existsById(id)) {
-            throw new ResourceNotFoundException("userAddress not found for userAddressId: " + id);
+            throw new ResourceNotFoundException("resource not found");
         }
         try {
             userAddressRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new DatabaseException("Referential integrity constraint violation");
+            throw new DatabaseException("integrity constraint violation");
         }
     }
 
-    public Address mapperAddressDtoFromNewAddress(AddressDTO dto) {
-        return new Address(
+    public UserAddress mapperAddressDtoFromNewUserAddress(AddressDTO dto) {
+
+        var userAddress = new UserAddress(
                 null,
                 dto.name(),
                 dto.phoneNumber(),
@@ -98,24 +97,24 @@ public class AddressService {
                 dto.city(),
                 dto.uf(),
                 dto.complement(),
-                dto.zipCode(),
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                dto.zipCode()
         );
+        userAddress.setUser(UserService.getUserAuthenticated());
+        return userAddress;
+
     }
 
-    public Address mapperAddressDtoFromUpdateAddress(AddressDTO dto, Address address) {
-        address.setName(dto.name());
-        address.setPhoneNumber(dto.phoneNumber());
-        address.setStreet(dto.street());
-        address.setNumber(dto.number());
-        address.setDistrict(dto.district());
-        address.setCity(dto.city());
-        address.setUf(dto.uf());
-        address.setComplement(dto.complement());
-        address.setZipCode(dto.zipCode());
-        address.setUpdatedAt(LocalDateTime.now());
-
-        return address;
+    public UserAddress mapperAddressDtoFromUpdateUserAddress(UserAddress userAddress, AddressDTO dto) {
+        userAddress.setName(dto.name());
+        userAddress.setPhoneNumber(dto.phoneNumber());
+        userAddress.setStreet(dto.street());
+        userAddress.setNumber(dto.number());
+        userAddress.setDistrict(dto.district());
+        userAddress.setCity(dto.city());
+        userAddress.setUf(dto.uf());
+        userAddress.setComplement(dto.complement());
+        userAddress.setZipCode(dto.zipCode());
+        userAddress.setUpdatedAt(LocalDateTime.now());
+        return userAddress;
     }
 }

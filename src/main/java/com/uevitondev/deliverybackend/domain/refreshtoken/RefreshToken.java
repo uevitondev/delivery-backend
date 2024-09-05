@@ -3,7 +3,7 @@ package com.uevitondev.deliverybackend.domain.refreshtoken;
 import com.uevitondev.deliverybackend.domain.user.User;
 import jakarta.persistence.*;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -12,26 +12,26 @@ public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false)
     private String token;
-    @Column(nullable = false, length = 10000)
-    private Instant expiryDate;
     @Column(nullable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
     @Column(nullable = false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private LocalDateTime expiredAt;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
     public RefreshToken() {
     }
 
-    public RefreshToken(String token, Instant expiryDate, User user) {
+    public RefreshToken(String token, LocalDateTime expiredAt, User user) {
         this.token = token;
-        this.expiryDate = expiryDate;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.expiredAt = expiredAt;
         this.user = user;
     }
 
@@ -51,28 +51,32 @@ public class RefreshToken {
         this.token = token;
     }
 
-    public Instant getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(Instant expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getExpiredAt() {
+        return expiredAt;
+    }
+
+    public void setExpiredAt(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
+    }
+
+    public boolean isExpired() {
+        return this.expiredAt.isBefore(LocalDateTime.now());
     }
 
     public User getUser() {

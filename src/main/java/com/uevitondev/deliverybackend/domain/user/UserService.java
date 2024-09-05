@@ -2,11 +2,10 @@ package com.uevitondev.deliverybackend.domain.user;
 
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
-import com.uevitondev.deliverybackend.domain.role.Role;
-import com.uevitondev.deliverybackend.domain.role.RoleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +14,24 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
-                       RoleRepository roleRepository
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("user not found")
+        );
     }
 
     public UserProfileDTO getUserProfile() {
@@ -37,61 +43,45 @@ public class UserService {
         return userRepository.findAll().stream().map(UserResponseDTO::new).toList();
     }
 
-    public UserResponseDTO findUserById(UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("user not found for userId: " + id));
-        return new UserResponseDTO(user);
+    public UserResponseDTO findUserById(UUID userId) {
+        return new UserResponseDTO(getUserById(userId));
     }
 
+    @Transactional
     public UserResponseDTO insertNewUser(UserRequestDTO dto) {
-        try {
-            User user = new User();
-            user.setUsername(dto.getEmail());
-            user.setPassword(dto.getPassword());
-
-            for (UUID roleId : dto.getRolesId()) {
-                Role role = roleRepository.getReferenceById(roleId);
-                user.getRoles().add(role);
-            }
-            user = userRepository.save(user);
-            return new UserResponseDTO(user);
-        } catch (Exception e) {
-            throw new ResourceNotFoundException(e.toString());
-        }
+        var user = new User();
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
+        user.setPhoneNumber(dto.phoneNumber());
+        user.setUsername(dto.username());
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        return new UserResponseDTO(userRepository.save(user));
     }
 
-    public UserResponseDTO updateUserById(UUID id, UserRequestDTO dto) {
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("user not found for userId: " + id));
-        user.setUsername(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.getRoles().clear();
+    @Transactional
+    public UserResponseDTO updateUserById(UUID userId, UserRequestDTO dto) {
+        var user = getUserById(userId);
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
+        user.setPhoneNumber(dto.phoneNumber());
+        user.setUsername(dto.username());
+        user.setPassword(passwordEncoder.encode(dto.password()));
         user.setUpdatedAt(LocalDateTime.now());
-
-        for (UUID roleId : dto.getRolesId()) {
-            Role role = roleRepository.findById(roleId)
-                    .orElseThrow(() -> new ResourceNotFoundException("role not found for userId: " + roleId));
-            user.getRoles().add(role);
-        }
-
-        user = userRepository.save(user);
-        return new UserResponseDTO(user);
+        return new UserResponseDTO(userRepository.save(user));
     }
 
-    public void deleteUserById(UUID id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("user not found for userId: " + id);
-        }
+    @Transactional
+    public void deleteUserById(UUID userId) {
         try {
-            userRepository.deleteById(id);
+            userRepository.deleteById(getUserById(userId).getId());
         } catch (DataIntegrityViolationException e) {
-            throw new DatabaseException("Referential integrity constraint violation");
+            throw new DatabaseException("integrity constraint violation");
         }
     }
 
     public static User getUserAuthenticated() {
-        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var userDetailsImpl = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (userDetailsImpl.getUser() != null) {
             return userDetailsImpl.getUser();
         }

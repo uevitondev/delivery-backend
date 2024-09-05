@@ -16,21 +16,21 @@ import com.uevitondev.deliverybackend.domain.utils.CookieService;
 import com.uevitondev.deliverybackend.domain.utils.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class AuthenticationService {
-    private final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -113,15 +113,20 @@ public class AuthenticationService {
     }
 
     private static void setNewAuthenticationInContextFromUserDetails(UserDetailsImpl userDetails) {
-        var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        var authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
 
+    @Transactional
     public void signUp(SignUpRequestDTO dto) {
         var userExists = userRepository.findByUsername(dto.email());
         if (userExists.isPresent()) {
-            log.error("[AuthenticationService:signUp]Exception while registering the user due to : user already exists");
+            LOGGER.error("exception while registering user: user already exists");
             throw new UserAlreadyExistsException("user already exists");
         }
         var newUser = registerNewUserFromSignUpRequestDto(dto);
@@ -137,12 +142,11 @@ public class AuthenticationService {
 
     }
 
-    @Transactional
     public User registerNewUserFromSignUpRequestDto(SignUpRequestDTO dto) {
         var role = roleRepository.findByName("ROLE_CUSTOMER").orElseThrow(
                 () -> new ResourceNotFoundException("role not found")
         );
-        Customer user = new Customer(
+        var user = new Customer(
                 null,
                 dto.firstName(),
                 dto.lastName(),
@@ -151,8 +155,8 @@ public class AuthenticationService {
         );
         user.getRoles().add(role);
         user = userRepository.save(user);
-        log.info("[AuthService:signUp] User Successfully registered ");
-        return  user;
+        LOGGER.info("User Successfully SignUp");
+        return user;
     }
 
 

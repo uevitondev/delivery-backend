@@ -9,19 +9,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class RefreshTokenService {
-    private final Logger log = LoggerFactory.getLogger(RefreshTokenService.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RefreshTokenService.class);
+
     @Value("${security.jwt.refresh.token.expiration.time}")
     private long refreshTokenExpiresAt;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
+    public RefreshTokenService(
+            RefreshTokenRepository refreshTokenRepository,
+            UserRepository userRepository
+    ) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
     }
@@ -35,6 +40,7 @@ public class RefreshTokenService {
         return optionalRefreshToken.isPresent();
     }
 
+    @Transactional
     public RefreshToken generateRefreshTokenFromUserByUsername(String username) {
         var user = userRepository.findByUsername(username).orElseThrow(
                 () -> new ResourceNotFoundException("user not found")
@@ -44,31 +50,30 @@ public class RefreshTokenService {
         if (optionalRefreshTokenEntity.isPresent()) {
             refreshTokenEntity = optionalRefreshTokenEntity.get();
             refreshTokenEntity.setToken(UUID.randomUUID().toString());
-            refreshTokenEntity.setUpdatedAt(Instant.now());
-            refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpiresAt));
-            log.info(
-                    "[RefreshTokenService:generateRefreshTokenFromUserByUsername] Refresh Token (exist and updated) " +
-                            "new token: {}", refreshTokenEntity.getToken()
+            refreshTokenEntity.setUpdatedAt(LocalDateTime.now());
+            refreshTokenEntity.setExpiredAt(LocalDateTime.now().plusSeconds(refreshTokenExpiresAt));
+            LOGGER.info("user has been generated new refresh token: {}", refreshTokenEntity.getToken()
             );
             return refreshTokenRepository.save(refreshTokenEntity);
         }
+
         refreshTokenEntity.setToken(UUID.randomUUID().toString());
-        refreshTokenEntity.setCreatedAt(Instant.now());
-        refreshTokenEntity.setUpdatedAt(Instant.now());
-        refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpiresAt));
+        refreshTokenEntity.setCreatedAt(LocalDateTime.now());
+        refreshTokenEntity.setUpdatedAt(LocalDateTime.now());
+        refreshTokenEntity.setExpiredAt(LocalDateTime.now().plusSeconds(refreshTokenExpiresAt));
         refreshTokenEntity.setUser(user);
-        log.info("[RefreshTokenService:generateRefreshTokenFromUserByUsername] Refresh Token has been generated: {}", refreshTokenEntity.getToken());
+        LOGGER.info("user has been generated new refresh token: {}", refreshTokenEntity.getToken());
         return refreshTokenRepository.save(refreshTokenEntity);
     }
 
-
+    @Transactional
     public RefreshToken validateTokenAndReturnRefreshToken(String token) {
         var refreshTokenEntity = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new RefreshTokenRevokedException("refresh token dont exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("refresh token not found"));
 
-        if (refreshTokenEntity.getExpiryDate().compareTo(Instant.now()) < 0) {
+        if (refreshTokenEntity.isExpired()) {
             refreshTokenRepository.delete(refreshTokenEntity);
-            throw new RefreshTokenRevokedException("Refresh token is expired. Please make a new login..!");
+            throw new RefreshTokenRevokedException("token expired");
         }
         return refreshTokenEntity;
     }

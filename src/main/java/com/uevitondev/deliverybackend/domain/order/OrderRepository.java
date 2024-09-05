@@ -14,8 +14,11 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-
-    @Query(value = " SELECT o.id, o.created_at, o.updated_at, o.status, o.total, o.address_id, o.customer_id, o.store_id FROM tb_order o  WHERE o.id = :id", nativeQuery = true)
+    @Query(
+            nativeQuery = true,
+            value = "SELECT o.id, o.created_at, o.updated_at, o.status, o.total, o.address_id, o.customer_id, " +
+                    "o.store_id FROM tb_order o  WHERE o.id = :id"
+    )
     Optional<Order> findByIdTest(@Param("id") UUID id);
 
     @Query("SELECT o FROM Order o JOIN FETCH o.orderItems WHERE o.customer = :customer")

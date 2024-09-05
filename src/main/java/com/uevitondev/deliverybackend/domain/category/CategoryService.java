@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.domain.category;
 
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -21,43 +20,42 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+
+    public Category getCategoryById(UUID categoryId) {
+        return categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("category not found")
+        );
+    }
+
     public List<CategoryDTO> findAllCategories() {
         return categoryRepository.findAll().stream().map(CategoryDTO::new).toList();
     }
 
-    public CategoryDTO findCategoryById(UUID id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("category not found for categoryId: " + id));
-        return new CategoryDTO(category);
+    public CategoryDTO findCategoryById(UUID categoryId) {
+        return new CategoryDTO(getCategoryById(categoryId));
     }
 
+    @Transactional
     public CategoryDTO insertNewCategory(CategoryDTO dto) {
-        Category category = new Category(null,dto.getName());
-        category = categoryRepository.save(category);
-
-        return new CategoryDTO(category);
+        var category = new Category(null, dto.name());
+        return new CategoryDTO(categoryRepository.save(category));
     }
 
-    public CategoryDTO updateCategoryById(UUID id, CategoryDTO dto) {
-        try {
-            Category category = categoryRepository.getReferenceById(id);
-            category.setName(dto.getName());
-            category.setUpdatedAt(LocalDateTime.now());
-            category = categoryRepository.save(category);
-            return new CategoryDTO(category);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("category not found for categoryId: " + id);
-        }
+    @Transactional
+    public CategoryDTO updateCategory(CategoryDTO dto) {
+        var category = getCategoryById(dto.id());
+        category.setName(dto.name());
+        category.setUpdatedAt(LocalDateTime.now());
+        return new CategoryDTO(categoryRepository.save(category));
     }
 
-    public void deleteCategoryById(UUID id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new ResourceNotFoundException("category not found for categoryId: " + id);
-        }
+    @Transactional
+    public void deleteCategoryById(UUID categoryId) {
         try {
-            categoryRepository.deleteById(id);
+            categoryRepository.deleteById(getCategoryById(categoryId).getId());
         } catch (DataIntegrityViolationException e) {
-            throw new DatabaseException("Referential integrity constraint violation");
+            throw new DatabaseException("integrity constraint violation");
         }
     }
+
 }

@@ -9,7 +9,6 @@ import com.uevitondev.deliverybackend.domain.orderitem.CartItemDTO;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItemDTO;
 import com.uevitondev.deliverybackend.domain.orderitem.ShoppingCartDTO;
-import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
 import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
@@ -25,17 +24,21 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class OrderService {
-    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+
     private final OrderRepository orderRepository;
     private final StoreRepository storeRepository;
     private final UserAddressRepository userAddressRepository;
     private final ProductRepository productRepository;
 
 
-    public OrderService(OrderRepository orderRepository, StoreRepository storeRepository,
-                        UserAddressRepository userAddressRepository, ProductRepository productRepository) {
+    public OrderService(
+            OrderRepository orderRepository,
+            StoreRepository storeRepository,
+            UserAddressRepository userAddressRepository,
+            ProductRepository productRepository
+    ) {
         this.orderRepository = orderRepository;
         this.storeRepository = storeRepository;
         this.userAddressRepository = userAddressRepository;
@@ -51,17 +54,15 @@ public class OrderService {
         return orderRepository.findByCustomer(customer).stream().map(OrderDTO::new).toList();
     }
 
-
     public OrderDTO findOrderById(UUID id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("order not found for orderId: " + id));
+        var order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("order not found"));
         return new OrderDTO(order);
     }
 
     public OrderCustomerDTO findOrderByIdWithOrderItems(UUID id) {
-        Order order = orderRepository.findByIdWithOrderItems(id)
-                .orElseThrow(() -> new ResourceNotFoundException("order not found for orderId: " + id));
-
+        var order = orderRepository.findByIdWithOrderItems(id)
+                .orElseThrow(() -> new ResourceNotFoundException("order not found"));
         return new OrderCustomerDTO(
                 order.getId(),
                 order.getCreatedAt(),
@@ -76,6 +77,7 @@ public class OrderService {
                 order.getOrderItems().stream().map(OrderItemDTO::new).toList()
         );
     }
+
 
     public OrderCustomerDataDTO getOrderCustomerDataForCustomerOrder(Customer customer) {
         return new OrderCustomerDataDTO(
@@ -96,22 +98,23 @@ public class OrderService {
     }
 
 
+    @Transactional
     public OrderDTO saveNewOrder(ShoppingCartDTO dto) {
         try {
-            Order order = new Order(
+            var order = new Order(
                     OrderStatus.PENDENTE,
                     OrderPayment.PIX,
                     (Customer) UserService.getUserAuthenticated(),
                     storeRepository.findById(dto.store().id())
-                            .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.store().id())),
+                            .orElseThrow(() -> new ResourceNotFoundException("store not found")),
                     userAddressRepository.findById(dto.address().id())
-                            .orElseThrow(() -> new ResourceNotFoundException("address not found for addressId: " + dto.address().id()))
+                            .orElseThrow(() -> new ResourceNotFoundException("address not found"))
             );
             addOrderItemsToOrder(order, dto.cartItems());
             return new OrderDTO(orderRepository.save(order));
 
         } catch (DataIntegrityViolationException e) {
-            throw new DatabaseException("Referential integrity constraint violation");
+            throw new DatabaseException("integrity constraint violation");
         }
     }
 
@@ -121,10 +124,11 @@ public class OrderService {
         }
     }
 
-    public OrderItem getOrderItemFromCartItem(CartItemDTO cartItemDTO){
+    public OrderItem getOrderItemFromCartItem(CartItemDTO cartItemDTO) {
         var productId = cartItemDTO.product().id();
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("product not found for productId: " + productId));
+        var product = productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("product not found")
+        );
         return new OrderItem(product, cartItemDTO.quantity(), cartItemDTO.note());
     }
 

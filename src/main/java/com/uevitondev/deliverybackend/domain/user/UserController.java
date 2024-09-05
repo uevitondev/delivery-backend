@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +19,7 @@ public class UserController {
     }
 
     @GetMapping("/account/profile")
-    public ResponseEntity<UserProfileDTO> getAccountData(){
+    public ResponseEntity<UserProfileDTO> getAccountData() {
         return ResponseEntity.ok().body(userService.getUserProfile());
     }
 
@@ -37,7 +36,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponseDTO> insertNewUser(@RequestBody @Valid UserRequestDTO dto) {
         var userResponseDTO = userService.insertNewUser(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userResponseDTO.getId()).toUri();
+        var uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userResponseDTO.id()).toUri();
         return ResponseEntity.created(uri).body(userResponseDTO);
     }
 

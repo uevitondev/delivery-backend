@@ -14,13 +14,20 @@ public class OrderItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
     private String imgUrl;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String description;
+    @Column(nullable = false)
     private Double price;
+    @Column(nullable = false)
     private Integer quantity;
+    @Column(nullable = false)
     private Double totalPrice;
     private String note;
+    @Column(nullable = false)
     private UUID productId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)

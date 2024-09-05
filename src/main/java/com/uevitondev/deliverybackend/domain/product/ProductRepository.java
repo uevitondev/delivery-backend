@@ -15,7 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT p FROM Product p")
     Page<Product> findAllProductsPaged(Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.store.id = :storeId AND (:categoryName = '' OR p.category.name = :categoryName)")
+    @Query("SELECT p FROM Product p WHERE p.store.id = :storeId AND" +
+            " (:categoryName = '' OR p.category.name = :categoryName)"
+    )
     Page<Product> findAllByStoreAndCategory(
             @Param("storeId") UUID storeId,
             @Param("categoryName") String categoryName,

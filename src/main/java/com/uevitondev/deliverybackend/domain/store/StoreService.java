@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class StoreService {
 
     private final StoreRepository storeRepository;
@@ -24,37 +24,44 @@ public class StoreService {
         return storeRepository.findAll().stream().map(StoreDTO::new).toList();
     }
 
-    public StoreDTO findStoreById(UUID id) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + id));
-        return new StoreDTO(store);
+    public StoreDTO findStoreById(UUID storeId) {
+        return new StoreDTO(getStoreById(storeId));
     }
 
+    @Transactional
     public StoreDTO insertNewStore(StoreDTO dto) {
-        Store store = new Store();
+        var store = new Store();
+        store.setLogoUrl(dto.logoUrl());
         store.setName(dto.name());
+        store.setPhoneNumber(dto.phoneNumber());
+        store.setType(StoreType.valueOf(dto.type()).toString());
         store = storeRepository.save(store);
-
-        return new StoreDTO(store);
+        return new StoreDTO(storeRepository.save(store));
     }
 
-    public StoreDTO updateStoreById(UUID id, StoreDTO dto) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + id));
+    @Transactional
+    public StoreDTO updateStore(StoreDTO dto) {
+        var store = getStoreById(dto.id());
+        store.setLogoUrl(dto.logoUrl());
         store.setName(dto.name());
+        store.setPhoneNumber(dto.phoneNumber());
+        store.setType(StoreType.valueOf(dto.type()).toString());
         store.setUpdatedAt(LocalDateTime.now());
-        store = storeRepository.save(store);
-        return new StoreDTO(store);
+        return new StoreDTO(storeRepository.save(store));
     }
 
-    public void deleteStoreById(UUID id) {
-        if (!storeRepository.existsById(id)) {
-            throw new ResourceNotFoundException("store not found for storeId: " + id);
-        }
+    @Transactional
+    public void deleteStoreById(UUID storeId) {
         try {
-            storeRepository.deleteById(id);
+            storeRepository.deleteById(getStoreById(storeId).getId());
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity constraint violation");
         }
+    }
+
+    public Store getStoreById(UUID storeId) {
+        return storeRepository.findById(storeId).orElseThrow(
+                () -> new ResourceNotFoundException("store not found")
+        );
     }
 }

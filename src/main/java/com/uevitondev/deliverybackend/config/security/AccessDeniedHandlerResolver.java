@@ -13,6 +13,7 @@ import java.io.IOException;
 
 @Component
 public class AccessDeniedHandlerResolver implements AccessDeniedHandler {
+
     private final HandlerExceptionResolver resolver;
 
     public AccessDeniedHandlerResolver(
@@ -22,7 +23,11 @@ public class AccessDeniedHandlerResolver implements AccessDeniedHandler {
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AccessDeniedException accessDeniedException
+    ) throws IOException, ServletException {
         this.resolver.resolveException(request, response, null, accessDeniedException);
     }
 

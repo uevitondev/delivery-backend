@@ -12,16 +12,27 @@ public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String phoneNumber;
+    @Column(nullable = false)
     private String street;
+    @Column(nullable = false)
     private Integer number;
+    @Column(nullable = false)
     private String district;
+    @Column(nullable = false)
     private String city;
+    @Column(nullable = false)
     private String uf;
+    @Column(nullable = false)
     private String complement;
+    @Column(nullable = false)
     private String zipCode;
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
 

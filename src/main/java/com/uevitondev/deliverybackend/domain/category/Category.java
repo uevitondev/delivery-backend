@@ -16,13 +16,14 @@ public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private LocalDateTime createdAt;
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private final List<Product> products = new ArrayList<>();
-
 
     public Category() {
     }

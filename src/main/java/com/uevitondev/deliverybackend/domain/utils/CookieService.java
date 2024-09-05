@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.domain.utils;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CookieService {
-    private final Logger log = LoggerFactory.getLogger(CookieService.class);
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CookieService.class);
 
     public Cookie createCookie(
             String cookieName,
@@ -27,10 +26,9 @@ public class CookieService {
         cookie.setMaxAge(cookieMaxAge);
         cookie.setHttpOnly(cookieHttpOnly);
         cookie.setSecure(cookieSecure);
-        log.info("[CookieService:createCookie] Cookie created, name: {}", cookieName);
+        LOGGER.info("Cookie created, name: {}", cookieName);
         return cookie;
     }
-
 
     public String extractCookieValueFromRequestByCookieName(HttpServletRequest request, String cookieName) {
         Cookie[] cookies = request.getCookies();
@@ -46,9 +44,8 @@ public class CookieService {
         if (cookieValue == null) {
             throw new AccessDeniedException("access denied");
         }
-        log.info("[CookieService:extractCookieValueFromRequestByCookieName] Cookie value has ben extract: {}", cookieValue);
+        LOGGER.info("Cookie value has ben extract: {}", cookieValue);
         return cookieValue;
     }
-
 
 }

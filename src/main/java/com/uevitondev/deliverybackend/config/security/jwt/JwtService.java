@@ -13,7 +13,9 @@ import java.time.Instant;
 
 @Service
 public class JwtService {
-    private final Logger log = LoggerFactory.getLogger(JwtService.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
+
     @Value("${security.jwt.access.token.secret.key}")
     private String jwtAccessTokenSecretKey;
     @Value("${security.jwt.access.token.expiration.time}")
@@ -21,7 +23,6 @@ public class JwtService {
 
     public String generateJwtToken(String username) {
         try {
-            log.info("[JwtService:generateJwtToken] Access Token Generate started for: {}", username);
             Algorithm algorithm = Algorithm.HMAC256(jwtAccessTokenSecretKey);
             var expiresAt = Instant.now().plusSeconds(jwtAccessTokenExpiration);
             var jwtToken = JWT.create()
@@ -29,7 +30,7 @@ public class JwtService {
                     .withSubject(username)
                     .withExpiresAt(expiresAt)
                     .sign(algorithm);
-            log.info("[JwtService:generateJwtToken] Access Token has been generated: {}", jwtToken);
+            LOGGER.info("Access Token has been generated for user: {}, value: {}", username, jwtToken);
             return jwtToken;
         } catch (JWTCreationException e) {
             throw new JwtBearerTokenException(e.getMessage());

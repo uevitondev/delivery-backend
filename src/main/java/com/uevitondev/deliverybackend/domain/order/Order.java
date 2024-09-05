@@ -19,12 +19,17 @@ public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderPayment paymentMethod;
+    @Column(nullable = false)
     private Double total;
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
     private LocalDateTime closedAt;
     @ManyToOne(fetch = FetchType.LAZY)

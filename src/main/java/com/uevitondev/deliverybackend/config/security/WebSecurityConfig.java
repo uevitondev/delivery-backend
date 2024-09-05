@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -49,7 +48,8 @@ public class WebSecurityConfig {
     private static final String[] ENDPOINTS_ADMIN = {"/v1/test/admin/**"};
 
 
-    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, JwtService jwtService,
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
+                             JwtService jwtService,
                              @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
     ) {
         this.userDetailsService = userDetailsService;
@@ -78,11 +78,16 @@ public class WebSecurityConfig {
                 .build();
     }
 
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public JwtTokenSecurityFilter jwtTokenSecurityFilter() {
         return new JwtTokenSecurityFilter(jwtService, userDetailsService, resolver);
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -90,8 +95,13 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public AuthenticationEntryPointResolver authenticationEntryPointResolver() {
+        return new AuthenticationEntryPointResolver(this.resolver);
+    }
+
+    @Bean
+    public AccessDeniedHandlerResolver accessDeniedHandlerResolver() {
+        return new AccessDeniedHandlerResolver(this.resolver);
     }
 
     @Bean
@@ -105,16 +115,6 @@ public class WebSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public AuthenticationEntryPointResolver authenticationEntryPointResolver() {
-        return new AuthenticationEntryPointResolver(this.resolver);
-    }
-
-    @Bean
-    public AccessDeniedHandlerResolver accessDeniedHandlerResolver() {
-        return new AccessDeniedHandlerResolver(this.resolver);
     }
 
 

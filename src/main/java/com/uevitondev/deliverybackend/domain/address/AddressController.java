@@ -53,20 +53,20 @@ public class AddressController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<AddressDTO> insertNewAddress(@RequestBody @Valid AddressDTO dto) {
-        dto = addressService.insertNewAddress(dto);
+    public ResponseEntity<AddressDTO> insertNewAddress(@Valid @RequestBody AddressDTO dto) {
+        dto = addressService.insertNewUserAddress(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.id()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AddressDTO> updateCategoryById(@PathVariable UUID id, @RequestBody AddressDTO dto) {
-        dto = addressService.updateAddressById(id, dto);
+    @PutMapping("/update")
+    public ResponseEntity<AddressDTO> updateAddressById(@Valid @RequestBody AddressDTO dto) {
+        dto = addressService.updateUserAddress(dto);
         return ResponseEntity.ok().body(dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoryById(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteAddressById(@PathVariable UUID id) {
         addressService.deleteAddressById(id);
         return ResponseEntity.noContent().build();
     }

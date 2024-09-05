@@ -1,12 +1,9 @@
 package com.uevitondev.deliverybackend.domain.product;
 
-import com.uevitondev.deliverybackend.domain.category.Category;
 import com.uevitondev.deliverybackend.domain.category.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
-import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.store.StoreRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,87 +14,83 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final StoreRepository storeRepository;
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, StoreRepository storeRepository) {
+    public ProductService(
+            ProductRepository productRepository,
+            CategoryRepository categoryRepository,
+            StoreRepository storeRepository
+    ) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.storeRepository = storeRepository;
+    }
+
+    public Product getProductById(UUID productId) {
+        return productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("product not found")
+        );
     }
 
     public Page<ProductDTO> getAllProductsPaged(Pageable pageable) {
         return productRepository.findAllProductsPaged(pageable).map(ProductDTO::new);
     }
 
-    public Page<ProductDTO> getAllProductsPagedByStoreAndCategory(UUID storeId, String categoryName, Pageable pageable) {
+    public Page<ProductDTO> getAllProductsPagedByStoreAndCategory(
+            UUID storeId,
+            String categoryName,
+            Pageable pageable
+    ) {
         return productRepository.findAllByStoreAndCategory(storeId, categoryName, pageable).map(ProductDTO::new);
     }
 
-    public ProductDTO findProductById(UUID id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("product not found for productId: " + id));
-        return new ProductDTO(product);
+    public ProductDTO findProductById(UUID productId) {
+        return new ProductDTO(getProductById(productId));
     }
 
+    @Transactional
     public ProductDTO insertNewProduct(NewProductDTO dto) {
-        Product product = productRepository.save(convertProductDtoToProduct(dto));
+        var product = productRepository.save(convertNewProductDtoToProduct(dto));
         return new ProductDTO(product);
     }
 
-    public Product convertProductDtoToProduct(NewProductDTO dto) {
-
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("category not found for categoryId: " + dto.getCategoryId()));
-        Store store = storeRepository.findById(dto.getStoreId())
-                .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getStoreId()));
-
-        Product product = new Product();
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
+    public Product convertNewProductDtoToProduct(NewProductDTO dto) {
+        var category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("category not found"));
+        var store = storeRepository.findById(dto.storeId())
+                .orElseThrow(() -> new ResourceNotFoundException("store not found"));
+        var product = new Product();
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPrice(dto.price());
         product.setCategory(category);
         product.setStore(store);
-
         return product;
     }
 
 
-    public ProductDTO updateProductById(UUID id, NewProductDTO dto) {
-        try {
-            Category category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException("category not found for categoryId: " + dto.getCategoryId()));
-            Store store = storeRepository.findById(dto.getStoreId())
-                    .orElseThrow(() -> new ResourceNotFoundException("store not found for storeId: " + dto.getStoreId()));
-
-
-            Product product = productRepository.getReferenceById(id);
-            product.setName(dto.getName());
-            product.setDescription(dto.getDescription());
-            product.setPrice(dto.getPrice());
-            product.setCategory(category);
-            product.setStore(store);
-            product.setUpdatedAt(LocalDateTime.now());
-            product = productRepository.save(product);
-
-            return new ProductDTO(product);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("product not found for productId: " + id);
-        }
+    @Transactional
+    public ProductDTO updateProduct(ProductDTO dto) {
+        var product = getProductById(dto.id());
+        product.setImgUrl(dto.imgUrl());
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPrice(dto.price());
+        product.setUpdatedAt(LocalDateTime.now());
+        return new ProductDTO(productRepository.save(product));
     }
 
-    public void deleteProductById(UUID id) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("product not found for productId: " + id);
-        }
+    @Transactional
+    public void deleteProductById(UUID productId) {
         try {
-            productRepository.deleteById(id);
+            productRepository.deleteById(getProductById(productId).getId());
         } catch (DataIntegrityViolationException e) {
-            throw new DatabaseException("Referential integrity constraint violation");
+            throw new DatabaseException("integrity constraint violation");
         }
     }
 

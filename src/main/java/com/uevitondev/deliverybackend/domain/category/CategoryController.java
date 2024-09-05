@@ -32,19 +32,19 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryDTO> insertNewCategory(@RequestBody @Valid CategoryDTO dto) {
         dto = categoryService.insertNewCategory(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.id()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategoryById(@PathVariable UUID id, @RequestBody CategoryDTO dto) {
-        dto = categoryService.updateCategoryById(id, dto);
+    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody @Valid CategoryDTO dto) {
+        dto = categoryService.updateCategory(dto);
         return ResponseEntity.ok().body(dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoryById(@PathVariable UUID id) {
-        categoryService.deleteCategoryById(id);
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable UUID categoryId) {
+        categoryService.deleteCategoryById(categoryId);
         return ResponseEntity.noContent().build();
     }
 }

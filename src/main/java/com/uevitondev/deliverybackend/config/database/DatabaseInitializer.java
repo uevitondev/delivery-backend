@@ -32,6 +32,7 @@ import java.util.UUID;
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
+
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final UserAddressRepository userAddressRepository;

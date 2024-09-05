@@ -19,10 +19,12 @@ public class MailService {
     public record EmailDTO(String email, String subject, String title, String text, String templateName) {
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
+
     @Value("${spring.mail.username}")
     private String mailHost;
     private final JavaMailSender javaMailSender;
-    private final Logger logger = LoggerFactory.getLogger(MailService.class);
+
 
     public MailService(JavaMailSenderImpl javaMailSender) {
         this.javaMailSender = javaMailSender;
@@ -39,19 +41,15 @@ public class MailService {
             helper.setSubject(emailDto.subject);
             helper.setText(mailTemplate, true);
             javaMailSender.send(mimeMessage);
-            logger.info("[MailService:sendEmail] send email (template: {}), (subject: {}), (email: {})",
-                    emailDto.templateName, emailDto.subject, emailDto.email)
-            ;
+            LOGGER.info("send email for mail template: {}", emailDto.templateName);
         } catch (MessagingException e) {
-            logger.error("failed to send email in mail service: {}", e.getMessage());
+            LOGGER.error("failed to send email in mail service: {}", e.getMessage());
             throw new IllegalStateException("failed to send email in mail service");
         }
     }
 
     public String buildMailTemplate(EmailDTO emailDto) {
-        logger.info("[MailService:buildMailTemplate] build template (template: {}) for to: {}",
-                emailDto.templateName, emailDto.subject
-        );
+        LOGGER.info("build mail template: {}", emailDto.templateName);
         var template = loadTemplate(emailDto.templateName);
         template = template.replace("#{{title}}", emailDto.title);
         template = template.replace("#{{subject}}", emailDto.subject);
@@ -65,7 +63,7 @@ public class MailService {
             var resource = new ClassPathResource("templates/" + templateName);
             return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            logger.error("[MailService:loadTemplate] failed to load template in mail service: {}", e.getMessage());
+            LOGGER.error("failed to load template: {}", templateName);
             throw new IllegalStateException("failed to load template in mail service");
         }
     }

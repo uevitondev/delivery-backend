@@ -1,12 +1,9 @@
 package com.uevitondev.deliverybackend.domain.product;
 
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -59,8 +56,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProductById(@PathVariable UUID id, @RequestBody NewProductDTO dto) {
-        var productDto = productService.updateProductById(id, dto);
+    public ResponseEntity<ProductDTO> updateProductById(@PathVariable UUID id, @RequestBody ProductDTO dto) {
+        var productDto = productService.updateProduct(dto);
         return ResponseEntity.ok().body(productDto);
     }
 

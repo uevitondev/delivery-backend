@@ -36,9 +36,9 @@ public class StoreController {
         return ResponseEntity.created(uri).body(dto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<StoreDTO> updateStoreById(@PathVariable UUID id, @RequestBody @Valid StoreDTO dto) {
-        dto = storeService.updateStoreById(id, dto);
+    @PutMapping("/update")
+    public ResponseEntity<StoreDTO> updateStoreById(@Valid @RequestBody StoreDTO dto) {
+        dto = storeService.updateStore(dto);
         return ResponseEntity.ok().body(dto);
     }
 

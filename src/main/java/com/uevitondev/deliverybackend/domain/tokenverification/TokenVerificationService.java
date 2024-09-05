@@ -13,9 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional(readOnly = true)
 public class TokenVerificationService {
 
-    private final Logger log = LoggerFactory.getLogger(TokenVerificationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenVerificationService.class);
 
     private final TokenVerificationRepository tokenVerificationRepository;
     private final UserRepository userRepository;
@@ -37,11 +38,12 @@ public class TokenVerificationService {
         return tokenVerificationRepository.save(tokenVerification);
     }
 
+    @Transactional
     public void validateUserTokenVerificationByToken(String token) {
         var tokenVerificationEntity = tokenVerificationRepository.findByToken(token)
                 .filter(tokenVerification -> !tokenVerification.isExpired())
                 .orElseThrow(() -> {
-                    log.error("[TokenVerificationService:validateUserTokenVerificationByToken] Token invalid or expired");
+                    LOGGER.error("token invalid or expired");
                     return new InvalidTokenVerificationException("token expired or invalid");
                 });
 
@@ -54,7 +56,7 @@ public class TokenVerificationService {
         var user = tokenVerification.getUser();
         user.isEnabled(true);
         userRepository.save(user);
-        log.error("[TokenVerificationService:enableUserByTokenVerification] User enabled by token verification");
+        LOGGER.error("user enabled by token verification");
     }
 
 

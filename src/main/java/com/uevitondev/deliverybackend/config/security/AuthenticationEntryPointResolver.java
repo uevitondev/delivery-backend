@@ -13,6 +13,7 @@ import java.io.IOException;
 
 @Component
 public class AuthenticationEntryPointResolver implements AuthenticationEntryPoint {
+
     private final HandlerExceptionResolver resolver;
 
     public AuthenticationEntryPointResolver(
