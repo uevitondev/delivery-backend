@@ -20,9 +20,9 @@ public class PasswordResetToken {
     private LocalDateTime createdAt;
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+    private LocalDateTime confirmedAt;
     @Column(nullable = false)
     private LocalDateTime expiredAt;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -35,6 +35,7 @@ public class PasswordResetToken {
         this.setToken();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.confirmedAt = null;
         this.expiredAt = LocalDateTime.now().plusMinutes(5);
         this.user = user;
     }
@@ -70,6 +71,14 @@ public class PasswordResetToken {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getConfirmedAt() {
+        return confirmedAt;
+    }
+
+    public void setConfirmedAt(LocalDateTime confirmedAt) {
+        this.confirmedAt = confirmedAt;
     }
 
     public LocalDateTime getExpiredAt() {

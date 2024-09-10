@@ -50,8 +50,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verification")
-    public ResponseEntity<Void> signUp(@RequestBody @Valid TokenRequestDTO dto) {
-        authService.signUpVerification(dto);
+    public ResponseEntity<Void> verification(@RequestBody @Valid TokenRequestDTO dto) {
+        authService.verification(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/verification/new-token")
+    public ResponseEntity<Void> verificationNewToken(@RequestParam("email") String userEmail) {
+        authService.verificationNewToken(userEmail);
         return ResponseEntity.ok().build();
     }
 

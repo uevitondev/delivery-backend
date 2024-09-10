@@ -44,7 +44,8 @@ public class WebSecurityConfig {
             "/v1/auth/change-password/**",
             "/v1/auth/refresh-token/**",
             "/v1/auth/sign-up/**",
-            "/v1/auth/verification/**"
+            "/v1/auth/verification/**",
+            "/v1/auth/verification/new-token/**"
     };
 
     private static final String[] ENDPOINTS_ADMIN = {"/v1/test/admin/**"};

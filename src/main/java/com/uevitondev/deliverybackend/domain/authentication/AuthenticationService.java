@@ -3,9 +3,9 @@ package com.uevitondev.deliverybackend.domain.authentication;
 import com.uevitondev.deliverybackend.config.security.jwt.JwtService;
 import com.uevitondev.deliverybackend.config.security.jwt.TokenType;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
-import com.uevitondev.deliverybackend.domain.exception.InvalidTokenVerificationException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
+import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetToken;
 import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetTokenDTO;
 import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetTokenService;
 import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshTokenService;
@@ -109,27 +109,21 @@ public class AuthenticationService {
         );
         var passwordResetToken = passwordResetTokenService.findPasswordResetTokenByUser(user.getId());
         passwordResetToken = passwordResetTokenService.updatePasswordResetToken(passwordResetToken);
-
-        var emailDto = new MailService.EmailDTO(
-                user.getUsername(),
-                user.getFirstName(),
-                "Password Reset Token",
-                passwordResetToken.getToken(),
-                "password-reset-token-email.html"
-        );
-        mailService.sendEmail(emailDto);
+        sendEmailForPassswordResetTokenUser(user, passwordResetToken);
     }
 
     @Transactional
     public void changePassword(PasswordResetTokenDTO dto) {
-        var passwordResetToken = passwordResetTokenService.findPasswordResetTokenByToken(dto.token());
-        if (passwordResetToken.isExpired()) {
-            throw new InvalidTokenVerificationException("password reset token is expired");
-        }
+        var passwordResetToken = passwordResetTokenService.validateAndConfirmPasswordResetTokenByToken(dto.token());
+        changeUserPasswordByVerification(passwordResetToken, dto);
+    }
+
+    public void changeUserPasswordByVerification(PasswordResetToken passwordResetToken, PasswordResetTokenDTO dto) {
         var user = passwordResetToken.getUser();
         user.setPassword(passwordEncoder.encode(dto.newPassword()));
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
+        LOGGER.error("user password changed success by password reset token");
     }
 
 
@@ -169,15 +163,8 @@ public class AuthenticationService {
             throw new UserAlreadyExistsException("user already exists");
         }
         var newUser = registerNewUserFromSignUpRequestDto(dto);
-        var token = tokenVerificationService.generateTokenVerificationByUser(newUser).getToken();
-        var emailDto = new MailService.EmailDTO(
-                newUser.getUsername(),
-                newUser.getFirstName(),
-                "Email de Verificação",
-                token,
-                "token-verification-email.html"
-        );
-        mailService.sendEmail(emailDto);
+        var tokenVerification = tokenVerificationService.generateTokenVerificationByUser(newUser);
+        sendEmailForTokenVerificationUser(newUser, tokenVerification);
 
     }
 
@@ -199,21 +186,48 @@ public class AuthenticationService {
         return user;
     }
 
-
     @Transactional
-    public void signUpVerification(TokenRequestDTO dto) {
-        var tokenVerification = tokenVerificationService.validateUserTokenVerificationByToken(dto.token());
+    public void verification(TokenRequestDTO dto) {
+        var tokenVerification = tokenVerificationService.validateAndConfirmTokenVerificationByToken(dto.token());
         enableUserByTokenVerification(tokenVerification);
     }
 
+    @Transactional
+    public void verificationNewToken(String userEmail) {
+        var user = userRepository.findByUsername(userEmail).orElseThrow(
+                () -> new ResourceNotFoundException("user not found")
+        );
+        var tokenVerification = tokenVerificationService.updateTokenVerificationByUser(user);
+        sendEmailForTokenVerificationUser(user, tokenVerification);
+    }
 
     public void enableUserByTokenVerification(TokenVerification tokenVerification) {
         var user = tokenVerification.getUser();
         user.isEnabled(true);
-        user = userRepository.save(user);
+        userRepository.save(user);
         LOGGER.error("user enabled by token verification");
-        LOGGER.error("user is enabled: {}", user.isEnabled());
+    }
 
+    public void sendEmailForPassswordResetTokenUser(User user, PasswordResetToken passwordResetToken) {
+        var emailDto = new MailService.EmailDTO(
+                user.getUsername(),
+                user.getFirstName(),
+                "Redefinição De Senha",
+                passwordResetToken.getToken(),
+                "password-reset-token-email.html"
+        );
+        mailService.sendEmail(emailDto);
+    }
+
+    public void sendEmailForTokenVerificationUser(User user, TokenVerification tokenVerification) {
+        var emailDto = new MailService.EmailDTO(
+                user.getUsername(),
+                user.getFirstName(),
+                "Verificação De Conta",
+                tokenVerification.getToken(),
+                "token-verification-email.html"
+        );
+        mailService.sendEmail(emailDto);
     }
 
 

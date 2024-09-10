@@ -3,8 +3,6 @@ package com.uevitondev.deliverybackend.domain.tokenverification;
 import com.uevitondev.deliverybackend.domain.exception.InvalidTokenVerificationException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.user.User;
-import com.uevitondev.deliverybackend.domain.user.UserRepository;
-import com.uevitondev.deliverybackend.domain.utils.MailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,58 +17,44 @@ public class TokenVerificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenVerificationService.class);
 
     private final TokenVerificationRepository tokenVerificationRepository;
-    private final UserRepository userRepository;
-    private final MailService mailService;
 
     public TokenVerificationService(
-            TokenVerificationRepository tokenVerificationRepository,
-            UserRepository userRepository,
-            MailService mailService
+            TokenVerificationRepository tokenVerificationRepository
     ) {
         this.tokenVerificationRepository = tokenVerificationRepository;
-        this.userRepository = userRepository;
-        this.mailService = mailService;
     }
 
     @Transactional
     public TokenVerification generateTokenVerificationByUser(User user) {
         var tokenVerification = new TokenVerification(user);
+        LOGGER.info("token verification success generated");
         return tokenVerificationRepository.save(tokenVerification);
     }
 
     @Transactional
-    public TokenVerification validateUserTokenVerificationByToken(String token) {
-        var tokenVerificationEntity = tokenVerificationRepository.findByToken(token)
-                .filter(tokenVerification -> !tokenVerification.isExpired())
-                .orElseThrow(() -> {
-                    LOGGER.error("token invalid or expired");
-                    return new InvalidTokenVerificationException("token expired or invalid");
-                });
-
-        tokenVerificationEntity.setConfirmedAt(LocalDateTime.now());
-        return tokenVerificationRepository.save(tokenVerificationEntity);
+    public TokenVerification validateAndConfirmTokenVerificationByToken(String token) {
+        var tokenVerification = tokenVerificationRepository.findByToken(token).orElseThrow(
+                () -> new ResourceNotFoundException("token verification not found")
+        );
+        if (tokenVerification.isExpired()) {
+            throw new InvalidTokenVerificationException("token verification expired");
+        }
+        tokenVerification.setConfirmedAt(LocalDateTime.now());
+        LOGGER.info("token verification success validation and confirmed");
+        return tokenVerificationRepository.save(tokenVerification);
     }
 
 
     @Transactional
-    public void updateTokenVerificationByUsername(String username) {
-        var user = userRepository.findByUsername(username).orElseThrow(
-                () -> new ResourceNotFoundException("user not found")
-        );
+    public TokenVerification updateTokenVerificationByUser(User user) {
         var tokenVerification = tokenVerificationRepository.findByUser(user).orElseThrow(
-                () -> new ResourceNotFoundException("token verification not found")
+                () -> new ResourceNotFoundException("token not found for user")
         );
         tokenVerification.setToken();
-        tokenVerification = tokenVerificationRepository.save(tokenVerification);
-
-        var emailDto = new MailService.EmailDTO(
-                user.getUsername(),
-                user.getFirstName(),
-                "Email de Verificação",
-                tokenVerification.getToken(),
-                "token-verification-email.html"
-        );
-        mailService.sendEmail(emailDto);
+        tokenVerification.setUpdatedAt(LocalDateTime.now());
+        tokenVerification.setExpiredAt(LocalDateTime.now().plusMinutes(3));
+        LOGGER.info("token verification success updated");
+        return tokenVerificationRepository.save(tokenVerification);
     }
 
 

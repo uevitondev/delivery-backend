@@ -18,9 +18,14 @@ public class TokenVerification implements Serializable {
     private UUID id;
     @Column(nullable = false)
     private String token;
+    @Column(nullable = false)
     private LocalDateTime createdAt;
-    private LocalDateTime expiredAt;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
     private LocalDateTime confirmedAt;
+    @Column(nullable = false)
+    private LocalDateTime expiredAt;
+
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -33,6 +38,7 @@ public class TokenVerification implements Serializable {
         this.id = null;
         this.setToken();
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.expiredAt = LocalDateTime.now().plusMinutes(3);
         this.user = user;
     }
@@ -59,6 +65,14 @@ public class TokenVerification implements Serializable {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public LocalDateTime getExpiredAt() {

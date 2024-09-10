@@ -1,5 +1,6 @@
 package com.uevitondev.deliverybackend.domain.passwordresettoken;
 
+import com.uevitondev.deliverybackend.domain.exception.InvalidTokenVerificationException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.user.User;
 import org.slf4j.Logger;
@@ -34,6 +35,16 @@ public class PasswordResetTokenService {
         return passwordResetTokenRepository.findByUserId(userId).orElseThrow(
                 () -> new ResourceNotFoundException("password reset token not found by user")
         );
+    }
+
+    @Transactional
+    public PasswordResetToken validateAndConfirmPasswordResetTokenByToken(String token) {
+        var passwordResetToken = findPasswordResetTokenByToken(token);
+        if (passwordResetToken.isExpired()) {
+            throw new InvalidTokenVerificationException("password reset token expired");
+        }
+        passwordResetToken.setConfirmedAt(LocalDateTime.now());
+        return passwordResetTokenRepository.save(passwordResetToken);
     }
 
     @Transactional
