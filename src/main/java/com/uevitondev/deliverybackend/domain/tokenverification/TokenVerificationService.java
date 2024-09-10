@@ -39,7 +39,7 @@ public class TokenVerificationService {
     }
 
     @Transactional
-    public void validateUserTokenVerificationByToken(String token) {
+    public TokenVerification validateUserTokenVerificationByToken(String token) {
         var tokenVerificationEntity = tokenVerificationRepository.findByToken(token)
                 .filter(tokenVerification -> !tokenVerification.isExpired())
                 .orElseThrow(() -> {
@@ -47,16 +47,8 @@ public class TokenVerificationService {
                     return new InvalidTokenVerificationException("token expired or invalid");
                 });
 
-        enableUserByTokenVerification(tokenVerificationEntity);
         tokenVerificationEntity.setConfirmedAt(LocalDateTime.now());
-        tokenVerificationRepository.save(tokenVerificationEntity);
-    }
-
-    public void enableUserByTokenVerification(TokenVerification tokenVerification) {
-        var user = tokenVerification.getUser();
-        user.isEnabled(true);
-        userRepository.save(user);
-        LOGGER.error("user enabled by token verification");
+        return tokenVerificationRepository.save(tokenVerificationEntity);
     }
 
 

@@ -1,14 +1,16 @@
-package com.uevitondev.deliverybackend.domain.refreshtoken;
+package com.uevitondev.deliverybackend.domain.passwordresettoken;
 
 import com.uevitondev.deliverybackend.domain.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
-@Table(name = "tb_refresh_token")
-public class RefreshToken {
+@Table(name = "tb_password_reset_token")
+public class PasswordResetToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -20,20 +22,23 @@ public class RefreshToken {
     private LocalDateTime updatedAt;
     @Column(nullable = false)
     private LocalDateTime expiredAt;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public RefreshToken() {
+
+    public PasswordResetToken() {
     }
 
-    public RefreshToken(String token, LocalDateTime expiredAt, User user) {
-        this.token = token;
+    public PasswordResetToken(User user) {
+        this.setToken();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.expiredAt = expiredAt;
+        this.expiredAt = LocalDateTime.now().plusMinutes(5);
         this.user = user;
     }
+
 
     public UUID getId() {
         return id;
@@ -47,8 +52,8 @@ public class RefreshToken {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setToken() {
+        this.token = Integer.toString(ThreadLocalRandom.current().nextInt(100000, 1000000));
     }
 
     public LocalDateTime getCreatedAt() {

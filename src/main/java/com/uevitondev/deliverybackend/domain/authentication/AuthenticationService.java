@@ -3,11 +3,15 @@ package com.uevitondev.deliverybackend.domain.authentication;
 import com.uevitondev.deliverybackend.config.security.jwt.JwtService;
 import com.uevitondev.deliverybackend.config.security.jwt.TokenType;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
+import com.uevitondev.deliverybackend.domain.exception.InvalidTokenVerificationException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
+import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetTokenDTO;
+import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetTokenService;
 import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshTokenService;
 import com.uevitondev.deliverybackend.domain.role.RoleRepository;
 import com.uevitondev.deliverybackend.domain.tokenverification.TokenRequestDTO;
+import com.uevitondev.deliverybackend.domain.tokenverification.TokenVerification;
 import com.uevitondev.deliverybackend.domain.tokenverification.TokenVerificationService;
 import com.uevitondev.deliverybackend.domain.user.User;
 import com.uevitondev.deliverybackend.domain.user.UserDetailsImpl;
@@ -26,6 +30,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional(readOnly = true)
 public class AuthenticationService {
@@ -37,6 +43,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final PasswordResetTokenService passwordResetTokenService;
     private final RefreshTokenService refreshTokenService;
     private final TokenVerificationService tokenVerificationService;
     private final CookieService cookieService;
@@ -48,7 +55,7 @@ public class AuthenticationService {
             RoleRepository roleRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder,
-            JwtService jwtService,
+            JwtService jwtService, PasswordResetTokenService passwordResetTokenService,
             RefreshTokenService refreshTokenService,
             TokenVerificationService tokenVerificationService,
             CookieService cookieService,
@@ -59,6 +66,7 @@ public class AuthenticationService {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.passwordResetTokenService = passwordResetTokenService;
         this.refreshTokenService = refreshTokenService;
         this.tokenVerificationService = tokenVerificationService;
         this.cookieService = cookieService;
@@ -93,6 +101,37 @@ public class AuthenticationService {
                 userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
         );
     }
+
+    @Transactional
+    public void resetPassword(String email) {
+        var user = userRepository.findByUsername(email).orElseThrow(
+                () -> new ResourceNotFoundException("user not found")
+        );
+        var passwordResetToken = passwordResetTokenService.findPasswordResetTokenByUser(user.getId());
+        passwordResetToken = passwordResetTokenService.updatePasswordResetToken(passwordResetToken);
+
+        var emailDto = new MailService.EmailDTO(
+                user.getUsername(),
+                user.getFirstName(),
+                "Password Reset Token",
+                passwordResetToken.getToken(),
+                "password-reset-token-email.html"
+        );
+        mailService.sendEmail(emailDto);
+    }
+
+    @Transactional
+    public void changePassword(PasswordResetTokenDTO dto) {
+        var passwordResetToken = passwordResetTokenService.findPasswordResetTokenByToken(dto.token());
+        if (passwordResetToken.isExpired()) {
+            throw new InvalidTokenVerificationException("password reset token is expired");
+        }
+        var user = passwordResetToken.getUser();
+        user.setPassword(passwordEncoder.encode(dto.newPassword()));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
 
     public AuthResponseDTO refreshToken(HttpServletRequest request, HttpServletResponse response) {
         var token = cookieService.extractCookieValueFromRequestByCookieName(request, "refreshToken");
@@ -155,12 +194,27 @@ public class AuthenticationService {
         );
         user.getRoles().add(role);
         user = userRepository.save(user);
+        passwordResetTokenService.createNewPasswordResetTokenForUser(user);
         LOGGER.info("User Successfully SignUp");
         return user;
     }
 
 
+    @Transactional
     public void signUpVerification(TokenRequestDTO dto) {
-        tokenVerificationService.validateUserTokenVerificationByToken(dto.token());
+        var tokenVerification = tokenVerificationService.validateUserTokenVerificationByToken(dto.token());
+        enableUserByTokenVerification(tokenVerification);
     }
+
+
+    public void enableUserByTokenVerification(TokenVerification tokenVerification) {
+        var user = tokenVerification.getUser();
+        user.isEnabled(true);
+        user = userRepository.save(user);
+        LOGGER.error("user enabled by token verification");
+        LOGGER.error("user is enabled: {}", user.isEnabled());
+
+    }
+
+
 }
