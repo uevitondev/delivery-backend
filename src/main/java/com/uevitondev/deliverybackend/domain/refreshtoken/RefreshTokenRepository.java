@@ -1,5 +1,7 @@
 package com.uevitondev.deliverybackend.domain.refreshtoken;
 
+import com.uevitondev.deliverybackend.domain.tokenverification.TokenVerification;
+import com.uevitondev.deliverybackend.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,11 +13,6 @@ import java.util.UUID;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
 
     Optional<RefreshToken> findByToken(String refreshToken);
-
-    @Query(
-            nativeQuery = true,
-            value = "SELECT tb_rt.* FROM TB_REFRESH_TOKEN tb_rt WHERE tb_rt.user_id = :userId"
-    )
-    Optional<RefreshToken> findRefreshTokenByUserId(UUID userId);
+    Optional<RefreshToken> findByUser(User user);
 
 }

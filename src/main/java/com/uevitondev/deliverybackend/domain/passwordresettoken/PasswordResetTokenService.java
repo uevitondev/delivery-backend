@@ -58,7 +58,7 @@ public class PasswordResetTokenService {
 
     @Transactional
     public void createNewPasswordResetTokenForUser(User user) {
-        LOGGER.info("create new password reset by user: {}", user.getUsername());
+        LOGGER.info("create new password reset by user: {}", user.getEmail());
         passwordResetTokenRepository.save(new PasswordResetToken(user));
     }
 

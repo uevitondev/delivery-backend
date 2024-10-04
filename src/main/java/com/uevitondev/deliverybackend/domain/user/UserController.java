@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @GetMapping("/account/profile")
-    public ResponseEntity<UserProfileDTO> getAccountData() {
+    public ResponseEntity<UserProfileDTO> getUserProfile() {
         return ResponseEntity.ok().body(userService.getUserProfile());
     }
 

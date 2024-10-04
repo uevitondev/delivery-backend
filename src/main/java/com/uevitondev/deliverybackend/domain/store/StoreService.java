@@ -20,12 +20,16 @@ public class StoreService {
         this.storeRepository = storeRepository;
     }
 
+    public Store findById(UUID id) {
+        return storeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("store not found"));
+    }
+
     public List<StoreDTO> findAllStores() {
         return storeRepository.findAll().stream().map(StoreDTO::new).toList();
     }
 
     public StoreDTO findStoreById(UUID storeId) {
-        return new StoreDTO(getStoreById(storeId));
+        return new StoreDTO(findById(storeId));
     }
 
     @Transactional
@@ -41,7 +45,7 @@ public class StoreService {
 
     @Transactional
     public StoreDTO updateStore(StoreDTO dto) {
-        var store = getStoreById(dto.id());
+        var store = findById(dto.id());
         store.setLogoUrl(dto.logoUrl());
         store.setName(dto.name());
         store.setPhoneNumber(dto.phoneNumber());
@@ -53,15 +57,11 @@ public class StoreService {
     @Transactional
     public void deleteStoreById(UUID storeId) {
         try {
-            storeRepository.deleteById(getStoreById(storeId).getId());
+            storeRepository.deleteById(findById(storeId).getId());
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity constraint violation");
         }
     }
 
-    public Store getStoreById(UUID storeId) {
-        return storeRepository.findById(storeId).orElseThrow(
-                () -> new ResourceNotFoundException("store not found")
-        );
-    }
+
 }

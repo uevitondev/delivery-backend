@@ -1,15 +1,19 @@
 package com.uevitondev.deliverybackend.domain.orderitem;
 
-import com.uevitondev.deliverybackend.domain.address.AddressDTO;
-import com.uevitondev.deliverybackend.domain.store.StoreDTO;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Set;
+import java.util.UUID;
 
 public record ShoppingCartDTO(
-        AddressDTO address,
-        StoreDTO store,
+        @NotNull
+        UUID addressId,
+        @NotNull
+        UUID storeId,
+        @NotNull
         String paymentMethod,
-        String note,
+        @NotEmpty
         Set<CartItemDTO> cartItems
 ) {
 }

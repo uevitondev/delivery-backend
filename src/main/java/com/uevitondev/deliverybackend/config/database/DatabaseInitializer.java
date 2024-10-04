@@ -7,13 +7,12 @@ import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
 import com.uevitondev.deliverybackend.domain.category.Category;
 import com.uevitondev.deliverybackend.domain.category.CategoryRepository;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
-import com.uevitondev.deliverybackend.domain.order.Order;
-import com.uevitondev.deliverybackend.domain.order.OrderPayment;
-import com.uevitondev.deliverybackend.domain.order.OrderRepository;
-import com.uevitondev.deliverybackend.domain.order.OrderStatus;
+import com.uevitondev.deliverybackend.domain.order.*;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
+import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshToken;
+import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshTokenRepository;
 import com.uevitondev.deliverybackend.domain.role.Role;
 import com.uevitondev.deliverybackend.domain.role.RoleRepository;
 import com.uevitondev.deliverybackend.domain.seller.Seller;
@@ -27,6 +26,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +41,7 @@ public class DatabaseInitializer implements CommandLineRunner {
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
     public DatabaseInitializer(
@@ -50,7 +51,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             CategoryRepository categoryRepository,
             ProductRepository productRepository,
             StoreRepository storeRepository,
-            OrderRepository orderRepository, PasswordEncoder passwordEncoder
+            OrderRepository orderRepository, PasswordEncoder passwordEncoder, RefreshTokenRepository refreshTokenRepository
     ) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
@@ -60,6 +61,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         this.storeRepository = storeRepository;
         this.orderRepository = orderRepository;
         this.passwordEncoder = passwordEncoder;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Transactional
@@ -109,6 +111,16 @@ public class DatabaseInitializer implements CommandLineRunner {
         sellerUser.isEnabled(true);
         sellerUser.getRoles().add(sellerRole);
         sellerUser = userRepository.save(sellerUser);
+
+
+        // user  refresh token
+        var refreshTokenEntity = new RefreshToken();
+        refreshTokenEntity.setToken(UUID.randomUUID().toString());
+        refreshTokenEntity.setCreatedAt(LocalDateTime.now());
+        refreshTokenEntity.setUpdatedAt(LocalDateTime.now());
+        refreshTokenEntity.setExpiredAt(LocalDateTime.now().plusSeconds(604800));
+        refreshTokenEntity.setUser(customerUser);
+        refreshTokenRepository.save(refreshTokenEntity);
 
 
         // user customer address
@@ -221,14 +233,29 @@ public class DatabaseInitializer implements CommandLineRunner {
         OrderItem orderItem2 = new OrderItem(product2, 3, "");
         var orderItems = List.of(orderItem1, orderItem2);
 
+        // order delivery
+
+        var orderDelivery = new OrderDelivery(
+                null,
+                addressCustomerUser.getName(),
+                addressCustomerUser.getPhoneNumber(),
+                addressCustomerUser.getStreet(),
+                addressCustomerUser.getNumber(),
+                addressCustomerUser.getDistrict(),
+                addressCustomerUser.getCity(),
+                addressCustomerUser.getUf(),
+                addressCustomerUser.getComplement(),
+                addressCustomerUser.getZipCode()
+        );
+
         // order
         Order order1 = new Order(
                 OrderStatus.PENDENTE,
                 OrderPayment.PIX,
                 customerUser,
-                store1,
-                addressCustomerUser
+                store1
         );
+        order1.addOrderDelivery(orderDelivery);
         order1.addOrderItems(orderItems);
         orderRepository.save(order1);
     }

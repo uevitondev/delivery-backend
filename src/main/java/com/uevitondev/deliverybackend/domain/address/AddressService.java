@@ -5,6 +5,7 @@ import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException
 import com.uevitondev.deliverybackend.domain.store.Store;
 import com.uevitondev.deliverybackend.domain.user.User;
 import com.uevitondev.deliverybackend.domain.user.UserService;
+import com.uevitondev.deliverybackend.domain.utils.ViaCepService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +20,29 @@ public class AddressService {
 
     private final UserAddressRepository userAddressRepository;
     private final StoreAddressRepository storeAddressRepository;
+    private final UserService userService;
+    private final ViaCepService viaCepService;
 
 
     public AddressService(
             UserAddressRepository userAddressRepository,
-            StoreAddressRepository storeAddressRepository
+            StoreAddressRepository storeAddressRepository,
+            UserService userService,
+            ViaCepService viaCepService
     ) {
+
         this.userAddressRepository = userAddressRepository;
         this.storeAddressRepository = storeAddressRepository;
+        this.userService = userService;
+        this.viaCepService = viaCepService;
+    }
+
+    public Address findById(UUID id) {
+        return userAddressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("address not found"));
+    }
+
+    public AddressViaCepDTO findAddressViaCepByCep(String cep) {
+        return viaCepService.findAddressByCep(cep);
     }
 
     public List<AddressDTO> findAllUserAddresses() {
@@ -99,7 +115,7 @@ public class AddressService {
                 dto.complement(),
                 dto.zipCode()
         );
-        userAddress.setUser(UserService.getUserAuthenticated());
+        userAddress.setUser(userService.getUserAuthenticated());
         return userAddress;
 
     }

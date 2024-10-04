@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.config.security;
 
 import com.uevitondev.deliverybackend.config.security.jwt.JwtService;
 import com.uevitondev.deliverybackend.config.security.jwt.JwtTokenSecurityFilter;
-import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +27,7 @@ import java.util.List;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private final JwtService jwtService;
     private final HandlerExceptionResolver resolver;
 
@@ -51,7 +50,7 @@ public class WebSecurityConfig {
     private static final String[] ENDPOINTS_ADMIN = {"/v1/test/admin/**"};
 
 
-    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
+    public WebSecurityConfig(CustomUserDetailsService userDetailsService,
                              JwtService jwtService,
                              @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
     ) {

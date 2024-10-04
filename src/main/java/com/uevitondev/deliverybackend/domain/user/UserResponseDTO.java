@@ -7,7 +7,7 @@ public record UserResponseDTO(
         UUID id,
         String firstName,
         String lastName,
-        String username,
+        String email,
         String phoneNumber,
         LocalDateTime createdAt,
         LocalDateTime updateAt
@@ -18,7 +18,7 @@ public record UserResponseDTO(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getUsername(),
+                user.getEmail(),
                 user.getPhoneNumber(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()

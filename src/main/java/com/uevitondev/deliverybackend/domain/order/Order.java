@@ -1,6 +1,5 @@
 package com.uevitondev.deliverybackend.domain.order;
 
-import com.uevitondev.deliverybackend.domain.address.UserAddress;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 import com.uevitondev.deliverybackend.domain.store.Store;
@@ -38,11 +37,12 @@ public class Order implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id", nullable = false)
-    private UserAddress address;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @JoinColumn(name = "order_delivery_id", nullable = false)
+    private OrderDelivery orderDelivery;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<OrderItem> orderItems = new ArrayList<>();
 
     public Order() {
@@ -52,14 +52,12 @@ public class Order implements Serializable {
             OrderStatus status,
             OrderPayment paymentMethod,
             Customer customer,
-            Store store,
-            UserAddress address
+            Store store
     ) {
         this.status = status;
         this.paymentMethod = paymentMethod;
         this.customer = customer;
         this.store = store;
-        this.address = address;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -136,12 +134,17 @@ public class Order implements Serializable {
         this.store = store;
     }
 
-    public UserAddress getAddress() {
-        return address;
+    public OrderDelivery getOrderDelivery() {
+        return orderDelivery;
     }
 
-    public void setAddress(UserAddress address) {
-        this.address = address;
+    public void setOrderDelivery(OrderDelivery orderDelivery) {
+        this.orderDelivery = orderDelivery;
+    }
+
+    public void addOrderDelivery(OrderDelivery orderDelivery) {
+        this.orderDelivery = orderDelivery;
+        orderDelivery.setOrder(this);
     }
 
     public List<OrderItem> getOrderItems() {

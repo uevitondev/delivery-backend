@@ -1,17 +1,36 @@
 package com.uevitondev.deliverybackend.domain.address;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.UUID;
 
 public record AddressDTO(
+
         UUID id,
+        @NotNull
+        @NotBlank
         String name,
+        @NotNull
+        @NotBlank
         String phoneNumber,
+        @NotNull
+        @NotBlank
         String street,
+        @NotNull
         Integer number,
+        @NotNull
+        @NotBlank
         String district,
+        @NotNull
+        @NotBlank
         String city,
+        @NotNull
+        @NotBlank
         String uf,
         String complement,
+        @NotNull
+        @NotBlank
         String zipCode
 ) {
     public AddressDTO(Address address) {

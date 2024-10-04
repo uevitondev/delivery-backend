@@ -1,11 +1,18 @@
 package com.uevitondev.deliverybackend.domain.user;
 
 public record UserProfileDTO(
-        String fullName,
-        String phoneNumber,
-        String username
+        String firstName,
+        String lastName,
+        String email,
+        String phoneNumber
+
 ) {
     public UserProfileDTO(User user) {
-        this(user.getFirstName() + " " + user.getLastName() , user.getPhoneNumber(), user.getUsername());
+        this(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhoneNumber()
+        );
     }
 }

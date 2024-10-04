@@ -1,7 +1,7 @@
 package com.uevitondev.deliverybackend.domain.order;
 
 import com.uevitondev.deliverybackend.domain.address.AddressDTO;
-import com.uevitondev.deliverybackend.domain.address.UserAddressRepository;
+import com.uevitondev.deliverybackend.domain.address.AddressService;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
@@ -10,11 +10,9 @@ import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItemDTO;
 import com.uevitondev.deliverybackend.domain.orderitem.ShoppingCartDTO;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
-import com.uevitondev.deliverybackend.domain.store.Store;
-import com.uevitondev.deliverybackend.domain.store.StoreRepository;
+import com.uevitondev.deliverybackend.domain.store.StoreDTO;
+import com.uevitondev.deliverybackend.domain.store.StoreService;
 import com.uevitondev.deliverybackend.domain.user.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,20 +26,24 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final StoreRepository storeRepository;
-    private final UserAddressRepository userAddressRepository;
+    private final UserService userService;
+    private final StoreService storeService;
+    private final AddressService addressService;
     private final ProductRepository productRepository;
 
 
     public OrderService(
             OrderRepository orderRepository,
-            StoreRepository storeRepository,
-            UserAddressRepository userAddressRepository,
+            UserService userService,
+            StoreService storeService,
+            AddressService addressService,
             ProductRepository productRepository
     ) {
+
         this.orderRepository = orderRepository;
-        this.storeRepository = storeRepository;
-        this.userAddressRepository = userAddressRepository;
+        this.userService = userService;
+        this.storeService = storeService;
+        this.addressService = addressService;
         this.productRepository = productRepository;
     }
 
@@ -60,10 +62,14 @@ public class OrderService {
         return new OrderDTO(order);
     }
 
-    public OrderCustomerDTO findOrderByIdWithOrderItems(UUID id) {
+    public OrderDetailsDTO findOrderByIdWithOrderItems(UUID id) {
         var order = orderRepository.findByIdWithOrderItems(id)
                 .orElseThrow(() -> new ResourceNotFoundException("order not found"));
-        return new OrderCustomerDTO(
+
+        var store = order.getStore();
+        var orderDelivery = order.getOrderDelivery();
+
+        return new OrderDetailsDTO(
                 order.getId(),
                 order.getCreatedAt(),
                 order.getUpdatedAt(),
@@ -71,29 +77,31 @@ public class OrderService {
                 order.getStatus(),
                 order.getPaymentMethod(),
                 order.getTotal(),
-                getOrderCustomerDataForCustomerOrder(order.getCustomer()),
-                getOrderStoreDataForStoreOrder(order.getStore()),
-                new AddressDTO(order.getAddress()),
+                 new OrderCustomerDTO(
+                         orderDelivery.getDeliveryName(),
+                         orderDelivery.getDeliveryPhoneNumber()
+                 )
+                ,
+                new StoreDTO(
+                        store.getId(),
+                        store.getLogoUrl(),
+                        store.getName(),
+                        store.getPhoneNumber(),
+                        store.getType()
+                ),
+                new AddressDTO(
+                        orderDelivery.getId(),
+                        orderDelivery.getDeliveryName(),
+                        orderDelivery.getDeliveryPhoneNumber(),
+                        orderDelivery.getDeliveryStreet(),
+                        orderDelivery.getDeliveryNumber(),
+                        orderDelivery.getDeliveryDistrict(),
+                        orderDelivery.getDeliveryCity(),
+                        orderDelivery.getDeliveryUf(),
+                        orderDelivery.getDeliveryComplement(),
+                        orderDelivery.getDeliveryZipCode()
+                ),
                 order.getOrderItems().stream().map(OrderItemDTO::new).toList()
-        );
-    }
-
-
-    public OrderCustomerDataDTO getOrderCustomerDataForCustomerOrder(Customer customer) {
-        return new OrderCustomerDataDTO(
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getPhoneNumber()
-        );
-    }
-
-    public OrderStoreDataDTO getOrderStoreDataForStoreOrder(Store store) {
-        return new OrderStoreDataDTO(
-                store.getId(),
-                store.getLogoUrl(),
-                store.getName(),
-                store.getPhoneNumber(),
-                store.getType()
         );
     }
 
@@ -101,15 +109,30 @@ public class OrderService {
     @Transactional
     public OrderDTO saveNewOrder(ShoppingCartDTO dto) {
         try {
+            var customer = (Customer) userService.getUserAuthenticated();
+            var store = storeService.findById(dto.storeId());
+            var address = addressService.findById(dto.addressId());
+
+            var orderDelivery = new OrderDelivery(
+                    null,
+                    address.getName(),
+                    address.getPhoneNumber(),
+                    address.getStreet(),
+                    address.getNumber(),
+                    address.getDistrict(),
+                    address.getCity(),
+                    address.getUf(),
+                    address.getComplement(),
+                    address.getZipCode()
+            );
+
             var order = new Order(
                     OrderStatus.PENDENTE,
                     OrderPayment.PIX,
-                    (Customer) UserService.getUserAuthenticated(),
-                    storeRepository.findById(dto.store().id())
-                            .orElseThrow(() -> new ResourceNotFoundException("store not found")),
-                    userAddressRepository.findById(dto.address().id())
-                            .orElseThrow(() -> new ResourceNotFoundException("address not found"))
+                    customer,
+                    store
             );
+            order.addOrderDelivery(orderDelivery);
             addOrderItemsToOrder(order, dto.cartItems());
             return new OrderDTO(orderRepository.save(order));
 

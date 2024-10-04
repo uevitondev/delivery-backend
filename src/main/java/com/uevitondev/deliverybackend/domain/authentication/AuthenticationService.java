@@ -1,5 +1,6 @@
 package com.uevitondev.deliverybackend.domain.authentication;
 
+import com.uevitondev.deliverybackend.config.security.CustomUserDetails;
 import com.uevitondev.deliverybackend.config.security.jwt.JwtService;
 import com.uevitondev.deliverybackend.config.security.jwt.TokenType;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
@@ -14,8 +15,7 @@ import com.uevitondev.deliverybackend.domain.tokenverification.TokenRequestDTO;
 import com.uevitondev.deliverybackend.domain.tokenverification.TokenVerification;
 import com.uevitondev.deliverybackend.domain.tokenverification.TokenVerificationService;
 import com.uevitondev.deliverybackend.domain.user.User;
-import com.uevitondev.deliverybackend.domain.user.UserDetailsImpl;
-import com.uevitondev.deliverybackend.domain.user.UserRepository;
+import com.uevitondev.deliverybackend.domain.user.UserService;
 import com.uevitondev.deliverybackend.domain.utils.CookieService;
 import com.uevitondev.deliverybackend.domain.utils.MailService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class AuthenticationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
@@ -51,7 +51,7 @@ public class AuthenticationService {
 
 
     public AuthenticationService(
-            UserRepository userRepository,
+            UserService userService,
             RoleRepository roleRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder,
@@ -61,7 +61,7 @@ public class AuthenticationService {
             CookieService cookieService,
             MailService mailService
     ) {
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.roleRepository = roleRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
@@ -73,12 +73,14 @@ public class AuthenticationService {
         this.mailService = mailService;
     }
 
+    @Transactional
     public AuthResponseDTO signIn(SignInRequestDTO dto, HttpServletResponse response) {
         var usernamePasswordAuthentication = new UsernamePasswordAuthenticationToken(dto.username(), dto.password());
         var authentication = authenticationManager.authenticate(usernamePasswordAuthentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        var userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        var refreshToken = refreshTokenService.generateRefreshTokenFromUserByUsername(userDetails.getUsername());
+        var userDetails = (CustomUserDetails) authentication.getPrincipal();
+        var user = userService.findUserByEmail(userDetails.getUsername());
+        var refreshToken = refreshTokenService.updateRefreshTokenByUser(user);
         var newRefreshTokenCookie = cookieService.createCookie(
                 "refreshToken",
                 refreshToken.getToken(),
@@ -91,22 +93,19 @@ public class AuthenticationService {
         return buildAuthResponseDto(userDetails);
     }
 
-    private AuthResponseDTO buildAuthResponseDto(UserDetailsImpl userDetails) {
+    private AuthResponseDTO buildAuthResponseDto(CustomUserDetails userDetails) {
         return new AuthResponseDTO(
+                userDetails.getName(),
+                userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
                 TokenType.Bearer.name(),
                 jwtService.generateJwtToken(userDetails.getUsername()),
-                jwtService.getExpirationJwtToken(),
-                userDetails.getUser().getFirstName(),
-                userDetails.getUsername(),
-                userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+                jwtService.getExpirationJwtToken()
         );
     }
 
     @Transactional
     public void resetPassword(String email) {
-        var user = userRepository.findByUsername(email).orElseThrow(
-                () -> new ResourceNotFoundException("user not found")
-        );
+        var user = userService.findUserByEmail(email);
         var passwordResetToken = passwordResetTokenService.findPasswordResetTokenByUser(user.getId());
         passwordResetToken = passwordResetTokenService.updatePasswordResetToken(passwordResetToken);
         sendEmailForPassswordResetTokenUser(user, passwordResetToken);
@@ -122,30 +121,30 @@ public class AuthenticationService {
         var user = passwordResetToken.getUser();
         user.setPassword(passwordEncoder.encode(dto.newPassword()));
         user.setUpdatedAt(LocalDateTime.now());
-        userRepository.save(user);
+        userService.saveUser(user);
         LOGGER.error("user password changed success by password reset token");
     }
 
 
     public AuthResponseDTO refreshToken(HttpServletRequest request, HttpServletResponse response) {
         var token = cookieService.extractCookieValueFromRequestByCookieName(request, "refreshToken");
-        var refreshTokenEntity = refreshTokenService.validateTokenAndReturnRefreshToken(token);
-        var userDetails = new UserDetailsImpl(refreshTokenEntity.getUser());
-        setNewAuthenticationInContextFromUserDetails(userDetails);
-        refreshTokenEntity = refreshTokenService.generateRefreshTokenFromUserByUsername(userDetails.getUsername());
+        var validRefreshToken = refreshTokenService.validateAndConfirmRefreshTokenByToken(token);
+        var user = validRefreshToken.getUser();
+        setNewAuthenticationInContextFromUserDetails(new CustomUserDetails(user));
+        var refreshTokenUpdated = refreshTokenService.updateRefreshTokenByUser(user);
         var newRefreshTokenCookie = cookieService.createCookie(
                 "refreshToken",
-                refreshTokenEntity.getToken(),
+                refreshTokenUpdated.getToken(),
                 "/v1/auth/refresh-token",
                 604800,
                 true,
                 true
         );
         response.addCookie(newRefreshTokenCookie);
-        return buildAuthResponseDto(userDetails);
+        return buildAuthResponseDto(new CustomUserDetails(user));
     }
 
-    private static void setNewAuthenticationInContextFromUserDetails(UserDetailsImpl userDetails) {
+    private static void setNewAuthenticationInContextFromUserDetails(CustomUserDetails userDetails) {
         var authentication = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
@@ -157,12 +156,9 @@ public class AuthenticationService {
 
     @Transactional
     public void signUp(SignUpRequestDTO dto) {
-        var userExists = userRepository.findByUsername(dto.email());
-        if (userExists.isPresent()) {
-            LOGGER.error("exception while registering user: user already exists");
-            throw new UserAlreadyExistsException("user already exists");
-        }
+        userService.existsUserByEmail(dto.email());
         var newUser = registerNewUserFromSignUpRequestDto(dto);
+        refreshTokenService.generateRefreshTokenFromUser(newUser);
         var tokenVerification = tokenVerificationService.generateTokenVerificationByUser(newUser);
         sendEmailForTokenVerificationUser(newUser, tokenVerification);
 
@@ -180,7 +176,7 @@ public class AuthenticationService {
                 passwordEncoder.encode(dto.password())
         );
         user.getRoles().add(role);
-        user = userRepository.save(user);
+        user = (Customer) userService.saveUser(user);
         passwordResetTokenService.createNewPasswordResetTokenForUser(user);
         LOGGER.info("User Successfully SignUp");
         return user;
@@ -193,10 +189,8 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public void verificationNewToken(String userEmail) {
-        var user = userRepository.findByUsername(userEmail).orElseThrow(
-                () -> new ResourceNotFoundException("user not found")
-        );
+    public void verificationNewToken(String email) {
+        var user = userService.findUserByEmail(email);
         var tokenVerification = tokenVerificationService.updateTokenVerificationByUser(user);
         sendEmailForTokenVerificationUser(user, tokenVerification);
     }
@@ -204,13 +198,13 @@ public class AuthenticationService {
     public void enableUserByTokenVerification(TokenVerification tokenVerification) {
         var user = tokenVerification.getUser();
         user.isEnabled(true);
-        userRepository.save(user);
+        userService.saveUser(user);
         LOGGER.error("user enabled by token verification");
     }
 
     public void sendEmailForPassswordResetTokenUser(User user, PasswordResetToken passwordResetToken) {
         var emailDto = new MailService.EmailDTO(
-                user.getUsername(),
+                user.getEmail(),
                 user.getFirstName(),
                 "Redefinição De Senha",
                 passwordResetToken.getToken(),
@@ -221,7 +215,7 @@ public class AuthenticationService {
 
     public void sendEmailForTokenVerificationUser(User user, TokenVerification tokenVerification) {
         var emailDto = new MailService.EmailDTO(
-                user.getUsername(),
+                user.getEmail(),
                 user.getFirstName(),
                 "Verificação De Conta",
                 tokenVerification.getToken(),

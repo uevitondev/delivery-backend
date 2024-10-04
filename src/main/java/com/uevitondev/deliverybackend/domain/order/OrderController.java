@@ -14,9 +14,11 @@ import java.util.UUID;
 @RequestMapping("/v1/orders")
 public class OrderController {
 
+    private final UserService userService;
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(UserService userService, OrderService orderService) {
+        this.userService = userService;
         this.orderService = orderService;
     }
 
@@ -32,12 +34,12 @@ public class OrderController {
 
     @GetMapping("/customer")
     public ResponseEntity<List<OrderDTO>> findOrdersByCustomer() {
-        Customer customer = (Customer) UserService.getUserAuthenticated();
+        Customer customer = (Customer) userService.getUserAuthenticated();
         return ResponseEntity.ok().body(orderService.findAllOrdersByCustomer(customer));
     }
 
     @GetMapping("/{id}/customer")
-    public ResponseEntity<OrderCustomerDTO> findOrderByIdWithOrderItems(@PathVariable UUID id) {
+    public ResponseEntity<OrderDetailsDTO> findOrderByIdWithOrderItems(@PathVariable UUID id) {
         return ResponseEntity.ok().body(orderService.findOrderByIdWithOrderItems(id));
     }
 

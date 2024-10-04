@@ -1,7 +1,7 @@
 package com.uevitondev.deliverybackend.config.security.jwt;
 
 
-import com.uevitondev.deliverybackend.domain.user.UserDetailsServiceImpl;
+import com.uevitondev.deliverybackend.config.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,12 +24,12 @@ public class JwtTokenSecurityFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenSecurityFilter.class);
 
     private final JwtService jwtService;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private final HandlerExceptionResolver resolver;
 
     public JwtTokenSecurityFilter(
             JwtService jwtService,
-            UserDetailsServiceImpl userDetailsService,
+            CustomUserDetailsService userDetailsService,
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
     ) {
         this.jwtService = jwtService;

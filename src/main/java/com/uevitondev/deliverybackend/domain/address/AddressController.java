@@ -15,10 +15,17 @@ import java.util.UUID;
 @RequestMapping("/v1/addresses")
 public class AddressController {
 
+    private final UserService userService;
     private final AddressService addressService;
 
-    public AddressController(AddressService addressService) {
+    public AddressController(UserService userService, AddressService addressService) {
+        this.userService = userService;
         this.addressService = addressService;
+    }
+
+    @GetMapping("/viacep")
+    public ResponseEntity<AddressViaCepDTO>  getAddressViaCepByCep(@RequestParam String cep){
+        return ResponseEntity.ok().body(addressService.findAddressViaCepByCep(cep));
     }
 
 
@@ -29,7 +36,7 @@ public class AddressController {
 
     @GetMapping("/user/all")
     public ResponseEntity<List<AddressDTO>> getAllAddressesByUser() {
-        return ResponseEntity.ok().body(addressService.findAllAddressesByUser(UserService.getUserAuthenticated()));
+        return ResponseEntity.ok().body(addressService.findAllAddressesByUser(userService.getUserAuthenticated()));
     }
 
     @GetMapping("/user/{id}")

@@ -11,7 +11,7 @@ import java.util.UUID;
 @Table(name = "tb_user_address")
 public class UserAddress extends Address implements Serializable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

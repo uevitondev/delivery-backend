@@ -1,7 +1,12 @@
 package com.uevitondev.deliverybackend.domain.user;
 
+import com.uevitondev.deliverybackend.config.security.CustomUserDetails;
+import com.uevitondev.deliverybackend.domain.authentication.AuthenticationService;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
+import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +22,8 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class UserService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -26,6 +33,27 @@ public class UserService {
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public void existsUserByEmail(String email) {
+        var optionalUserExists =  userRepository.findByEmail(email);
+        if (optionalUserExists.isPresent()) {
+            LOGGER.error("user already exists");
+            throw new UserAlreadyExistsException("user already exists");
+        }
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("user not found")
+        );
+    }
+
+
+
+    @Transactional
+    public User saveUser(User user){
+        return userRepository.save(user);
     }
 
     public User getUserById(UUID userId) {
@@ -52,9 +80,9 @@ public class UserService {
         var user = new User();
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
-        user.setPhoneNumber(dto.phoneNumber());
-        user.setUsername(dto.username());
+        user.setEmail(dto.email());
         user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setPhoneNumber(dto.phoneNumber());
         return new UserResponseDTO(userRepository.save(user));
     }
 
@@ -64,9 +92,9 @@ public class UserService {
         var user = getUserById(userId);
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
-        user.setPhoneNumber(dto.phoneNumber());
-        user.setUsername(dto.username());
+        user.setEmail(dto.email());
         user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setPhoneNumber(dto.phoneNumber());
         user.setUpdatedAt(LocalDateTime.now());
         return new UserResponseDTO(userRepository.save(user));
     }
@@ -80,10 +108,10 @@ public class UserService {
         }
     }
 
-    public static User getUserAuthenticated() {
-        var userDetailsImpl = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userDetailsImpl.getUser() != null) {
-            return userDetailsImpl.getUser();
+    public User getUserAuthenticated() {
+        var userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userDetails != null) {
+            return findUserByEmail(userDetails.getUsername());
         }
         throw new AccessDeniedException("Access denied");
     }

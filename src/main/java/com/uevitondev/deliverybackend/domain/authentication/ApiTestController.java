@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/test")
 public class ApiTestController {
 
+
     @GetMapping("/public")
     public ResponseEntity<TestResponse> routePublic() {
         return ResponseEntity.ok().body(new TestResponse("access public route success!"));
