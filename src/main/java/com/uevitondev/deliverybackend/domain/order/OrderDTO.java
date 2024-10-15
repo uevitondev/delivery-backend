@@ -5,8 +5,8 @@ import java.util.UUID;
 
 public record OrderDTO(
         UUID id,
-        OrderStatus status,
-        OrderPayment paymentMethod,
+        String status,
+        String paymentMethod,
         Double total,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -16,8 +16,8 @@ public record OrderDTO(
     public OrderDTO(Order order) {
         this(
                 order.getId(),
-                order.getStatus(),
-                order.getPaymentMethod(),
+                order.getStatus().toString(),
+                order.getPaymentMethod().toString(),
                 order.getTotal(),
                 order.getCreatedAt(),
                 order.getUpdatedAt()

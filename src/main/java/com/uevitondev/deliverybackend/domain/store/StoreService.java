@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
 public class StoreService {
 
     private final StoreRepository storeRepository;

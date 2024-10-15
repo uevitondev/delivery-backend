@@ -1,7 +1,6 @@
 package com.uevitondev.deliverybackend.domain.user;
 
 import com.uevitondev.deliverybackend.config.security.CustomUserDetails;
-import com.uevitondev.deliverybackend.domain.authentication.AuthenticationService;
 import com.uevitondev.deliverybackend.domain.exception.DatabaseException;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
 import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
 public class UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);

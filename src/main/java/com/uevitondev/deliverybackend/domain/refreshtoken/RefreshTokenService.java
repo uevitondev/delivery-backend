@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
 public class RefreshTokenService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RefreshTokenService.class);

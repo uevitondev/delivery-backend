@@ -2,6 +2,7 @@ package com.uevitondev.deliverybackend.domain.order;
 
 import com.uevitondev.deliverybackend.domain.customer.Customer;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
+import com.uevitondev.deliverybackend.domain.payment.PaymentMethodName;
 import com.uevitondev.deliverybackend.domain.store.Store;
 import jakarta.persistence.*;
 
@@ -23,7 +24,7 @@ public class Order implements Serializable {
     private OrderStatus status;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderPayment paymentMethod;
+    private PaymentMethodName paymentMethod;
     @Column(nullable = false)
     private Double total;
     @Column(nullable = false)
@@ -39,8 +40,8 @@ public class Order implements Serializable {
     private Store store;
 
     @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @JoinColumn(name = "order_delivery_id", nullable = false)
-    private OrderDelivery orderDelivery;
+    @JoinColumn(name = "delivery_address_id", nullable = false)
+    private DeliveryAddress deliveryAddress;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<OrderItem> orderItems = new ArrayList<>();
@@ -50,7 +51,7 @@ public class Order implements Serializable {
 
     public Order(
             OrderStatus status,
-            OrderPayment paymentMethod,
+            PaymentMethodName paymentMethod,
             Customer customer,
             Store store
     ) {
@@ -78,11 +79,11 @@ public class Order implements Serializable {
         this.status = status;
     }
 
-    public OrderPayment getPaymentMethod() {
+    public PaymentMethodName getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(OrderPayment paymentMethod) {
+    public void setPaymentMethod(PaymentMethodName paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
@@ -134,17 +135,17 @@ public class Order implements Serializable {
         this.store = store;
     }
 
-    public OrderDelivery getOrderDelivery() {
-        return orderDelivery;
+    public DeliveryAddress getDeliveryAddress() {
+        return deliveryAddress;
     }
 
-    public void setOrderDelivery(OrderDelivery orderDelivery) {
-        this.orderDelivery = orderDelivery;
+    public void setDeliveryAddress(DeliveryAddress deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
     }
 
-    public void addOrderDelivery(OrderDelivery orderDelivery) {
-        this.orderDelivery = orderDelivery;
-        orderDelivery.setOrder(this);
+    public void addDeliveryAddress(DeliveryAddress deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+        deliveryAddress.setOrder(this);
     }
 
     public List<OrderItem> getOrderItems() {

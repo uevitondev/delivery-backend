@@ -13,7 +13,4 @@ public record OrderDeliveryDTO(
         String deliveryUf,
         String deliveryComplement,
         String deliveryZipCode
-) {
-
-
-}
+) { }

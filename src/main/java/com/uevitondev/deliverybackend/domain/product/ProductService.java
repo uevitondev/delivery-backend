@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;

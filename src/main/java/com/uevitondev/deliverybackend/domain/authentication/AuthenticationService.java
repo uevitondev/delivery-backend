@@ -5,7 +5,6 @@ import com.uevitondev.deliverybackend.config.security.jwt.JwtService;
 import com.uevitondev.deliverybackend.config.security.jwt.TokenType;
 import com.uevitondev.deliverybackend.domain.customer.Customer;
 import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException;
-import com.uevitondev.deliverybackend.domain.exception.UserAlreadyExistsException;
 import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetToken;
 import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetTokenDTO;
 import com.uevitondev.deliverybackend.domain.passwordresettoken.PasswordResetTokenService;
@@ -33,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
-@Transactional(readOnly = true)
 public class AuthenticationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);

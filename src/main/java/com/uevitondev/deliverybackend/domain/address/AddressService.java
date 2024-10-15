@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
 public class AddressService {
 
     private final UserAddressRepository userAddressRepository;

@@ -9,6 +9,7 @@ import com.uevitondev.deliverybackend.domain.orderitem.CartItemDTO;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItem;
 import com.uevitondev.deliverybackend.domain.orderitem.OrderItemDTO;
 import com.uevitondev.deliverybackend.domain.orderitem.ShoppingCartDTO;
+import com.uevitondev.deliverybackend.domain.payment.PaymentService;
 import com.uevitondev.deliverybackend.domain.product.ProductRepository;
 import com.uevitondev.deliverybackend.domain.store.StoreDTO;
 import com.uevitondev.deliverybackend.domain.store.StoreService;
@@ -22,10 +23,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final PaymentService paymentService;
     private final UserService userService;
     private final StoreService storeService;
     private final AddressService addressService;
@@ -34,6 +35,7 @@ public class OrderService {
 
     public OrderService(
             OrderRepository orderRepository,
+            PaymentService paymentService,
             UserService userService,
             StoreService storeService,
             AddressService addressService,
@@ -41,6 +43,7 @@ public class OrderService {
     ) {
 
         this.orderRepository = orderRepository;
+        this.paymentService = paymentService;
         this.userService = userService;
         this.storeService = storeService;
         this.addressService = addressService;
@@ -63,25 +66,20 @@ public class OrderService {
     }
 
     public OrderDetailsDTO findOrderByIdWithOrderItems(UUID id) {
-        var order = orderRepository.findByIdWithOrderItems(id)
+        var order = orderRepository.findByIdWithStoreAndOrderItemsDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("order not found"));
 
         var store = order.getStore();
-        var orderDelivery = order.getOrderDelivery();
+        var deliveryAddress = order.getDeliveryAddress();
 
         return new OrderDetailsDTO(
                 order.getId(),
                 order.getCreatedAt(),
                 order.getUpdatedAt(),
                 order.getClosedAt(),
-                order.getStatus(),
-                order.getPaymentMethod(),
+                order.getStatus().toString(),
+                order.getPaymentMethod().toString(),
                 order.getTotal(),
-                 new OrderCustomerDTO(
-                         orderDelivery.getDeliveryName(),
-                         orderDelivery.getDeliveryPhoneNumber()
-                 )
-                ,
                 new StoreDTO(
                         store.getId(),
                         store.getLogoUrl(),
@@ -90,16 +88,16 @@ public class OrderService {
                         store.getType()
                 ),
                 new AddressDTO(
-                        orderDelivery.getId(),
-                        orderDelivery.getDeliveryName(),
-                        orderDelivery.getDeliveryPhoneNumber(),
-                        orderDelivery.getDeliveryStreet(),
-                        orderDelivery.getDeliveryNumber(),
-                        orderDelivery.getDeliveryDistrict(),
-                        orderDelivery.getDeliveryCity(),
-                        orderDelivery.getDeliveryUf(),
-                        orderDelivery.getDeliveryComplement(),
-                        orderDelivery.getDeliveryZipCode()
+                        deliveryAddress.getId(),
+                        deliveryAddress.getName(),
+                        deliveryAddress.getPhoneNumber(),
+                        deliveryAddress.getStreet(),
+                        deliveryAddress.getNumber(),
+                        deliveryAddress.getDistrict(),
+                        deliveryAddress.getCity(),
+                        deliveryAddress.getUf(),
+                        deliveryAddress.getComplement(),
+                        deliveryAddress.getZipCode()
                 ),
                 order.getOrderItems().stream().map(OrderItemDTO::new).toList()
         );
@@ -112,8 +110,8 @@ public class OrderService {
             var customer = (Customer) userService.getUserAuthenticated();
             var store = storeService.findById(dto.storeId());
             var address = addressService.findById(dto.addressId());
-
-            var orderDelivery = new OrderDelivery(
+            var paymentMethod = paymentService.findPaymentMethodByName(dto.paymentMethod());
+            var deliveryAddress = new DeliveryAddress(
                     null,
                     address.getName(),
                     address.getPhoneNumber(),
@@ -123,17 +121,20 @@ public class OrderService {
                     address.getCity(),
                     address.getUf(),
                     address.getComplement(),
-                    address.getZipCode()
+                    address.getZipCode(),
+                    address.getCreatedAt(),
+                    address.getUpdatedAt()
             );
 
             var order = new Order(
                     OrderStatus.PENDENTE,
-                    OrderPayment.PIX,
+                    paymentMethod.getName(),
                     customer,
                     store
             );
-            order.addOrderDelivery(orderDelivery);
+            order.addDeliveryAddress(deliveryAddress);
             addOrderItemsToOrder(order, dto.cartItems());
+
             return new OrderDTO(orderRepository.save(order));
 
         } catch (DataIntegrityViolationException e) {

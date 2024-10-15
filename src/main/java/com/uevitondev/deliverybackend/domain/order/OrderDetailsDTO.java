@@ -13,15 +13,11 @@ public record OrderDetailsDTO(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime closedAt,
-        OrderStatus status,
-        OrderPayment paymentMethod,
+        String status,
+        String paymentMethod,
         Double total,
-        OrderCustomerDTO customer,
         StoreDTO store,
         AddressDTO deliveryAddress,
         List<OrderItemDTO> orderItems
 
-) {
-
-
-}
+) { }
