@@ -12,7 +12,7 @@ public record ShoppingCartDTO(
         @NotNull
         UUID storeId,
         @NotNull
-        String paymentMethod,
+        UUID paymentMethodId,
         @NotEmpty
         Set<CartItemDTO> cartItems
 ) {

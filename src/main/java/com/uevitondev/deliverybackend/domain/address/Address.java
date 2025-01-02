@@ -17,6 +17,8 @@ public class Address implements Serializable {
     @Column(nullable = false)
     private String phoneNumber;
     @Column(nullable = false)
+    private String zipCode;
+    @Column(nullable = false)
     private String street;
     @Column(nullable = false)
     private Integer number;
@@ -28,8 +30,6 @@ public class Address implements Serializable {
     private String uf;
     @Column(nullable = false)
     private String complement;
-    @Column(nullable = false)
-    private String zipCode;
     @Column(nullable = false)
     private LocalDateTime createdAt;
     @Column(nullable = false)
@@ -43,26 +43,26 @@ public class Address implements Serializable {
             UUID id,
             String name,
             String phoneNumber,
+            String zipCode,
             String street,
             Integer number,
             String district,
             String city,
             String uf,
             String complement,
-            String zipCode,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.zipCode = zipCode;
         this.street = street;
         this.number = number;
         this.district = district;
         this.city = city;
         this.uf = uf;
         this.complement = complement;
-        this.zipCode = zipCode;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -89,6 +89,14 @@ public class Address implements Serializable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public String getStreet() {
@@ -137,14 +145,6 @@ public class Address implements Serializable {
 
     public void setComplement(String complement) {
         this.complement = complement;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
     }
 
     public LocalDateTime getCreatedAt() {

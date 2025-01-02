@@ -16,6 +16,8 @@ public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String imgUrl;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
@@ -28,8 +30,9 @@ public class Category implements Serializable {
     public Category() {
     }
 
-    public Category(UUID id, String name) {
+    public Category(UUID id, String imgUrl, String name) {
         this.id = id;
+        this.imgUrl = imgUrl;
         this.name = name;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -41,6 +44,14 @@ public class Category implements Serializable {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public String getName() {

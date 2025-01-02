@@ -35,13 +35,13 @@ public class StoreAddress extends Address implements Serializable {
                 id,
                 name,
                 phoneNumber,
+                zipCode,
                 street,
                 number,
                 district,
                 city,
                 uf,
                 complement,
-                zipCode,
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

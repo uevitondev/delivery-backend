@@ -1,7 +1,7 @@
 package com.uevitondev.deliverybackend.handler;
 
-import com.uevitondev.deliverybackend.domain.exception.*;
 import com.uevitondev.deliverybackend.config.security.jwt.JwtBearerTokenException;
+import com.uevitondev.deliverybackend.domain.exception.*;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.stream.Collectors;
@@ -27,6 +28,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     })
     protected ResponseEntity<ProblemDetail> handleAuthenticationException(Exception e) {
         var httpStatus = HttpStatus.UNAUTHORIZED;
+        ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
+        problemDetail.setTitle(httpStatus.getReasonPhrase());
+        problemDetail.setDetail(e.getMessage());
+        return ResponseEntity.status(httpStatus).body(problemDetail);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ProblemDetail> handleTypeMismatchException(Exception e) {
+        var httpStatus = HttpStatus.BAD_REQUEST;
         ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
         problemDetail.setTitle(httpStatus.getReasonPhrase());
         problemDetail.setDetail(e.getMessage());

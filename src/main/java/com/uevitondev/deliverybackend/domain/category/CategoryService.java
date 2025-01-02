@@ -36,7 +36,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryDTO insertNewCategory(CategoryDTO dto) {
-        var category = new Category(null, dto.name());
+        var category = new Category(null, dto.imgUrl(), dto.name());
         return new CategoryDTO(categoryRepository.save(category));
     }
 

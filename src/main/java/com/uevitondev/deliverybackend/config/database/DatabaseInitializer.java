@@ -155,10 +155,16 @@ public class DatabaseInitializer implements CommandLineRunner {
 
 
         // category
-        Category category1 = new Category(null, "PIZZAS");
-        Category category2 = new Category(null, "BEBIDAS");
-        Category category3 = new Category(null, "SALGADOS");
-        Category category4 = new Category(null, "DOCES");
+
+        final String category1ImgUrl = "https://img.freepik.com/vetores-gratis/slice-pizza-melted-cartoon-vector-icon-ilustracao-alimentacao-icon-objeto-isolado-vector-plano_138676-10750.jpg?t=st=1732815088~exp=1732818688~hmac=98981ac690a813bf2cbe7e0a4a823393342f5afdd9038150eab187ca49963627&w=826";
+        final String category2ImgUrl = "https://img.freepik.com/vetores-gratis/modelo-de-design-de-logotipo-kombucha_23-2150038349.jpg?t=st=1732815253~exp=1732818853~hmac=6cc92483eafaeff832d96fb6c3463db17466988eeb40727c545f6bb0bdf7c63c&w=826";
+        final String category3ImgUrl = "https://img.freepik.com/vetores-gratis/colecao-de-empanada-assada-deliciosa_23-2148579448.jpg?t=st=1732815316~exp=1732818916~hmac=bd8588b503e08cb44eddb988f14af9ecaafd4d56bf7dff7a0f05e747c0e1104e&w=826";
+        final String category4ImgUrl = "https://img.freepik.com/vetores-gratis/coleccao-de-sobremesas-doces-em-estilo-desenhado-a-mao_23-2147783427.jpg?ga=GA1.1.216393060.1732815058&semt=ais_hybrid";
+
+        Category category1 = new Category(null, category1ImgUrl, "PIZZAS");
+        Category category2 = new Category(null, category2ImgUrl, "BEBIDAS");
+        Category category3 = new Category(null, category3ImgUrl, "SALGADOS");
+        Category category4 = new Category(null, category4ImgUrl, "DOCES");
         categoryRepository.saveAll(List.of(category1, category2, category3, category4));
 
         // address store
@@ -240,12 +246,10 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         // payment method
 
-        var paymentMethod1 = new PaymentMethod(null, PaymentMethodName.ESPECIE, PaymentMethodName.ESPECIE.toString());
+        var paymentMethod1 = new PaymentMethod(null, PaymentMethodName.DINHEIRO, PaymentMethodName.DINHEIRO.toString());
         var paymentMethod2 = new PaymentMethod(null, PaymentMethodName.PIX, PaymentMethodName.PIX.toString());
         var paymentMethod3 = new PaymentMethod(null, PaymentMethodName.CARTAO, PaymentMethodName.CARTAO.toString());
         paymentMethodRepository.saveAll(List.of(paymentMethod1, paymentMethod2, paymentMethod3));
-
-
 
 
         // order-item
@@ -272,6 +276,7 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         // order
         Order order1 = new Order(
+                null,
                 OrderStatus.PENDENTE,
                 PaymentMethodName.PIX,
                 customerUser,

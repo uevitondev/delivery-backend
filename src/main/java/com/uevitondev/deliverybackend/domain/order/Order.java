@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 @Table(name = "tb_order")
@@ -19,6 +20,8 @@ public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
+    private Integer number;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -50,11 +53,14 @@ public class Order implements Serializable {
     }
 
     public Order(
+            UUID id,
             OrderStatus status,
             PaymentMethodName paymentMethod,
             Customer customer,
             Store store
     ) {
+        this.id = id;
+        this.number = ThreadLocalRandom.current().nextInt(100000, 1000000);
         this.status = status;
         this.paymentMethod = paymentMethod;
         this.customer = customer;
@@ -69,6 +75,14 @@ public class Order implements Serializable {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public OrderStatus getStatus() {

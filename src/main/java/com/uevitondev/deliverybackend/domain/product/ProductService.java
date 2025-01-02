@@ -36,16 +36,12 @@ public class ProductService {
         );
     }
 
-    public Page<ProductDTO> getAllProductsPaged(Pageable pageable) {
-        return productRepository.findAllProductsPaged(pageable).map(ProductDTO::new);
+    public Page<ProductDTO> getAllProducts(Pageable pageable) {
+        return productRepository.findAllProducts(pageable).map(ProductDTO::new);
     }
 
-    public Page<ProductDTO> getAllProductsPagedByStoreAndCategory(
-            UUID storeId,
-            String categoryName,
-            Pageable pageable
-    ) {
-        return productRepository.findAllByStoreAndCategory(storeId, categoryName, pageable).map(ProductDTO::new);
+    public Page<Product> findAllProductsByStoreId(UUID id, String name, String category, Pageable pageable) {
+        return productRepository.findProductsByStoreWithFilters(id, name, category, pageable);
     }
 
     public ProductDTO findProductById(UUID productId) {

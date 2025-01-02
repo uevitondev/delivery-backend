@@ -2,7 +2,6 @@ package com.uevitondev.deliverybackend.domain.product;
 
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,20 +21,9 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<PagedModel<ProductDTO>> getAllProductsPaged(Pageable pageable) {
+    public ResponseEntity<PagedModel<ProductDTO>> getAllProducts(Pageable pageable) {
         return ResponseEntity.ok().body(
-                new PagedModel<>(productService.getAllProductsPaged(pageable))
-        );
-    }
-
-    @GetMapping("/store/{storeId}")
-    public ResponseEntity<PagedModel<ProductDTO>> getAllProductsPagedByStoreAndCategory(
-            @PathVariable UUID storeId,
-            @RequestParam(required = false) String categoryName,
-            @PageableDefault(size = 12) Pageable pageable
-    ) {
-        return ResponseEntity.ok().body(
-                new PagedModel<>(productService.getAllProductsPagedByStoreAndCategory(storeId, categoryName, pageable))
+                new PagedModel<>(productService.getAllProducts(pageable))
         );
     }
 

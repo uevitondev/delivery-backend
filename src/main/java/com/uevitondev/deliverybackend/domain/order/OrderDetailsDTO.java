@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public record OrderDetailsDTO(
         UUID id,
+        Integer number,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime closedAt,

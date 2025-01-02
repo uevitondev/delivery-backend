@@ -13,14 +13,41 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @Query("SELECT p FROM Product p")
-    Page<Product> findAllProductsPaged(Pageable pageable);
+    Page<Product> findAllProducts(Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.store.id = :storeId AND" +
-            " (:categoryName = '' OR p.category.name = :categoryName)"
-    )
-    Page<Product> findAllByStoreAndCategory(
-            @Param("storeId") UUID storeId,
-            @Param("categoryName") String categoryName,
+
+    @Query("""
+            SELECT p 
+            FROM Product p 
+            WHERE p.store.id = :id 
+            AND (
+                 (
+                     :name = '' 
+                     OR LOWER(p.name) LIKE CONCAT('%', LOWER(:name), '%')
+                     OR NOT EXISTS (
+                         SELECT 1 
+                         FROM Product p2 
+                         WHERE p2.store.id = :id 
+                         AND LOWER(p2.name) LIKE CONCAT('%', LOWER(:name), '%')
+                         AND LOWER(p2.category.name) LIKE CONCAT('%', LOWER(:category), '%')
+                     )
+                 )
+                 AND (
+                     :category = '' 
+                     OR LOWER(p.category.name) LIKE CONCAT('%', LOWER(:category), '%')
+                     OR NOT EXISTS (
+                         SELECT 1 
+                         FROM Product p3 
+                         WHERE p3.store.id = :id 
+                         AND LOWER(p3.category.name) LIKE CONCAT('%', LOWER(:category), '%')
+                     )
+                 )
+            )
+            """)
+    Page<Product> findProductsByStoreWithFilters(
+            @Param("id") UUID id,
+            @Param("name") String name,
+            @Param("category") String category,
             Pageable pageable
     );
 }

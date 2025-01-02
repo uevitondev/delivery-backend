@@ -74,6 +74,7 @@ public class OrderService {
 
         return new OrderDetailsDTO(
                 order.getId(),
+                order.getNumber(),
                 order.getCreatedAt(),
                 order.getUpdatedAt(),
                 order.getClosedAt(),
@@ -91,13 +92,13 @@ public class OrderService {
                         deliveryAddress.getId(),
                         deliveryAddress.getName(),
                         deliveryAddress.getPhoneNumber(),
+                        deliveryAddress.getZipCode(),
                         deliveryAddress.getStreet(),
                         deliveryAddress.getNumber(),
                         deliveryAddress.getDistrict(),
                         deliveryAddress.getCity(),
                         deliveryAddress.getUf(),
-                        deliveryAddress.getComplement(),
-                        deliveryAddress.getZipCode()
+                        deliveryAddress.getComplement()
                 ),
                 order.getOrderItems().stream().map(OrderItemDTO::new).toList()
         );
@@ -110,7 +111,7 @@ public class OrderService {
             var customer = (Customer) userService.getUserAuthenticated();
             var store = storeService.findById(dto.storeId());
             var address = addressService.findById(dto.addressId());
-            var paymentMethod = paymentService.findPaymentMethodByName(dto.paymentMethod());
+            var paymentMethod = paymentService.findPaymentMethodById(dto.paymentMethodId());
             var deliveryAddress = new DeliveryAddress(
                     null,
                     address.getName(),
@@ -127,6 +128,7 @@ public class OrderService {
             );
 
             var order = new Order(
+                    null,
                     OrderStatus.PENDENTE,
                     paymentMethod.getName(),
                     customer,

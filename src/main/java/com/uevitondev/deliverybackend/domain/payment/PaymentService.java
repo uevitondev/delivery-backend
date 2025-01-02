@@ -4,6 +4,7 @@ import com.uevitondev.deliverybackend.domain.exception.ResourceNotFoundException
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PaymentService {
@@ -17,6 +18,12 @@ public class PaymentService {
 
     public List<PaymentMethod> getAllPaymentMethods(){
         return this.paymentMethodRepository.findAll();
+    }
+
+    public PaymentMethod findPaymentMethodById(UUID id) {
+        return paymentMethodRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("payment method not found by id")
+        );
     }
 
 

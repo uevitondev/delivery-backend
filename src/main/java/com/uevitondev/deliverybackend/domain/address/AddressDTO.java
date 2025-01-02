@@ -16,6 +16,9 @@ public record AddressDTO(
         String phoneNumber,
         @NotNull
         @NotBlank
+        String zipCode,
+        @NotNull
+        @NotBlank
         String street,
         @NotNull
         Integer number,
@@ -28,23 +31,21 @@ public record AddressDTO(
         @NotNull
         @NotBlank
         String uf,
-        String complement,
-        @NotNull
-        @NotBlank
-        String zipCode
+        String complement
+
 ) {
     public AddressDTO(Address address) {
         this(
                 address.getId(),
                 address.getName(),
                 address.getPhoneNumber(),
+                address.getZipCode(),
                 address.getStreet(),
                 address.getNumber(),
                 address.getDistrict(),
                 address.getCity(),
                 address.getUf(),
-                address.getComplement(),
-                address.getZipCode()
+                address.getComplement()
         );
     }
 }
