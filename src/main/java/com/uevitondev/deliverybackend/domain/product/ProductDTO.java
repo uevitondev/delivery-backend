@@ -7,7 +7,10 @@ public record ProductDTO(
         String imgUrl,
         String name,
         String description,
-        Double price
+        Double price,
+        UUID categoryId,
+        UUID storeId
+
 ) {
 
     public ProductDTO(Product product) {
@@ -16,7 +19,9 @@ public record ProductDTO(
                 product.getImgUrl(),
                 product.getName(),
                 product.getDescription(),
-                product.getPrice()
+                product.getPrice(),
+                product.getCategory().getId(),
+                product.getStore().getId()
         );
     }
 }

@@ -55,6 +55,11 @@ public class OrderService {
         return orderRepository.findAll().stream().map(OrderDTO::new).toList();
     }
 
+    public List<OrderDTO> findAllOrdersByStore(UUID storeId) {
+        return orderRepository.findByStore(storeId).stream().map(OrderDTO::new).toList();
+    }
+
+
     public List<OrderDTO> findAllOrdersByCustomer(Customer customer) {
         return orderRepository.findByCustomer(customer).stream().map(OrderDTO::new).toList();
     }

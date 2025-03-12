@@ -5,8 +5,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 
@@ -33,8 +35,10 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> insertNewProduct(@RequestBody @Valid NewProductDTO dto) {
-        var productDto = productService.insertNewProduct(dto);
+    public ResponseEntity<ProductDTO> insertNewProduct(
+            @RequestPart("imgFile") @Valid MultipartFile imgFile,
+            @RequestPart("newProduct") @Valid NewProductDTO dto) throws IOException {
+        var productDto = productService.insertNewProduct(imgFile, dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/{id}")
                 .buildAndExpand(productDto.id())

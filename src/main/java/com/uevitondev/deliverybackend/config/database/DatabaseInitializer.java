@@ -124,14 +124,23 @@ public class DatabaseInitializer implements CommandLineRunner {
         sellerUser = userRepository.save(sellerUser);
 
 
-        // user  refresh token
-        var refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setToken(UUID.randomUUID().toString());
-        refreshTokenEntity.setCreatedAt(LocalDateTime.now());
-        refreshTokenEntity.setUpdatedAt(LocalDateTime.now());
-        refreshTokenEntity.setExpiredAt(LocalDateTime.now().plusSeconds(604800));
-        refreshTokenEntity.setUser(customerUser);
-        refreshTokenRepository.save(refreshTokenEntity);
+        // user customer refresh token
+        var refreshTokenEntityCustomer = new RefreshToken();
+        refreshTokenEntityCustomer.setToken(UUID.randomUUID().toString());
+        refreshTokenEntityCustomer.setCreatedAt(LocalDateTime.now());
+        refreshTokenEntityCustomer.setUpdatedAt(LocalDateTime.now());
+        refreshTokenEntityCustomer.setExpiredAt(LocalDateTime.now().plusSeconds(604800));
+        refreshTokenEntityCustomer.setUser(customerUser);
+        refreshTokenRepository.save(refreshTokenEntityCustomer);
+
+        // user seller  refresh token
+        var refreshTokenEntitySeller = new RefreshToken();
+        refreshTokenEntitySeller.setToken(UUID.randomUUID().toString());
+        refreshTokenEntitySeller.setCreatedAt(LocalDateTime.now());
+        refreshTokenEntitySeller.setUpdatedAt(LocalDateTime.now());
+        refreshTokenEntitySeller.setExpiredAt(LocalDateTime.now().plusSeconds(604800));
+        refreshTokenEntitySeller.setUser(sellerUser);
+        refreshTokenRepository.save(refreshTokenEntitySeller);
 
 
         // user customer address

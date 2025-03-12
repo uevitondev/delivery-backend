@@ -32,6 +32,7 @@ public class WebSecurityConfig {
     private final HandlerExceptionResolver resolver;
 
     private static final String[] ENDPOINTS_PUBLIC = {
+            "/ws/**",
             "/v1/h2-console/**",
             "/v1/doc/**",
             "/v1/test/public/**",
@@ -109,7 +110,7 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200",
+            configuration.setAllowedOrigins(List.of("http://localhost:4200",
                 "https://delivery-ui-bay.vercel.app"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));

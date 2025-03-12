@@ -1,5 +1,6 @@
 package com.uevitondev.deliverybackend.domain.store;
 
+import com.uevitondev.deliverybackend.domain.seller.Seller;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,20 +22,18 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
     @Query("SELECT s FROM Store s WHERE LOWER(s.name) =  LOWER(:name)")
     Optional<Store> findByName(@Param("name") String name);
 
+    @Query("SELECT s FROM Store s WHERE s.seller = :seller")
+    List<Store> findBySeller(@Param("seller") Seller seller);
+
     @Query("""
             SELECT s
             FROM Store s 
-            WHERE (
-                      :name = '' OR 
-                      LOWER(s.name) LIKE CONCAT('%', LOWER(:name), '%') OR 
-                      NOT EXISTS (
-                          SELECT 1 FROM Store s2 
-                          WHERE s2.name = :name AND LOWER(s2.name) LIKE CONCAT('%', LOWER(:name), '%')
-                      )
-                  ) 
-            
+            WHERE 
+            :store_name IS NULL
+            OR  
+            LOWER(s.name) LIKE CONCAT('%', LOWER(:store_name), '%')
             """)
-    List<Store> findStoresWithFilters(@Param("name") String name);
+    List<Store> findStoresWithFilters(@Param("store_name") String storeName);
 
 
 }

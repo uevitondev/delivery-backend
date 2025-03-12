@@ -3,10 +3,12 @@ package com.uevitondev.deliverybackend.domain.store;
 import com.uevitondev.deliverybackend.domain.product.ProductDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -42,11 +44,20 @@ public class StoreController {
         return ResponseEntity.ok().body(storeDto);
     }
 
+    @GetMapping("/seller/list")
+    public ResponseEntity<List<StoreDTO>> getStoresBySeller() {
+        var storeDtos = storeService.findStoresBySeller().stream().map(StoreDTO::new).toList();
+        return ResponseEntity.ok().body(storeDtos);
+    }
+
     @PostMapping
-    public ResponseEntity<StoreDTO> insertNewStore(@RequestBody @Valid StoreDTO dto) {
-        dto = new StoreDTO(storeService.insertNewStore(dto));
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.id()).toUri();
-        return ResponseEntity.created(uri).body(dto);
+    public ResponseEntity<StoreDTO> insertNewStore(
+            @RequestPart("logoFile") @Valid MultipartFile logoFile,
+            @RequestPart("newStore") @Valid NewStoreDTO dto
+    ) {
+        var storeDto = new StoreDTO(storeService.insertNewStore(logoFile, dto));
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(storeDto.id()).toUri();
+        return ResponseEntity.created(uri).body(storeDto);
     }
 
     @PutMapping("/update")
@@ -62,14 +73,15 @@ public class StoreController {
     }
 
 
-    @GetMapping("/{id}/products")
+    @GetMapping("/{store_id}/products")
     public ResponseEntity<PagedModel<ProductDTO>> getAllProductsByStoreId(
-            @PathVariable UUID id,
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "category", required = false) String category,
-            @PageableDefault(size = 12) Pageable pageable
+            @PathVariable(name = "store_id") UUID storeId,
+            @RequestParam(name = "product_name", required = false) String productName,
+            @RequestParam(name = "category_name", required = false) String categoryName,
+            @PageableDefault( page = 0, size = 12, direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        var products = storeService.findAllProductsByStoreId(id, name, category, pageable).map(ProductDTO::new);
+        var products = storeService.findAllProductsByStoreId(storeId, productName, categoryName, pageable)
+                .map(ProductDTO::new);
         return ResponseEntity.ok().body(new PagedModel<>(products));
     }
 

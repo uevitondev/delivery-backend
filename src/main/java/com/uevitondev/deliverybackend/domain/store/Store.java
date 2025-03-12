@@ -19,7 +19,7 @@ public class Store implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String logoUrl;
     @Column(nullable = false)
     private String name;
