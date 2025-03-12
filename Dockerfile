@@ -6,6 +6,8 @@ RUN apt-get install openjdk-21-jdk -y
 
 ENV HOST_EMAIL=''
 ENV HOST_EMAIL_PASSWORD=''
+ENV AWS_ACCESS_KEY_ID=''
+ENV AWS_SECRET_ACCESS_KEY=''
 
 COPY . .
 
