@@ -2,6 +2,7 @@ package com.uevitondev.deliverybackend.config.aws;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,7 @@ public class AwsS3Service {
     @Value("${aws.s3.bucket.name}")
     private String awsS3BucketName;
 
-    AwsS3Service(S3Client s3Client) {
+    AwsS3Service(@Qualifier("s3Client") S3Client s3Client) {
         this.s3Client = s3Client;
     }
 

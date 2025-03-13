@@ -18,7 +18,7 @@ class AWSConfig {
     @Value("${aws.secret.access.key}")
     private String awsSecretAccessKey;
 
-    @Bean
+    @Bean("s3Client")
     public S3Client s3Client() {
         var awsCredentials = AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey);
         var credentialsProvider = StaticCredentialsProvider.create(awsCredentials);
