@@ -2,6 +2,8 @@ package com.uevitondev.deliverybackend.domain.store;
 
 import com.uevitondev.deliverybackend.domain.product.ProductDTO;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/stores")
 public class StoreController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StoreController.class);
 
     private final StoreService storeService;
 
@@ -55,6 +58,7 @@ public class StoreController {
             @RequestPart("logoFile") @Valid MultipartFile logoFile,
             @RequestPart("newStore") @Valid NewStoreDTO dto
     ) {
+        LOGGER.info("Insert New Store In Controller");
         var storeDto = new StoreDTO(storeService.insertNewStore(logoFile, dto));
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(storeDto.id()).toUri();
         return ResponseEntity.created(uri).body(storeDto);

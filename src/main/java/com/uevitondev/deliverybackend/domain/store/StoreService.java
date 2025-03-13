@@ -7,6 +7,8 @@ import com.uevitondev.deliverybackend.domain.product.Product;
 import com.uevitondev.deliverybackend.domain.product.ProductService;
 import com.uevitondev.deliverybackend.domain.seller.Seller;
 import com.uevitondev.deliverybackend.domain.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import java.util.UUID;
 @Service
 public class StoreService {
 
+    private static final Logger log = LoggerFactory.getLogger(StoreService.class);
     private final StoreRepository storeRepository;
     private final ProductService productService;
     private final UserService userService;
@@ -61,6 +64,7 @@ public class StoreService {
     @Transactional
     public Store insertNewStore(MultipartFile logoFile, NewStoreDTO dto) {
         try {
+            log.info("Insert New Store In Service");
             var seller = (Seller) userService.getUserAuthenticated();
             var store = new Store();
             store.setCreatedAt(LocalDateTime.now());
@@ -71,7 +75,9 @@ public class StoreService {
             store.setType(StoreType.valueOf(dto.type()).toString());
             store.setSeller(seller);
             return storeRepository.save(store);
-        } catch (RuntimeException | IOException e) {
+        } catch (RuntimeException  e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 

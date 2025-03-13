@@ -1,13 +1,14 @@
 package com.uevitondev.deliverybackend.config.aws;
 
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
 
 
 @Configuration
@@ -17,16 +18,15 @@ class AWSConfig {
     private String awsAccessKeyId;
     @Value("${aws.secret.access.key}")
     private String awsSecretAccessKey;
+    private static final String awsRegion = "sa-east-1";
 
-    @Bean("s3Client")
-    public S3Client s3Client() {
-        var awsCredentials = AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey);
-        var credentialsProvider = StaticCredentialsProvider.create(awsCredentials);
-        return S3Client.builder()
-                .region(Region.SA_EAST_1)
-                .credentialsProvider(credentialsProvider)
+    @Bean
+    public AmazonS3 amazonS3() {
+        AWSCredentials credentials = new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey);
+        return AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(awsRegion)
                 .build();
-
     }
 
 
