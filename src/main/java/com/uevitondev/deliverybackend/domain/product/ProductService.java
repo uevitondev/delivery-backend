@@ -58,7 +58,7 @@ public class ProductService {
         var product = new Product();
         product.setCreatedAt(LocalDateTime.now());
         product.setUpdatedAt(LocalDateTime.now());
-        product.setImgUrl(awsS3Service.uploadS3FileAndReturnUrl(file));
+        product.setImgUrl(awsS3Service.uploadFileAndReturnUrl(dto.name(), file));
         product.setName(dto.name());
         product.setDescription(dto.description());
         product.setPrice(dto.price());

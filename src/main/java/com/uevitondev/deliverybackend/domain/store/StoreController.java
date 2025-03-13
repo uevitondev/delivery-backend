@@ -58,7 +58,6 @@ public class StoreController {
             @RequestPart("logoFile") @Valid MultipartFile logoFile,
             @RequestPart("newStore") @Valid NewStoreDTO dto
     ) {
-        LOGGER.info("Insert New Store In Controller");
         var storeDto = new StoreDTO(storeService.insertNewStore(logoFile, dto));
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(storeDto.id()).toUri();
         return ResponseEntity.created(uri).body(storeDto);

@@ -64,20 +64,17 @@ public class StoreService {
     @Transactional
     public Store insertNewStore(MultipartFile logoFile, NewStoreDTO dto) {
         try {
-            log.info("Insert New Store In Service");
             var seller = (Seller) userService.getUserAuthenticated();
             var store = new Store();
             store.setCreatedAt(LocalDateTime.now());
             store.setUpdatedAt(LocalDateTime.now());
-            store.setLogoUrl(awsS3Service.uploadS3FileAndReturnUrl(logoFile));
+            store.setLogoUrl(awsS3Service.uploadFileAndReturnUrl(dto.name(), logoFile));
             store.setName(dto.name());
             store.setPhoneNumber(dto.phoneNumber());
             store.setType(StoreType.valueOf(dto.type()).toString());
             store.setSeller(seller);
             return storeRepository.save(store);
-        } catch (RuntimeException  e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             throw new RuntimeException(e);
         }
 
