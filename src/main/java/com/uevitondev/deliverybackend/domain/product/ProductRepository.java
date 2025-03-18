@@ -3,6 +3,8 @@ package com.uevitondev.deliverybackend.domain.product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -15,7 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Page<Product> findAll(Pageable pageable);
 
-    /*
 
     @Query("""
             SELECT p 
@@ -27,7 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
                     (:category_name IS NULL OR LOWER(p.category.name) LIKE CONCAT('%', LOWER(:category_name), '%'))
                 )
             """)
-    Page<Product> findProductsByStoreIdWithFilters(
+    Page<Product> findByStore(
             @Param("store_id") UUID storeId,
             @Param("product_name") String productName,
             @Param("category_name") String categoryName,
@@ -35,13 +36,4 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     );
 
 
-     */
-
-
-    Page<Product> findByStore(
-            UUID storeId,
-            String productName,
-            String categoryName,
-            Pageable pageable
-    );
 }
