@@ -54,7 +54,6 @@ public class DatabaseInitializer implements CommandLineRunner {
             UserRepository userRepository,
             UserAddressRepository userAddressRepository,
             CategoryRepository categoryRepository,
-
             StoreRepository storeRepository,
             OrderRepository orderRepository,
             PaymentMethodRepository paymentMethodRepository,
@@ -291,8 +290,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                 customerUser,
                 store1
         );
-        order1.addDeliveryAddress(deliveryAddress);
-        order1.addOrderItems(orderItems);
-        orderRepository.save(order1);
+        // order1.addDeliveryAddress(deliveryAddress);
+        // order1.addOrderItems(orderItems);
+        // orderRepository.save(order1);
     }
 }
