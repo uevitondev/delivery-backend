@@ -204,7 +204,6 @@ public class DatabaseInitializer implements CommandLineRunner {
                 sellerUser,
                 addressStore1
         );
-        store1.setId(UUID.fromString("005d7c57-04ad-4251-bf05-fdc8b38182aa"));
         store1.addAddress(addressStore1);
         store1 = storeRepository.save(store1);
 

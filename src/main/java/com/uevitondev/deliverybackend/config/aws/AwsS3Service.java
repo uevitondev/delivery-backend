@@ -1,36 +1,44 @@
 package com.uevitondev.deliverybackend.config.aws;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class AwsS3Service {
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsS3Service.class);
 
-    private final AmazonS3 amazonS3Client;
+    private final S3Client s3Client;
 
     @Value("${aws.s3.bucket.name}")
     private String awsS3BucketName;
 
-    public AwsS3Service(AmazonS3 amazonS3Client) {
-        this.amazonS3Client = amazonS3Client;
+    public AwsS3Service(S3Client s3Client) {
+        this.s3Client = s3Client;
     }
 
     public String uploadFileAndReturnUrl(String fileName, MultipartFile multipartFile) throws IOException {
-        var objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
-        objectMetadata.setContentLength(multipartFile.getSize());
-        var keyName = fileName.replace(" ", "_").toLowerCase();
-        amazonS3Client.putObject(awsS3BucketName, keyName, multipartFile.getInputStream(), new ObjectMetadata());
-        LOGGER.info("Upload File AWS-S3 Success!");
-        return "https://" + awsS3BucketName + ".s3.sa-east-1.amazonaws.com/" + keyName;
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+
+            var keyName = fileName.replace(" ", "_").toLowerCase();
+            var requestBody = RequestBody.fromInputStream(inputStream, multipartFile.getSize());
+            var putObjectRequest = PutObjectRequest.builder()
+                    .bucket(awsS3BucketName)
+                    .key(keyName)
+                    .build();
+            s3Client.putObject(putObjectRequest, requestBody);
+
+            LOGGER.info("Upload File AWS-S3 Success!");
+            return "https://" + awsS3BucketName + ".s3.sa-east-1.amazonaws.com/" + keyName;
+        }
 
     }
 

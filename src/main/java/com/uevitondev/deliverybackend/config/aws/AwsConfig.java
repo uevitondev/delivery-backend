@@ -1,14 +1,14 @@
 package com.uevitondev.deliverybackend.config.aws;
 
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 
 @Configuration
@@ -21,11 +21,12 @@ class AWSConfig {
     private static final String awsRegion = "sa-east-1";
 
     @Bean
-    public AmazonS3 amazonS3() {
-        AWSCredentials credentials = new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey);
-        return AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(awsRegion)
+    public S3Client getS3Client() {
+        AwsCredentials credentials = AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey);
+        return S3Client
+                .builder()
+                .region(Region.of(awsRegion))
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
     }
 
