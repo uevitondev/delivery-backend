@@ -28,16 +28,20 @@ public class AwsS3Service {
     public String uploadFileAndReturnUrl(String fileName, MultipartFile multipartFile) throws IOException {
         try (InputStream inputStream = multipartFile.getInputStream()) {
 
-            var keyName = fileName.replace(" ", "_").toLowerCase();
-            var requestBody = RequestBody.fromInputStream(inputStream, multipartFile.getSize());
+            var key = fileName.replace(" ", "_").toLowerCase();
+            var contentType = multipartFile.getContentType();
+            var contentLength = multipartFile.getSize();
             var putObjectRequest = PutObjectRequest.builder()
                     .bucket(awsS3BucketName)
-                    .key(keyName)
+                    .key(key)
+                    .contentType(contentType)
+                    .contentLength(contentLength)
                     .build();
+            var requestBody = RequestBody.fromInputStream(inputStream, multipartFile.getSize());
             s3Client.putObject(putObjectRequest, requestBody);
 
             LOGGER.info("Upload File AWS-S3 Success!");
-            return "https://" + awsS3BucketName + ".s3.sa-east-1.amazonaws.com/" + keyName;
+            return "https://" + awsS3BucketName + ".s3.sa-east-1.amazonaws.com/" + key;
         }
 
     }
