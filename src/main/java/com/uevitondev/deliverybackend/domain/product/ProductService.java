@@ -42,11 +42,11 @@ public class ProductService {
     }
 
     public Page<ProductDTO> getAllProducts(Pageable pageable) {
-        return productRepository.findAllProducts(pageable).map(ProductDTO::new);
+        return productRepository.findAll(pageable).map(ProductDTO::new);
     }
 
     public Page<Product> findAllProductsByStoreId(UUID storeId, String productName, String categoryName, Pageable pageable) {
-        return productRepository.findProductsByStoreIdWithFilters(storeId, productName, categoryName, pageable);
+        return productRepository.findByStore(storeId, productName, categoryName, pageable);
     }
 
     public ProductDTO findProductById(UUID productId) {

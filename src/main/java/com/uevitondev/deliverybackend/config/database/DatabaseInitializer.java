@@ -16,6 +16,7 @@ import com.uevitondev.deliverybackend.domain.payment.PaymentMethod;
 import com.uevitondev.deliverybackend.domain.payment.PaymentMethodName;
 import com.uevitondev.deliverybackend.domain.payment.PaymentMethodRepository;
 import com.uevitondev.deliverybackend.domain.product.Product;
+import com.uevitondev.deliverybackend.domain.product.ProductRepository;
 import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshToken;
 import com.uevitondev.deliverybackend.domain.refreshtoken.RefreshTokenRepository;
 import com.uevitondev.deliverybackend.domain.role.Role;
@@ -42,6 +43,7 @@ public class DatabaseInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final UserAddressRepository userAddressRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
     private final PaymentMethodRepository paymentMethodRepository;
@@ -54,6 +56,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             UserRepository userRepository,
             UserAddressRepository userAddressRepository,
             CategoryRepository categoryRepository,
+            ProductRepository productRepository,
             StoreRepository storeRepository,
             OrderRepository orderRepository,
             PaymentMethodRepository paymentMethodRepository,
@@ -64,6 +67,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         this.userRepository = userRepository;
         this.userAddressRepository = userAddressRepository;
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.orderRepository = orderRepository;
         this.paymentMethodRepository = paymentMethodRepository;
@@ -244,13 +248,9 @@ public class DatabaseInitializer implements CommandLineRunner {
         Product product8 = new Product(productImageUrl, "Brigadeiro de Colher", productDescription, 40.0);
         product8.setCategory(category4);
         product8.setStore(store1);
-        /*
         productRepository.saveAll(
                 List.of(product1, product2, product3, product4, product5, product6, product7, product8)
         );
-
-        */
-
 
         // payment method
 
@@ -290,8 +290,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                 customerUser,
                 store1
         );
-        // order1.addDeliveryAddress(deliveryAddress);
-        // order1.addOrderItems(orderItems);
-        // orderRepository.save(order1);
+        order1.addDeliveryAddress(deliveryAddress);
+        order1.addOrderItems(orderItems);
+        orderRepository.save(order1);
     }
 }
