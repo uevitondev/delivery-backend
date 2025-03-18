@@ -18,16 +18,16 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     Page<Product> findAll(Pageable pageable);
 
 
-    @Query("""
-            SELECT p 
-            FROM Product p 
-            WHERE p.store.id = :store_id 
-            AND ( 
-                    (:product_name IS NULL OR LOWER(p.name) LIKE CONCAT('%', LOWER(:product_name), '%'))
-                    AND
-                    (:category_name IS NULL OR LOWER(p.category.name) LIKE CONCAT('%', LOWER(:category_name), '%'))
-                )
-            """)
+
+    @Query(value = """
+    SELECT p.* 
+    FROM tb_product p 
+    JOIN tb_category c ON p.category_id = c.id
+    WHERE p.store_id = :store_id 
+    AND (:product_name IS NULL OR LOWER(p.name) LIKE CONCAT('%', LOWER(:product_name), '%'))
+    AND (:category_name IS NULL OR LOWER(c.name) LIKE CONCAT('%', LOWER(:category_name), '%'))
+    """, nativeQuery = true)
+
     Page<Product> findByStore(
             @Param("store_id") UUID storeId,
             @Param("product_name") String productName,
