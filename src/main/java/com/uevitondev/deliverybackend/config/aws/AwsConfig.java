@@ -14,9 +14,9 @@ import software.amazon.awssdk.services.s3.S3Client;
 @Configuration
 class AWSConfig {
 
-    @Value("${aws.access.key.id}")
+    @Value("${aws.accessKeyId")
     private String awsAccessKeyId;
-    @Value("${aws.secret.access.key}")
+    @Value("${aws.secretKey}")
     private String awsSecretAccessKey;
     private static final String awsRegion = "sa-east-1";
 
@@ -25,7 +25,7 @@ class AWSConfig {
         AwsCredentials credentials = AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey);
         return S3Client
                 .builder()
-                .region(Region.of(awsRegion))
+                .region(Region.SA_EAST_1)
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
     }
